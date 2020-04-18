@@ -1,0 +1,29 @@
+p6e:
+  germ:
+    file:
+      base-path: E://
+      map:
+        avatar:
+          # 是否允许访问
+          visit: true
+          # 图片最大为 3M
+          size: 3145728
+          # 白名单的格式
+          format:
+            - JPG
+            - PNG
+            - JPEG
+            - GIF
+          # 文件保存路径
+          path: /avatar
+
+
+
+# 采用 Spring Boot 上传文件
+spring:
+  servlet:
+    multipart:
+      # 最大的文件大小 3MB
+      # 一次上传的文件最多为 10MB
+      max-file-size: 3MB
+      max-request-size: 10MB
