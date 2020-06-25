@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.p6e.germ.oauth2.mapper.P6eOauth2UserMapper">
+
+    <select id="select" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2UserDb"
+            resultType="com.p6e.germ.oauth2.model.db.P6eOauth2UserDb">
+        SELECT
+            `A`.`id`,
+            `A`.`status`,
+            `A`.`avatar`,
+            `A`.`name`,
+            `A`.`nickname`,
+            `A`.`sex`,
+            `A`.`birthday`,
+            `A`.`role`,
+            `B`.`email`,
+            `B`.`phone`
+        FROM
+            `p6e_germ_oauth2_user` AS `A`
+            LEFT JOIN `p6e_germ_oauth2_user_auth` AS `B` ON `A`.`id` = `B`.`id`
+        WHERE
+            (
+                B.email = #{account}
+                OR
+                B.phone = #{account}
+            )
+            AND B.`password` = #{password}
+        LIMI 0, 1;
+    </select>
+</mapper>

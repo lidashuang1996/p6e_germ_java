@@ -1,7 +1,7 @@
 p6e:
   germ:
     file:
-      base-path: E://
+      base-path: /p6e/file
       map:
         avatar:
           # 是否允许访问

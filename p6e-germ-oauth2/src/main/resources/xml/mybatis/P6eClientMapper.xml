@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.p6e.germ.oauth2.mapper.P6eClientMapper">
+
+    <select id="selectOne" parameterType="com.p6e.germ.oauth2.model.db.P6eClientDb"
+            resultType="com.p6e.germ.oauth2.model.db.P6eClientDb">
+        SELECT
+            `id` AS `id`,
+            `client_name` AS `clientName`,
+            `client_id` AS `clientId`,
+            `client_secret` AS `clientSecret`,
+            `client_scope` AS `clientScope`,
+            `client_redirect_uri` AS `clientRedirectUri`,
+            `client_access_token_stamp` AS `clientAccessTokenStamp`,
+            `client_access_refresh_token_stamp` AS `clientAccessRefreshTokenStamp`,
+            `client_describe` AS `clientDescribe`,
+            `client_limiting_rule` AS `clientLimitingRule`
+        FROM
+            `p6e_germ_oauth2_client`
+        <trim prefix="WHERE" prefixOverrides="AND| OR">
+            <if test="id != null">AND `id` = #{id}</if>
+            <if test="clientId != null">AND `client_id` = #{clientId}</if>
+        </trim>
+        LIMIT 0, 1;
+    </select>
+
+</mapper>
