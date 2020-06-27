@@ -18,14 +18,9 @@ public final class P6eResultConfig implements Serializable {
 
 
     /** 成功 */
-    public static final String SUCCESS = "200-SUCCERR";
-    public static final String SUCCERR_USERS_GET = "200-SUCCERR_USERS_GET";
-    public static final String SUCCERR_USERS_LIST = "200-SUCCERR_USERS_LIST";
-    public static final String SUCCERR_USERS_CREATE = "200-SUCCERR_USERS_CREATE";
-    public static final String SUCCERR_USERS_DELETE = "200-SUCCERR_USERS_DELETE";
-    public static final String SUCCERR_USERS_UPDATE = "200-SUCCERR_USERS_UPDATE";
+    public static final String SUCCESS = "200-SUCCESS";
 
-
-    public static final String ERROR_ACCOUNT_OR_PASSOWR = "400-ERROR_ACCOUNT_OR_PASSOWR";
+    /** 凭证生成失败 */
+    public static final String ERROR_VOUCHER_GENERATE = "500-ERROR_VOUCHER_GENERATE";
 
 }

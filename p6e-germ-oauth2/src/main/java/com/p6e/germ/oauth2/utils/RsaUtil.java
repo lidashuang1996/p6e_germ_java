@@ -37,7 +37,7 @@ public class RsaUtil {
      * @param keyMap 公钥私钥的字典
      * @return 公钥字符串
      */
-    private static String getRsaPublicKeyStr(final Map<String, Object> keyMap) {
+    public static String getRsaPublicKeyStr(final Map<String, Object> keyMap) {
         // 获得map中的公钥对象 转为key对象
         final Key key = (Key) keyMap.get(RSA_PUBLIC_KEY);
         // 编码返回字符串
@@ -49,7 +49,7 @@ public class RsaUtil {
      * @param keyMap 公钥私钥的字典
      * @return 私钥字符串
      */
-    private static String getRsaPrivateKeyStr(final Map<String, Object> keyMap) {
+    public static String getRsaPrivateKeyStr(final Map<String, Object> keyMap) {
         // 获得map中的私钥对象 转为key对象
         final Key key = (Key) keyMap.get(RSA_PRIVATE_KEY);
         // 编码返回字符串

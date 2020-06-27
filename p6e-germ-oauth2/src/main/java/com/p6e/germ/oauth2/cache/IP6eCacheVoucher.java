@@ -6,11 +6,24 @@ package com.p6e.germ.oauth2.cache;
  */
 public interface IP6eCacheVoucher {
 
+    /** 凭证缓存的前缀名称 */
+    String VOUCHER_NAME = "P6E:VOUCHER:";
+
+    /** 凭证缓存的过期时间 */
+    long VOUCHER_TIME = 180;
+
     /**
-     * 生成数据
-     * @param key 缓存 key
-     * @return 生成的公钥
+     * 写入数据
+     * @param value 数据内容
+     * @return 数据编号
      */
-    public String generate(String key);
+    public String set(String value);
+
+    /**
+     * 读取数据
+     * @param key 数据编号
+     * @return 数据内容
+     */
+    public String get(String key);
 
 }

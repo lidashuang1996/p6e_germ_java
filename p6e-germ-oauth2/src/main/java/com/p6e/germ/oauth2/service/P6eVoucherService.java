@@ -1,5 +1,7 @@
 package com.p6e.germ.oauth2.service;
 
+import com.p6e.germ.oauth2.model.dto.P6eVoucherResultDto;
+
 /**
  * 凭证的服务
  * 下发 AES 加密的公钥
@@ -12,6 +14,6 @@ public interface P6eVoucherService {
      * 生成密码公钥令牌的方法
      * @return 公钥字符串
      */
-    public String generate();
+    public P6eVoucherResultDto generate();
 
 }
