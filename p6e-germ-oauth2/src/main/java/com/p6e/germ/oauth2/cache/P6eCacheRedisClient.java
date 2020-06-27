@@ -1,10 +1,13 @@
 package com.p6e.germ.oauth2.cache;
 
+import org.springframework.stereotype.Component;
+
 /**
  * 客户端缓存实现类
  * @author lidashuang
  * @version 1.0
  */
+@Component
 public class P6eCacheRedisClient extends P6eCacheRedis implements IP6eCacheClient {
 
     @Override

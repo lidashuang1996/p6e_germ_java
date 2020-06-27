@@ -87,8 +87,12 @@ public class P6eCrossDomainFilter implements Filter {
          * @return 是否处理跨域的状态
          */
         boolean isCrossDomain() {
-            final String crossDomainHeader = myHeader.get("cross-domain").toLowerCase();
-            return "existence".equals(crossDomainHeader);
+            String crossDomain = myHeader.get("cross-domain");
+            if (crossDomain == null) {
+                return false;
+            } else {
+                return "existence".equals(crossDomain.toLowerCase());
+            }
         }
 
         /**

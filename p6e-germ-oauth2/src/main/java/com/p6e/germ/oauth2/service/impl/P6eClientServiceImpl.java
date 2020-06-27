@@ -8,6 +8,7 @@ import com.p6e.germ.oauth2.model.dto.P6eClientResultDto;
 import com.p6e.germ.oauth2.service.P6eClientService;
 import com.p6e.germ.oauth2.utils.CopyUtil;
 import com.p6e.germ.oauth2.utils.GsonUtil;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
@@ -15,6 +16,7 @@ import javax.annotation.Resource;
  * @author lidashuang
  * @version 1.0
  */
+@Service
 public class P6eClientServiceImpl implements P6eClientService {
 
     /**

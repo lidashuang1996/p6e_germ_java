@@ -1,5 +1,7 @@
 package com.p6e.germ.oauth2.cache;
 
+import org.springframework.stereotype.Component;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -7,6 +9,7 @@ import java.util.concurrent.TimeUnit;
  * @author lidashuang
  * @version 1.0
  */
+@Component
 public class P6eCacheRedisAuth extends P6eCacheRedis implements IP6eCacheAuth {
 
     @Override

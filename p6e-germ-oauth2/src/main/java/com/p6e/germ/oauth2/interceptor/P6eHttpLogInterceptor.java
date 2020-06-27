@@ -3,6 +3,7 @@ package com.p6e.germ.oauth2.interceptor;
 import com.p6e.germ.oauth2.controller.support.P6eBaseController;
 import com.p6e.germ.oauth2.model.P6eResultModel;
 import com.p6e.germ.oauth2.model.base.P6eBaseParamVo;
+import com.p6e.germ.oauth2.utils.GsonUtil;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -142,7 +143,7 @@ public class P6eHttpLogInterceptor {
             httpLogModel.result = ret;
             httpLogModel.endDateTime = LocalDateTime.now()
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
-            logger.info(httpLogModel.toString());
+            logger.info(GsonUtil.toJson(httpLogModel));
         }
         // 如果压力测试时候对内存成为阶梯状可以在考虑在这里 GC 一下
         // System.gc(); // GC 一下 ？ Spring 管理了吗 ？

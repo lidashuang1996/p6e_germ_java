@@ -7,12 +7,17 @@ mybatis:
   config-location: classpath:./xml/mybatis-config.xml
   mapper-locations: classpath:./xml/mybatis/*.xml
 
+
 # 日志
 logging:
   level:
     com.p6e.germ.oauth.mapper: debug
 
 spring:
+  mvc:
+    view:
+      prefix: /
+      suffix: .jsp
   application:
     name: P6E_GERM_OAUTH2
   datasource:

@@ -26,7 +26,7 @@ public class P6eAuthServiceImpl implements P6eAuthService {
     private IP6eCacheAuth p6eCacheAuth;
 
     @Override
-    public P6eAuthResultDto code(P6eAuthParamDto param) {
+    public P6eAuthResultDto code(final P6eAuthParamDto param) {
         // 结果对象的创建
         final P6eAuthResultDto p6eAuthResultDto = new P6eAuthResultDto();
         // 查询认证数据
