@@ -22,5 +22,7 @@ public interface IP6eCacheAuth {
     public String getCodeMark(String key);
 
     public void setCode(String key, String value);
+    public String getCode(String key);
+    public void delCode(String key);
 
 }

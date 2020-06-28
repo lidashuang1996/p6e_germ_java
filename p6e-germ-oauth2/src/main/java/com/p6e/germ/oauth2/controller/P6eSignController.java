@@ -14,6 +14,7 @@ import com.p6e.germ.oauth2.utils.GsonUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 用户登录的接口
@@ -33,11 +34,15 @@ public class P6eSignController extends P6eBaseController {
     @Resource
     private P6eVoucherService p6eVoucherService;
 
+    /** COOKIE 的名称 */
+    private static final String COOKIE_NAME = "P6E_OAUTH2_COOKIE";
 
     @PostMapping("/in")
-    public P6eResultModel in(@RequestBody P6eSignInParamVo param) {
+    public Object in(HttpServletRequest request, @RequestBody P6eSignInParamVo param) {
         try {
+            final Object cookie = request.getAttribute(COOKIE_NAME);
             if (param == null
+                    || cookie == null
                     || param.getMode() == null
                     || param.getVoucher() == null
                     || param.getAccount() == null
@@ -53,11 +58,12 @@ public class P6eSignController extends P6eBaseController {
                 if (p6eVoucherResultDto != null) {
                     // 重写密码数据
                     param.setPassword(p6eVoucherResultDto.getContent());
+                    param.setCookie(String.valueOf(cookie));
                     // 登录的操作
                     P6eSignResultDto p6eSignResultDto
                             = p6eSignService.in(CopyUtil.run(param, P6eSignParamDto.class));
                     if (p6eSignResultDto == null || p6eSignResultDto.getError() != null) {
-                        // 参数异常
+                        // 账号/密码错误
                         return P6eResultModel.build(P6eResultConfig.ERROR_ACCOUNT_OR_PASSWORD);
                     } else {
                         final String mode = param.getMode();
@@ -68,22 +74,17 @@ public class P6eSignController extends P6eBaseController {
                                     // 参数异常
                                     return P6eResultModel.build(P6eResultConfig.ERROR_PARAM_EXCEPTION);
                                 } else {
-                                    System.out.println("111111111");
                                     // 读取记号
                                     P6eAuthParamDto p6eAuthParamDto = new P6eAuthParamDto();
                                     p6eAuthParamDto.setMark(mark);
-                                    p6eAuthParamDto.setData(GsonUtil.toJson(p6eSignResultDto));
-                                    P6eAuthResultDto p6eAuthResultDto = p6eAuthService.getCache(p6eAuthParamDto);
+                                    p6eAuthParamDto.setData(p6eSignResultDto);
+                                    P6eAuthResultDto p6eAuthResultDto = p6eAuthService.manageCode(p6eAuthParamDto);
                                     if (p6eAuthResultDto == null) {
-                                        System.out.println("22222");
                                         return P6eResultModel.build(P6eResultConfig.ERROR_PARAM_EXCEPTION);
                                     } else {
                                         // 缓存用户信息---code
-                                        P6eSignInResultVo p6eSignInResultVo = new P6eSignInResultVo();
-                                        p6eSignInResultVo.setCode(p6eAuthResultDto.getCode());
-                                        p6eSignInResultVo.setUri(p6eAuthResultDto.getRedirectUri());
-                                        p6eSignInResultVo.setData(GsonUtil.toJson(p6eSignResultDto));
-                                        return P6eResultModel.build(P6eResultConfig.SUCCESS, p6eSignInResultVo);
+                                        return "redirect:" + p6eAuthResultDto.getRedirectUri()
+                                                + "?code=" + p6eAuthResultDto.getCode();
                                     }
                                 }
                             case "2":

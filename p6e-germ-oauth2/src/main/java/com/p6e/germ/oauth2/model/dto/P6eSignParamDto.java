@@ -19,6 +19,6 @@ import java.io.Serializable;
 public class P6eSignParamDto extends P6eBaseParamDto implements Serializable {
     private String account;
     private String password;
-    private String token;
-    private String refreshToken;
+
+    private String cookie;
 }

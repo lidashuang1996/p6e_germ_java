@@ -17,11 +17,14 @@ public interface P6eAuthService {
     public P6eAuthResultDto code(P6eAuthParamDto param);
 
     /**
-     * 获取缓存数据
+     * 处理认证模式 code
      * @param param 参数对象
      * @return 结果对象
      */
-    public P6eAuthResultDto getCache(P6eAuthParamDto param);
+    public P6eAuthResultDto manageCode(P6eAuthParamDto param);
 
-
+    /**
+     * 处理 code 的模式
+     */
+    public P6eAuthResultDto collateCode(P6eAuthParamDto param);
 }

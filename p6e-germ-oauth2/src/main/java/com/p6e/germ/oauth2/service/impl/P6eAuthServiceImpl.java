@@ -1,5 +1,6 @@
 package com.p6e.germ.oauth2.service.impl;
 
+import com.google.gson.reflect.TypeToken;
 import com.p6e.germ.oauth2.cache.IP6eCacheAuth;
 import com.p6e.germ.oauth2.model.dto.P6eAuthParamDto;
 import com.p6e.germ.oauth2.model.dto.P6eAuthResultDto;
@@ -13,6 +14,7 @@ import com.p6e.germ.oauth2.utils.GsonUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Map;
 
 /**
  * 认证服务的实现
@@ -85,13 +87,13 @@ public class P6eAuthServiceImpl implements P6eAuthService {
     }
 
     @Override
-    public P6eAuthResultDto getCache(P6eAuthParamDto param) {
+    public P6eAuthResultDto manageCode(P6eAuthParamDto param) {
         try {
             String content = p6eCacheAuth.getCodeMark(param.getMark());
             if (content != null) {
                 final P6eClientResultDto p6eClientResultDto = GsonUtil.fromJson(content, P6eClientResultDto.class);
                 final String code = CommonUtil.generateUUID();
-                p6eCacheAuth.setCode(code, param.getData());
+                p6eCacheAuth.setCode(code, GsonUtil.toJson(param.getData()));
                 P6eAuthResultDto p6eAuthResultDto = new P6eAuthResultDto();
                 p6eAuthResultDto.setCode(code);
                 p6eAuthResultDto.setRedirectUri(p6eClientResultDto.getClientRedirectUri());
@@ -101,6 +103,22 @@ public class P6eAuthServiceImpl implements P6eAuthService {
             }
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    @Override
+    public P6eAuthResultDto collateCode(P6eAuthParamDto param) {
+        final String code = param.getCode();
+        try {
+            String content = p6eCacheAuth.getCode(code);
+            final P6eAuthResultDto p6eAuthResultDto = new P6eAuthResultDto();
+            p6eAuthResultDto.setData(GsonUtil.fromJson(content, new TypeToken<Map<String, String>>(){}.getType()));
+            return p6eAuthResultDto;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            p6eCacheAuth.delCode(code);
         }
     }
 }

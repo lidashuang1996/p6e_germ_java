@@ -26,4 +26,14 @@ public class P6eCacheRedisAuth extends P6eCacheRedis implements IP6eCacheAuth {
     public void setCode(String key, String value) {
         p6eRedisTemplate.getRedisTemplate().opsForValue().set(AUTH_NAME + "MARK:" + key, value, AUTH_TIME, TimeUnit.SECONDS);
     }
+
+    @Override
+    public String getCode(String key) {
+        return p6eRedisTemplate.getRedisTemplate().opsForValue().get(AUTH_NAME + "MARK:" + key);
+    }
+
+    @Override
+    public void delCode(String key) {
+        p6eRedisTemplate.getRedisTemplate().delete(AUTH_NAME + "MARK:" + key);
+    }
 }

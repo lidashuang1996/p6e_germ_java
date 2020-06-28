@@ -29,5 +29,7 @@ public class P6eAuthParamDto extends P6eBaseParamDto implements Serializable {
     private String state;
 
     private String mark;
-    private String data;
+    private Object data;
+
+    private String code;
 }

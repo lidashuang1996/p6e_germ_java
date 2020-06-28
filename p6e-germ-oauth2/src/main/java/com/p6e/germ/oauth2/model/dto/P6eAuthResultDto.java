@@ -21,4 +21,6 @@ public class P6eAuthResultDto extends P6eBaseResultDto implements Serializable {
     private String code;
 
     private String redirectUri;
+
+    private Object data;
 }

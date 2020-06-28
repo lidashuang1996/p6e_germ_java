@@ -23,4 +23,5 @@ public class P6eSignInParamVo extends P6eBaseParamVo implements Serializable {
     private String mark;
 
     private String mode;
+    private String cookie;
 }
