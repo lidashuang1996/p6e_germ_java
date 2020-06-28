@@ -38,7 +38,7 @@ public class P6eAdminSignController extends P6eBaseController {
             } else {
                 P6eAdminSignResultDto result = adminSignService.in(CopyUtil.run(param, P6eAdminSignParamDto.class));
                 if (result == null || result.getError() != null) {
-                    return P6eResultModel.build(P6eResultConfig.ERROR_ACCOUNT_OR_PASSOWR);
+                    return P6eResultModel.build(P6eResultConfig.ERROR_ACCOUNT_OR_PASSWORD);
                 } else {
                     return P6eResultModel.build(P6eResultConfig.SUCCESS, result);
                 }

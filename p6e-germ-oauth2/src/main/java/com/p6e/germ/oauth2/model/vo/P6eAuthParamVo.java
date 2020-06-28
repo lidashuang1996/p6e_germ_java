@@ -18,9 +18,9 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 public class P6eAuthParamVo extends P6eBaseParamVo implements Serializable {
 
-    private String responseType;
-    private String clientId;
-    private String redirectUri;
+    private String response_type;
+    private String client_id;
+    private String redirect_uri;
     private String scope;
     private String state;
 

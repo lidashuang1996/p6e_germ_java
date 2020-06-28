@@ -39,11 +39,11 @@ public class P6eSignServiceImpl implements P6eSignService {
         if (p6eOauth2UserDb == null) {
             p6eSignResultDto.setError("ERROR_ACCOUNT_OR_PASSWORD");
         } else {
-            P6eCacheRedisSignModel.Core core = cacheSign.set(String.valueOf(p6eOauth2UserDb.getId()), p6eOauth2UserDb);
-            p6eSignResultDto = CopyUtil.run(p6eOauth2UserDb, P6eSignResultDto.class);
-            p6eSignResultDto.setToken(core.getToken());
-            p6eSignResultDto.setRefreshToken(core.getRefreshToken());
-            p6eSignResultDto.setExpiration(core.getExpiration());
+//            P6eCacheRedisSignModel.Core core = cacheSign.set(String.valueOf(p6eOauth2UserDb.getId()), p6eOauth2UserDb);
+//            p6eSignResultDto = CopyUtil.run(p6eOauth2UserDb, P6eSignResultDto.class);
+//            p6eSignResultDto.setToken(core.getToken());
+//            p6eSignResultDto.setRefreshToken(core.getRefreshToken());
+//            p6eSignResultDto.setExpiration(core.getExpiration());
         }
         return p6eSignResultDto;
     }

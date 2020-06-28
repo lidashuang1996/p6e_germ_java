@@ -14,10 +14,10 @@ public interface IP6eCacheVoucher {
 
     /**
      * 写入数据
+     * @param key 数据名称
      * @param value 数据内容
-     * @return 数据编号
      */
-    public String set(String value);
+    public void set(String key, String value);
 
     /**
      * 读取数据

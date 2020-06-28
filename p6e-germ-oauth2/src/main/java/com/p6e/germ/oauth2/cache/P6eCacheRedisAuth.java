@@ -13,7 +13,17 @@ import java.util.concurrent.TimeUnit;
 public class P6eCacheRedisAuth extends P6eCacheRedis implements IP6eCacheAuth {
 
     @Override
-    public void setCodeVoucher(String key, String value) {
-        redisTemplate.opsForValue().set(AUTH_NAME + key, value, AUTH_TIME, TimeUnit.SECONDS);
+    public void setCodeMark(String key, String value) {
+        p6eRedisTemplate.getRedisTemplate().opsForValue().set(AUTH_NAME + "CODE:" + key, value, AUTH_TIME, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public String getCodeMark(String key) {
+        return p6eRedisTemplate.getRedisTemplate().opsForValue().get(AUTH_NAME + "CODE:" + key);
+    }
+
+    @Override
+    public void setCode(String key, String value) {
+        p6eRedisTemplate.getRedisTemplate().opsForValue().set(AUTH_NAME + "MARK:" + key, value, AUTH_TIME, TimeUnit.SECONDS);
     }
 }

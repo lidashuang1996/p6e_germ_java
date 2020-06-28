@@ -9,16 +9,16 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * @version 1.0
  * @author lidashuang
+ * @version 1.0
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class P6eSignParamDto extends P6eBaseParamDto implements Serializable {
-    private String account;
-    private String password;
-    private String token;
-    private String refreshToken;
+public class P6eVoucherParamDto extends P6eBaseParamDto implements Serializable {
+    /** 凭证 */
+    private String voucher;
+    /** 待解密的内容 */
+    private String content;
 }

@@ -22,11 +22,11 @@
             LEFT JOIN `p6e_germ_oauth2_user_auth` AS `B` ON `A`.`id` = `B`.`id`
         WHERE
             (
-                B.email = #{account}
+                B.email = #{DB.account}
                 OR
-                B.phone = #{account}
+                B.phone = #{DB.account}
             )
-            AND B.`password` = #{password}
-        LIMI 0, 1;
+            AND B.`password` = #{DB.password}
+        LIMIT 0, 1;
     </select>
 </mapper>

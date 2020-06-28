@@ -20,4 +20,7 @@ public class P6eSignInParamVo extends P6eBaseParamVo implements Serializable {
     private String account;
     private String password;
     private String voucher;
+    private String mark;
+
+    private String mode;
 }

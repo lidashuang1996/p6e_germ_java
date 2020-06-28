@@ -20,8 +20,8 @@
         FROM
             `p6e_germ_oauth2_client`
         <trim prefix="WHERE" prefixOverrides="AND| OR">
-            <if test="id != null">AND `id` = #{id}</if>
-            <if test="clientId != null">AND `client_id` = #{clientId}</if>
+            <if test="DB.id != null">AND `id` = #{DB.id}</if>
+            <if test="DB.clientId != null">AND `client_id` = #{DB.clientId}</if>
         </trim>
         LIMIT 0, 1;
     </select>

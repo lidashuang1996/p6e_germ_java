@@ -23,4 +23,9 @@ public final class P6eResultConfig implements Serializable {
     /** 凭证生成失败 */
     public static final String ERROR_VOUCHER_GENERATE = "500-ERROR_VOUCHER_GENERATE";
 
+    /** 凭证生成失败 */
+    public static final String ERROR_ACCOUNT_OR_PASSWORD = "500-ERROR_ACCOUNT_OR_PASSWORD";
+
+
+
 }

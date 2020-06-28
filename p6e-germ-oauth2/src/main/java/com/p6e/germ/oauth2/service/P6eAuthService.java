@@ -16,4 +16,12 @@ public interface P6eAuthService {
      */
     public P6eAuthResultDto code(P6eAuthParamDto param);
 
+    /**
+     * 获取缓存数据
+     * @param param 参数对象
+     * @return 结果对象
+     */
+    public P6eAuthResultDto getCache(P6eAuthParamDto param);
+
+
 }

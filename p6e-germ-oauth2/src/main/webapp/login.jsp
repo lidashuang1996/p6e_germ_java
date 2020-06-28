@@ -36,7 +36,6 @@
             height: 64vh;
             background-color: rgb(246 246 246);
         }
-
         .main-bottom .main-bottom-copyright {
             position: absolute;
             bottom: 10px;
@@ -150,7 +149,10 @@
         }
 
     </style>
+    <!-- JQ -->
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-2.1.1.min.js"></script>
+    <!-- RSA -->
+    <script src="${pageContext.request.contextPath}/js/jsencrypt.min.js"></script>
 </head>
 <body>
 <div class="main">
@@ -210,23 +212,34 @@
     </div>
 </div>
 <script type="text/javascript">
+    /** 是否登录 */
     let isLogin = false;
 
+    /**
+     * 获取焦点事件
+     */
     function inputFocus(name) {
         document.getElementById(name + '-title').style.color = 'rgb(60 129 228)';
         document.getElementById(name).style.borderBottom = '2px solid rgb(60 129 228)';
     }
 
+    /**
+     * 失去焦点事件
+     */
     function inputBlur(name) {
         document.getElementById(name + '-title').style.color = '#262626';
         document.getElementById(name).style.borderBottom = '2px solid #262626';
     }
 
+    /**
+     * 按键触发事件，以及确认事件
+     */
     function confirm(e) {
         if (isLogin) {
             return;
         }
-        const event = e || window.event; //在火狐下event会做为参数传进来，ie下会在window下
+        //在火狐下event会做为参数传进来，ie下会在window下
+        const event = e || window.event;
         // e.which是火狐下获取keyCode的方式，ie下使用e.keyCode获取
         const keyCode = event.which || event.keyCode || (e === 'LOGIN' && 13);
         const account = document.getElementById('account-input').value;
@@ -256,14 +269,34 @@
         document.getElementById('button').style.marginTop = '40px';
         document.getElementById('error').style.display = 'none';
         if (keyCode === 13) {
-            loginAjax({
-                voucher: '<%= request.getAttribute("voucher") %>',
-                account: account,
-                password: password
-            });
+            // 打开加载动画
             document.getElementById('button-text1').style.display = 'none';
             document.getElementById('button-text2').style.display = 'block';
             document.getElementById('button-svg').style.display = 'block';
+            // 获取密钥
+            voucherAjax(
+                (res) => {
+                    if (res.code === 200) {
+                        const voucher = res.data.voucher;
+                        const publicKey = res.data.publicKey;
+                        const encrypt = new JSEncrypt();
+                        encrypt.setPublicKey(publicKey);
+                        const encryptedPassword = encrypt.encrypt(password);
+                        loginAjax({
+                            mode: 'CODE',
+                            mark: '<%= request.getAttribute("mark") %>',
+                            voucher: voucher,
+                            account: account,
+                            password: encryptedPassword
+                        });
+                    } else {
+                        document.getElementById('error').innerText = '网络异常，请稍后重试';
+                        document.getElementById('button-text1').style.display = 'block';
+                        document.getElementById('button-text2').style.display = 'none';
+                        document.getElementById('button-svg').style.display = 'none';
+                    }
+                }
+            );
         }
     }
 
@@ -280,12 +313,23 @@
             dataType: 'JSON',
             success: (res) => {
                 isLogin = false;
-                console.log(res);
+                if (res.code === 200) {
+                    // 写入缓存
+                    setCache(res.data.data);
+                    // 初始化缓存
+                    initCache();
+                    // 页面跳转
+                    window.location.href = res.data.uri + '?code=' + res.data.code;
+                } else {
+                    document.getElementById('error').innerText = res.message;
+                }
+                // 关闭加载动画
                 document.getElementById('button-text1').style.display = 'block';
                 document.getElementById('button-text2').style.display = 'none';
                 document.getElementById('button-svg').style.display = 'none';
             }, error: (e) => {
                 isLogin = false;
+                // 关闭加载动画
                 document.getElementById('error').innerText = '网络异常，请稍后重试';
                 document.getElementById('button-text1').style.display = 'block';
                 document.getElementById('button-text2').style.display = 'none';
@@ -294,6 +338,49 @@
             }
         });
     }
+
+    /**
+     * 凭证的 ajax 请求
+     */
+    function voucherAjax(callback = () => {}) {
+        $.ajax({
+            type: 'GET',
+            url: '/voucher',
+            dataType: 'JSON',
+            success: (res) => {
+                callback(res);
+            }, error: (e) => {
+                callback(e);
+                console.error(e);
+            }
+        });
+    }
+
+
+    /**
+     * 缓存的相关的操作
+     */
+    function setCache(data) {
+        window.localStorage.setItem('P6E_SIGN_AUTH', JSON.stringify(data));
+    }
+
+    function initCache() {
+        try {
+            // 1. 读取缓存
+            const auth = window.localStorage.getItem('P6E_SIGN_AUTH');
+            if (auth === undefined || auth === null || auth === '') {
+                // 2. 不存在缓存
+                console.log("缓存不存在，用户没有登录");
+            } else {
+                // 3. 存在缓存
+                // 发送用户的缓存
+
+            }
+        } catch (e) {
+            window.localStorage.removeItem('P6E_SIGN_AUTH');
+        }
+    }
+
 </script>
 </body>
 </html>

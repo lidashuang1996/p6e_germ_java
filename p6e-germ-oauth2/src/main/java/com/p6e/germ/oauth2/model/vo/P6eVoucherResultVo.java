@@ -1,6 +1,7 @@
-package com.p6e.germ.oauth2.model.dto;
+package com.p6e.germ.oauth2.model.vo;
 
 import com.p6e.germ.oauth2.model.base.P6eBaseResultDto;
+import com.p6e.germ.oauth2.model.base.P6eBaseResultVo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,12 +14,10 @@ import java.io.Serializable;
  * @version 1.0
  */
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class P6eAuthResultDto extends P6eBaseResultDto implements Serializable {
-    private String mark;
-    private String code;
-
-    private String redirectUri;
+public class P6eVoucherResultVo extends P6eBaseResultVo implements Serializable {
+    private String voucher;
+    private String publicKey;
 }

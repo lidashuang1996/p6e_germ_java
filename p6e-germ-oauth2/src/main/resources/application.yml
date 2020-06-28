@@ -26,7 +26,7 @@ spring:
     password: Root1234!@#$
     driver-class-name: com.mysql.cj.jdbc.Driver
   redis:
-    database: 14
+    database: 11
     host: 119.23.25.159
     port: 6379
     password: lidashuang

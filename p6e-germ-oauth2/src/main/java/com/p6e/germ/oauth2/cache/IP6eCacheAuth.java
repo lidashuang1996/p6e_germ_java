@@ -7,7 +7,7 @@ package com.p6e.germ.oauth2.cache;
 public interface IP6eCacheAuth {
 
     /** 缓存名称 */
-    String AUTH_NAME = "P6E:AUTH:CODE:";
+    String AUTH_NAME = "P6E:AUTH:";
 
     /** 缓存时间 15分钟 */
     long AUTH_TIME = 900;
@@ -17,6 +17,10 @@ public interface IP6eCacheAuth {
      * @param key 凭证数据
      * @param value 客户端编号
      */
-    public void setCodeVoucher(String key, String value);
+    public void setCodeMark(String key, String value);
+
+    public String getCodeMark(String key);
+
+    public void setCode(String key, String value);
 
 }

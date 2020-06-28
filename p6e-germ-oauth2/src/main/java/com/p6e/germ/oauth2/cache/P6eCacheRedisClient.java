@@ -12,17 +12,17 @@ public class P6eCacheRedisClient extends P6eCacheRedis implements IP6eCacheClien
 
     @Override
     public void set(String key, String value) {
-        redisTemplate.opsForValue().set(CLIENT_NAME + key, value);
+        p6eRedisTemplate.getRedisTemplate().opsForValue().set(CLIENT_NAME + key, value);
     }
 
     @Override
     public void del(String key) {
-        redisTemplate.delete(CLIENT_NAME + key);
+        p6eRedisTemplate.getRedisTemplate().delete(CLIENT_NAME + key);
     }
 
     @Override
     public String get(String key) {
-        return redisTemplate.opsForValue().get(CLIENT_NAME + key);
+        return p6eRedisTemplate.getRedisTemplate().opsForValue().get(CLIENT_NAME + key);
     }
 
 }

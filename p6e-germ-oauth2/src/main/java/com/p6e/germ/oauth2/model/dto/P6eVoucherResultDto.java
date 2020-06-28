@@ -17,6 +17,20 @@ import java.io.Serializable;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class P6eVoucherResultDto extends P6eBaseResultDto implements Serializable {
-    private String vid;
+    /** 凭证 */
+    private String voucher;
+    /** 公钥 */
     private String publicKey;
+
+    public P6eVoucherResultDto(String voucher, String publicKey) {
+        this.voucher = voucher;
+        this.publicKey = publicKey;
+    }
+
+    /** 解密后的内容 */
+    private String content;
+
+    public P6eVoucherResultDto(String content) {
+        this.content = content;
+    }
 }
