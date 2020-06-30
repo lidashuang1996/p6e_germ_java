@@ -178,6 +178,7 @@
                        type="text"
                        placeholder="请输入账号（邮箱/手机号）"
                        id="account-input"
+                       value="15549562863"
                        onkeyup="confirm()"
                        onfocus="inputFocus('account')"
                        onblur="inputBlur('account')"/>
@@ -192,6 +193,7 @@
                        type="password"
                        placeholder="请输入密码"
                        id="password-input"
+                       value="123456"
                        onkeyup="confirm()"
                        onfocus="inputFocus('password')"
                        onblur="inputBlur('password')"/>
@@ -315,11 +317,11 @@
                 isLogin = false;
                 if (res.code === 200) {
                     // 写入缓存
-                    setCache(res.data.data);
+                    // setCache(res.data.data);
                     // 初始化缓存
-                    initCache();
+                    // initCache();
                     // 页面跳转
-                    window.location.href = res.data.uri + '?code=' + res.data.code;
+                    window.location.href = res.data;
                 } else {
                     document.getElementById('error').innerText = res.message;
                 }

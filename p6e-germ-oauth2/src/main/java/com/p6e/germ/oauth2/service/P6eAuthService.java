@@ -1,7 +1,6 @@
 package com.p6e.germ.oauth2.service;
 
-import com.p6e.germ.oauth2.model.dto.P6eAuthParamDto;
-import com.p6e.germ.oauth2.model.dto.P6eAuthResultDto;
+import com.p6e.germ.oauth2.model.dto.*;
 
 /**
  * @author lidashuang
@@ -21,10 +20,10 @@ public interface P6eAuthService {
      * @param param 参数对象
      * @return 结果对象
      */
-    public P6eAuthResultDto manageCode(P6eAuthParamDto param);
+    public P6eAuthManageCodeResultDto manageCode(P6eAuthManageCodeParamDto param);
 
     /**
      * 处理 code 的模式
      */
-    public P6eAuthResultDto collateCode(P6eAuthParamDto param);
+    public P6eAuthCollateCodeResultDto collateCode(P6eAuthCollateCodeParamDto param);
 }

@@ -14,6 +14,13 @@ public interface P6eOauth2UserMapper {
      * @param db 查询对象
      * @return 查询结果对象
      */
-    public P6eOauth2UserDb select(@Param("DB") P6eOauth2UserDb db);
+    public P6eOauth2UserDb selectByAccountAndPassword(@Param("DB") P6eOauth2UserDb db);
+
+    /**
+     * 查询 ID
+     * @param db 查询对象
+     * @return 查询结果对象
+     */
+    public P6eOauth2UserDb selectById(@Param("DB") P6eOauth2UserDb db);
 
 }

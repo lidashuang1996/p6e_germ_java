@@ -43,6 +43,7 @@ public class P6eAuthController extends P6eBaseController {
                     return errorPage(P6eResultConfig.ERROR_PARAM_EXCEPTION);
                 } else {
                     switch (responseType.toUpperCase()) {
+                        // CODE 的认证模式
                         case "CODE":
                             P6eAuthResultDto p6eAuthResultDto
                                     = p6eAuthService.code(CopyUtil.run(param, P6eAuthParamDto.class));

@@ -20,4 +20,9 @@ public class P6eCacheRedisVoucher extends P6eCacheRedis implements IP6eCacheVouc
     public String get(String key) {
         return p6eRedisTemplate.getRedisTemplate().opsForValue().get(VOUCHER_NAME + key);
     }
+
+    @Override
+    public void del(String key) {
+        p6eRedisTemplate.getRedisTemplate().delete(VOUCHER_NAME + key);
+    }
 }

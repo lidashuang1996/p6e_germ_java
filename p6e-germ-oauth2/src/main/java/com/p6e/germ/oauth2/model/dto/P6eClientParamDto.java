@@ -17,5 +17,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class P6eClientParamDto extends P6eBaseParamDto implements Serializable {
+    /** 客户端 ID */
     private String clientId;
 }

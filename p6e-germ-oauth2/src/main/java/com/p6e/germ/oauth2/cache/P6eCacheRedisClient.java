@@ -2,6 +2,8 @@ package com.p6e.germ.oauth2.cache;
 
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * 客户端缓存实现类
  * @author lidashuang
@@ -12,7 +14,7 @@ public class P6eCacheRedisClient extends P6eCacheRedis implements IP6eCacheClien
 
     @Override
     public void set(String key, String value) {
-        p6eRedisTemplate.getRedisTemplate().opsForValue().set(CLIENT_NAME + key, value);
+        p6eRedisTemplate.getRedisTemplate().opsForValue().set(CLIENT_NAME + key, value, CLIENT_TIME, TimeUnit.SECONDS);
     }
 
     @Override

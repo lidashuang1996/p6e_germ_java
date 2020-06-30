@@ -14,26 +14,31 @@ public class P6eCacheRedisAuth extends P6eCacheRedis implements IP6eCacheAuth {
 
     @Override
     public void setCodeMark(String key, String value) {
-        p6eRedisTemplate.getRedisTemplate().opsForValue().set(AUTH_NAME + "CODE:" + key, value, AUTH_TIME, TimeUnit.SECONDS);
+        p6eRedisTemplate.getRedisTemplate().opsForValue().set(AUTH_NAME + "CODE:MARK:" + key, value, AUTH_TIME, TimeUnit.SECONDS);
     }
 
     @Override
     public String getCodeMark(String key) {
-        return p6eRedisTemplate.getRedisTemplate().opsForValue().get(AUTH_NAME + "CODE:" + key);
+        return p6eRedisTemplate.getRedisTemplate().opsForValue().get(AUTH_NAME + "CODE:MARK:" + key);
     }
 
     @Override
-    public void setCode(String key, String value) {
-        p6eRedisTemplate.getRedisTemplate().opsForValue().set(AUTH_NAME + "MARK:" + key, value, AUTH_TIME, TimeUnit.SECONDS);
+    public void delCodeMark(String key) {
+        p6eRedisTemplate.getRedisTemplate().delete(AUTH_NAME + "CODE:MARK:" + key);
     }
 
     @Override
-    public String getCode(String key) {
-        return p6eRedisTemplate.getRedisTemplate().opsForValue().get(AUTH_NAME + "MARK:" + key);
+    public void setCodeVoucher(String key, String value) {
+        p6eRedisTemplate.getRedisTemplate().opsForValue().set(AUTH_NAME + "CODE:VOUCHER:" + key, value, AUTH_TIME, TimeUnit.SECONDS);
     }
 
     @Override
-    public void delCode(String key) {
-        p6eRedisTemplate.getRedisTemplate().delete(AUTH_NAME + "MARK:" + key);
+    public String getCodeVoucher(String key) {
+        return p6eRedisTemplate.getRedisTemplate().opsForValue().get(AUTH_NAME + "CODE:VOUCHER:" + key);
+    }
+
+    @Override
+    public void delCodeVoucher(String key) {
+        p6eRedisTemplate.getRedisTemplate().delete(AUTH_NAME + "CODE:VOUCHER:" + key);
     }
 }

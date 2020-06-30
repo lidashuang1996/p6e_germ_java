@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 
 /**
+ * 客户端查询服务的实现
  * @author lidashuang
  * @version 1.0
  */
@@ -34,11 +35,15 @@ public class P6eClientServiceImpl implements P6eClientService {
     @Override
     public P6eClientResultDto selectOne(final P6eClientParamDto param) {
         final String clientId = param.getClientId();
+        // 缓存中去查询数据
         final String clientJson = p6eCacheClient.get(clientId);
+        // 缓存中不存在数据
         if (clientJson == null) {
+            // DB 查询数据
             P6eClientDb p6eClientDb = p6eClientMapper.selectOne(CopyUtil.run(param, P6eClientDb.class));
             if (p6eClientDb == null) {
                 // 请求量很大可以考虑采用布隆过滤器
+                // 查询不到该客户端 ID 的信息
                 return null;
             } else {
                 // 添加到缓存中
@@ -47,6 +52,7 @@ public class P6eClientServiceImpl implements P6eClientService {
                 return CopyUtil.run(p6eClientDb, P6eClientResultDto.class);
             }
         } else {
+            // 缓存中存在数据
             return GsonUtil.fromJson(clientJson, P6eClientResultDto.class);
         }
     }

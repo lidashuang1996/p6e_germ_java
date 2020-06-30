@@ -35,7 +35,7 @@ public class P6eSignServiceImpl implements P6eSignService {
     @Override
     public P6eSignResultDto in(final P6eSignParamDto param) {
         P6eSignResultDto p6eSignResultDto = new P6eSignResultDto();
-        final P6eOauth2UserDb p6eOauth2UserDb = oauth2UserMapper.select(CopyUtil.run(param, P6eOauth2UserDb.class));
+        final P6eOauth2UserDb p6eOauth2UserDb = oauth2UserMapper.selectByAccountAndPassword(CopyUtil.run(param, P6eOauth2UserDb.class));
         if (p6eOauth2UserDb == null) {
             p6eSignResultDto.setError("ERROR_ACCOUNT_OR_PASSWORD");
         } else {

@@ -16,6 +16,14 @@ public final class P6eResultConfig implements Serializable {
     /** 服务器内部出现异常 */
     public static final String ERROR_SERVICE_INSIDE = "500-ERROR_SERVICE_INSIDE";
 
+    /** 认证出现异常 */
+    public static final String ERROR_AUTH = "400-ERROR_AUTH";
+
+    /** 资源不存在 */
+    public static final String ERROR_RESOURCES_NOT_EXISTENCE = "400-ERROR_RESOURCES_NOT_EXISTENCE";
+
+    /** 认证出现异常 */
+    public static final String ERROR_AUTH_NO_EXISTENCE = "400-ERROR_AUTH_NO_EXISTENCE";
 
     /** 成功 */
     public static final String SUCCESS = "200-SUCCESS";

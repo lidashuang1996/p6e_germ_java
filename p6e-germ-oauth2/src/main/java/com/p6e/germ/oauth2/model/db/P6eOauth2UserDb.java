@@ -26,6 +26,8 @@ public class P6eOauth2UserDb extends P6eBaseDb implements Serializable {
     private String birthday;
     private String role;
 
+    private String oid;
+
     private String account;
     private String password;
 }

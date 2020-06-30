@@ -26,4 +26,6 @@ public interface IP6eCacheVoucher {
      */
     public String get(String key);
 
+    public void del(String key);
+
 }

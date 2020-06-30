@@ -5,12 +5,10 @@ import com.p6e.germ.oauth2.model.P6eResultConfig;
 import com.p6e.germ.oauth2.model.P6eResultModel;
 import com.p6e.germ.oauth2.model.dto.*;
 import com.p6e.germ.oauth2.model.vo.P6eSignInParamVo;
-import com.p6e.germ.oauth2.model.vo.P6eSignInResultVo;
 import com.p6e.germ.oauth2.service.P6eAuthService;
 import com.p6e.germ.oauth2.service.P6eSignService;
 import com.p6e.germ.oauth2.service.P6eVoucherService;
 import com.p6e.germ.oauth2.utils.CopyUtil;
-import com.p6e.germ.oauth2.utils.GsonUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -50,7 +48,7 @@ public class P6eSignController extends P6eBaseController {
                 // 参数异常
                 return P6eResultModel.build(P6eResultConfig.ERROR_PARAM_EXCEPTION);
             } else {
-                // 1. 读取信息
+                // 读取信息对密码解密
                 P6eVoucherParamDto p6eVoucherParamDto = new P6eVoucherParamDto();
                 p6eVoucherParamDto.setVoucher(param.getVoucher());
                 p6eVoucherParamDto.setContent(param.getPassword());
@@ -60,6 +58,7 @@ public class P6eSignController extends P6eBaseController {
                     param.setPassword(p6eVoucherResultDto.getContent());
                     param.setCookie(String.valueOf(cookie));
                     // 登录的操作
+                    // cookie 绑定 用户信息
                     P6eSignResultDto p6eSignResultDto
                             = p6eSignService.in(CopyUtil.run(param, P6eSignParamDto.class));
                     if (p6eSignResultDto == null || p6eSignResultDto.getError() != null) {
@@ -75,16 +74,21 @@ public class P6eSignController extends P6eBaseController {
                                     return P6eResultModel.build(P6eResultConfig.ERROR_PARAM_EXCEPTION);
                                 } else {
                                     // 读取记号
-                                    P6eAuthParamDto p6eAuthParamDto = new P6eAuthParamDto();
-                                    p6eAuthParamDto.setMark(mark);
-                                    p6eAuthParamDto.setData(p6eSignResultDto);
-                                    P6eAuthResultDto p6eAuthResultDto = p6eAuthService.manageCode(p6eAuthParamDto);
-                                    if (p6eAuthResultDto == null) {
+                                    P6eAuthManageCodeParamDto p6eAuthManageCodeParamDto = new P6eAuthManageCodeParamDto();
+                                    p6eAuthManageCodeParamDto.setMark(mark);
+                                    p6eAuthManageCodeParamDto.setData(CopyUtil.toMap(p6eSignResultDto));
+
+                                    // 验证 code
+                                    P6eAuthManageCodeResultDto p6eAuthManageCodeResultDto
+                                            = p6eAuthService.manageCode(p6eAuthManageCodeParamDto);
+
+                                    if (p6eAuthManageCodeResultDto == null) {
                                         return P6eResultModel.build(P6eResultConfig.ERROR_PARAM_EXCEPTION);
                                     } else {
                                         // 缓存用户信息---code
-                                        return "redirect:" + p6eAuthResultDto.getRedirectUri()
-                                                + "?code=" + p6eAuthResultDto.getCode();
+                                        return P6eResultModel.build(P6eResultConfig.SUCCESS,
+                                                p6eAuthManageCodeResultDto.getRedirectUri()
+                                                        + "?code=" + p6eAuthManageCodeResultDto.getCode());
                                     }
                                 }
                             case "2":

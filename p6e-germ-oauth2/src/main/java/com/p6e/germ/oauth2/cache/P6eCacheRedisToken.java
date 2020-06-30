@@ -12,8 +12,18 @@ import java.util.concurrent.TimeUnit;
 public class P6eCacheRedisToken extends P6eCacheRedis implements IP6eCacheToken {
 
     @Override
-    public void set(String key, String value) {
-        p6eRedisTemplate.getRedisTemplate().opsForValue().set(TOKEN_NAME + key, value, TOKEN_TIME, TimeUnit.SECONDS);
+    public void setAccessToken(String key, String value) {
+        p6eRedisTemplate.getRedisTemplate().opsForValue().set(TOKEN_NAME + "ACCESS_TOKEN:" + key, value, TOKEN_TIME, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void setRefreshToken(String key, String value) {
+        p6eRedisTemplate.getRedisTemplate().opsForValue().set(TOKEN_NAME  + "REFRESH_TOKEN:" + key, value, TOKEN_TIME, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void setUserInfo(String key, String value) {
+        p6eRedisTemplate.getRedisTemplate().opsForValue().set(TOKEN_NAME  + "USER_INFO:" + key, value, TOKEN_TIME, TimeUnit.SECONDS);
     }
 
     @Override

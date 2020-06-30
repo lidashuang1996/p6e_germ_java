@@ -1,6 +1,5 @@
 package com.p6e.germ.oauth2.model.vo;
 
-import com.p6e.germ.oauth2.model.base.P6eBaseResultDto;
 import com.p6e.germ.oauth2.model.base.P6eBaseResultVo;
 import lombok.AllArgsConstructor;
 import lombok.Data;

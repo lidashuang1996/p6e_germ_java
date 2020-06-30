@@ -4,6 +4,7 @@ import com.p6e.germ.oauth2.model.dto.P6eClientParamDto;
 import com.p6e.germ.oauth2.model.dto.P6eClientResultDto;
 
 /**
+ * 客户端查询服务
  * @author lidashuang
  * @version 1.0
  */

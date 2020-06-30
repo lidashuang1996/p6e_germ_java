@@ -8,7 +8,10 @@ public interface IP6eCacheToken {
     String TOKEN_NAME = "P6E:TOKEN:";
     long TOKEN_TIME = 3600L;
 
-    public void set(String key, String value);
+    public void setAccessToken(String key, String value);
+    public void setRefreshToken(String key, String value);
+    public void setUserInfo(String key, String value);
+
     public void del(String key);
     public String get(String key);
 }

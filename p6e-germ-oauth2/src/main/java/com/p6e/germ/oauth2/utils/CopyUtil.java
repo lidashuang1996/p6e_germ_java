@@ -2,9 +2,7 @@ package com.p6e.germ.oauth2.utils;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Copy 的帮助类
@@ -40,8 +38,6 @@ public final class CopyUtil {
                         boolean bool = f1.getGenericType().equals(f2.getGenericType()); // 判断类型是否相同
                         if (bool && o != null) f2.set(t, o); // 对象不为 null 且类型相同，执行赋值操作
                         else if (!bool && o != null) {
-                            System.out.println(f1.getGenericType().getTypeName());
-                            System.out.println(f2.getGenericType().getTypeName());
                             if (f1.getGenericType().getTypeName().startsWith("java.util.List") &&
                                     f2.getGenericType().getTypeName().startsWith("java.util.List")) {
                                 String genericF1 = "";
@@ -127,6 +123,32 @@ public final class CopyUtil {
             cls = cls.getSuperclass();
         }
         return fields.toArray(new Field[0]);
+    }
+
+    public static Map<String, Object> toMap(final Object o) {
+        if (o == null) {
+            return new HashMap<>(1);
+        } else {
+            try {
+                final Class<?> oClass = o.getClass();
+                // 判断是否接口于 java.io.Serializable
+                for (Class<?> anInterface : oClass.getInterfaces()) {
+                    if (anInterface == Serializable.class) {
+                        final Field[] fields = obtainFields(oClass);
+                        final Map<String, Object> rMap = new HashMap<>(fields.length);
+                        for (Field field : fields) {
+                            field.setAccessible(true);
+                            rMap.put(field.getName(), field.get(o));
+                        }
+                        return rMap;
+                    }
+                }
+                throw new RuntimeException("copy no interface java.io.Serializable");
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                return new HashMap<>(1);
+            }
+        }
     }
 
 }

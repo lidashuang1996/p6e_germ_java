@@ -4,7 +4,7 @@
 
 <mapper namespace="com.p6e.germ.oauth2.mapper.P6eOauth2UserMapper">
 
-    <select id="select" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2UserDb"
+    <select id="selectByAccountAndPassword" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2UserDb"
             resultType="com.p6e.germ.oauth2.model.db.P6eOauth2UserDb">
         SELECT
             `A`.`id`,
@@ -22,11 +22,34 @@
             LEFT JOIN `p6e_germ_oauth2_user_auth` AS `B` ON `A`.`id` = `B`.`id`
         WHERE
             (
-                B.email = #{DB.account}
+                B.`email` = #{DB.account}
                 OR
-                B.phone = #{DB.account}
+                B.`phone` = #{DB.account}
             )
             AND B.`password` = #{DB.password}
+        LIMIT 0, 1;
+    </select>
+
+    <select id="selectById" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2UserDb"
+            resultType="com.p6e.germ.oauth2.model.db.P6eOauth2UserDb">
+        SELECT
+            `A`.`id`,
+            `A`.`status`,
+            `A`.`avatar`,
+            `A`.`name`,
+            `A`.`nickname`,
+            `A`.`sex`,
+            `A`.`birthday`,
+            `A`.`role`,
+            `B`.`email`,
+            `B`.`phone`,
+			`C`.`oid`
+        FROM
+            `p6e_germ_oauth2_user` AS `A`
+            LEFT JOIN `p6e_germ_oauth2_user_auth` AS `B` ON `A`.`id` = `B`.`id`
+			LEFT JOIN `p6e_germ_oauth2_client_user` AS `C` ON `A`.`id` = `C`.`uid`
+        WHERE
+            `A`.`id` = #{DB.id};
         LIMIT 0, 1;
     </select>
 </mapper>

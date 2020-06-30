@@ -48,10 +48,11 @@ public class P6eVoucherServiceImpl implements P6eVoucherService {
 
     @Override
     public P6eVoucherResultDto verify(final P6eVoucherParamDto param) {
+        final String voucher = param.getVoucher();
         try {
             // 读取缓存数据
             final String content = param.getContent();
-            final String voucherContent = p6eCacheVoucher.get(param.getVoucher());
+            final String voucherContent = p6eCacheVoucher.get(voucher);
             if (voucherContent != null && content != null) {
                 final Map<String, String> map
                         = GsonUtil.fromJson(voucherContent, new TypeToken<Map<String, String>>() {}.getType());
@@ -66,6 +67,8 @@ public class P6eVoucherServiceImpl implements P6eVoucherService {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        } finally {
+            p6eCacheVoucher.del(voucher);
         }
     }
 }

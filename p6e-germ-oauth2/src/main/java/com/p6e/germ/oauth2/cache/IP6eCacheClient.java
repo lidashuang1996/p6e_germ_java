@@ -9,6 +9,9 @@ public interface IP6eCacheClient {
     /** 客户端名称 */
     String CLIENT_NAME = "P6E:DB:CLIENT:";
 
+    /** 客户端缓存的过期时间 */
+    long CLIENT_TIME = 3600;
+
     /**
      * 添加客户端缓存
      * @param key 缓存名称
