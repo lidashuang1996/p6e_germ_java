@@ -26,13 +26,13 @@ public class P6eUserServiceImpl implements P6eUserService {
 
     @Override
     public P6eUserResultDto select(P6eUserParamDto param) {
-        P6eUserResultDto p6eUserResultDto = new P6eUserResultDto();
+        final P6eUserResultDto p6eUserResultDto = new P6eUserResultDto();
         final P6eOauth2UserDb p6eOauth2UserDb = p6eUserMapper.selectById(CopyUtil.run(param, P6eOauth2UserDb.class));
         if (p6eOauth2UserDb == null) {
             // 查询的用户信息不存在
             p6eUserResultDto.setError("ERROR_USER_ID_NOT_EXISTENCE");
         } else {
-            p6eUserResultDto = CopyUtil.run(p6eOauth2UserDb, P6eUserResultDto.class);
+            CopyUtil.run(p6eOauth2UserDb, p6eUserResultDto);
         }
         return p6eUserResultDto;
     }

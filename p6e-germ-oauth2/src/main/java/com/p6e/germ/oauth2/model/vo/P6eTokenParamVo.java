@@ -1,13 +1,16 @@
 package com.p6e.germ.oauth2.model.vo;
 
+import com.p6e.germ.oauth2.model.base.P6eBaseParamVo;
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * @author lidashuang
  * @version 1.0
  */
 @Data
-public class P6eTokenParamVo {
+public class P6eTokenParamVo extends P6eBaseParamVo implements Serializable {
 
     // - `grant_type=authorization_code` -这告诉令牌端点应用程序正在使用授权码授予类型。
     //        - `code` -该应用程序包括在重定向中提供的授权代码。
@@ -20,5 +23,8 @@ public class P6eTokenParamVo {
     private String redirect_uri;
     private String client_id;
     private String client_secret;
+
+    private String password;
+    private String account;
 
 }

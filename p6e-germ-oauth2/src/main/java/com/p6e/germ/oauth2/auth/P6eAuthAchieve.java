@@ -7,7 +7,9 @@ import com.p6e.germ.oauth2.model.dto.P6eTokenResultDto;
 import com.p6e.germ.oauth2.service.P6eTokenService;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
@@ -76,57 +78,63 @@ public class P6eAuthAchieve {
     private Object around(final ProceedingJoinPoint pjp) throws Throwable {
         // 当前执行的 class
         final Class<?> clazz = pjp.getTarget().getClass();
+        // 当前执行的方法对象
+        Signature signature = pjp.getSignature();
         // 当前执行的 method 名称
-        final String methodName = pjp.getSignature().getName();
-        // 当前执行的 method 对象
-        final Method method = clazz.getMethod(methodName);
-        // 读取注解对象
-        final P6eAuth p6eAuth = method.getAnnotation(P6eAuth.class);
-        // 判断接口是否开启了认证
-        if (p6eAuth != null) {
-            // 读取请求头中的参数
-            final ServletRequestAttributes servletRequestAttributes
-                    = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            if (servletRequestAttributes == null) {
-                return P6eResultModel.build(P6eResultConfig.ERROR_SERVICE_INSIDE);
-            } else {
-                // 读取请求头部的 TOKEN 数据
-                final String authContent = servletRequestAttributes.getRequest().getHeader(AUTH_HEADER_NAME);
-                if (authContent == null) {
-                    return P6eResultModel.build(P6eResultConfig.ERROR_AUTH);
+        final String methodName = signature.getName();
+        if (signature instanceof MethodSignature) {
+            // 当前执行的 method 对象
+            final Method method = clazz.getMethod(methodName, ((MethodSignature) signature).getParameterTypes());
+            // 读取注解对象
+            final P6eAuth p6eAuth = method.getAnnotation(P6eAuth.class);
+            // 判断接口是否开启了认证
+            if (p6eAuth != null) {
+                // 读取请求头中的参数
+                final ServletRequestAttributes servletRequestAttributes
+                        = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+                if (servletRequestAttributes == null) {
+                    return P6eResultModel.build(P6eResultConfig.ERROR_SERVICE_INSIDE);
                 } else {
-                    // 判断协议是否正确
-                    if (authContent.toUpperCase().startsWith(AUTH_HEADER_AGREEMENT)
-                            && authContent.length() > AUTH_HEADER_AGREEMENT.length() + 1) {
-                        final String token = authContent.substring(AUTH_HEADER_AGREEMENT.length() + 1);
-                        final P6eTokenResultDto p6eTokenResultDto = p6eTokenService.get(new P6eTokenParamDto(token));
-                        if (p6eTokenResultDto == null || p6eTokenResultDto.getError() != null) {
-                            return P6eResultModel.build(P6eResultConfig.ERROR_AUTH_NO_EXISTENCE);
-                        } else {
-                            // 判断请求参数中是否含有 P6eAuthModel 对象
-                            final Object[] args = pjp.getArgs();
-                            if (args != null) {
-                                for (Object arg : args) {
-                                    if (arg instanceof P6eAuthModel) {
-                                        P6eAuthModel model = (P6eAuthModel) arg;
-                                        model.setId(0);
-                                        model.setStatus(0);
-                                        model.setAvatar("");
-                                        model.setName("");
-                                        model.setNickname("");
-                                        model.setSex("");
-                                        model.setBirthday("");
-                                        model.setRole("");
-                                        break;
+                    // 读取请求头部的 TOKEN 数据
+                    final String authContent = servletRequestAttributes.getRequest().getHeader(AUTH_HEADER_NAME);
+                    if (authContent == null) {
+                        return P6eResultModel.build(P6eResultConfig.ERROR_AUTH);
+                    } else {
+                        // 判断协议是否正确
+                        if (authContent.toUpperCase().startsWith(AUTH_HEADER_AGREEMENT)
+                                && authContent.length() > AUTH_HEADER_AGREEMENT.length() + 1) {
+                            final String token = authContent.substring(AUTH_HEADER_AGREEMENT.length() + 1);
+                            final P6eTokenResultDto p6eTokenResultDto = p6eTokenService.get(new P6eTokenParamDto(token));
+                            if (p6eTokenResultDto == null || p6eTokenResultDto.getError() != null) {
+                                return P6eResultModel.build(P6eResultConfig.ERROR_AUTH_NO_EXISTENCE);
+                            } else {
+                                // 判断请求参数中是否含有 P6eAuthModel 对象
+                                final Object[] args = pjp.getArgs();
+                                if (args != null) {
+                                    for (Object arg : args) {
+                                        if (arg instanceof P6eAuthModel) {
+                                            P6eAuthModel model = (P6eAuthModel) arg;
+                                            model.setId(0);
+                                            model.setStatus(0);
+                                            model.setAvatar("");
+                                            model.setName("");
+                                            model.setNickname("");
+                                            model.setSex("");
+                                            model.setBirthday("");
+                                            model.setRole("");
+                                            break;
+                                        }
                                     }
                                 }
+                                return pjp.proceed();
                             }
-                            return pjp.proceed();
+                        } else {
+                            return P6eResultModel.build(P6eResultConfig.ERROR_AUTH);
                         }
-                    } else {
-                        return P6eResultModel.build(P6eResultConfig.ERROR_AUTH);
                     }
                 }
+            } else {
+                return pjp.proceed();
             }
         } else {
             return pjp.proceed();

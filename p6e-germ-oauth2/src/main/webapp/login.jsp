@@ -285,7 +285,7 @@
                         encrypt.setPublicKey(publicKey);
                         const encryptedPassword = encrypt.encrypt(password);
                         loginAjax({
-                            mode: 'CODE',
+                            mode: '<%= request.getAttribute("mode") %>',
                             mark: '<%= request.getAttribute("mark") %>',
                             voucher: voucher,
                             account: account,

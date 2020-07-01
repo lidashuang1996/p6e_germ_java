@@ -7,7 +7,9 @@ import com.p6e.germ.oauth2.model.P6eResultConfig;
 import com.p6e.germ.oauth2.model.P6eResultModel;
 import com.p6e.germ.oauth2.model.dto.P6eUserParamDto;
 import com.p6e.germ.oauth2.model.dto.P6eUserResultDto;
+import com.p6e.germ.oauth2.model.vo.P6eUserResultVo;
 import com.p6e.germ.oauth2.service.P6eUserService;
+import com.p6e.germ.oauth2.utils.CopyUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -38,7 +40,8 @@ public class P6eUserController extends P6eBaseController {
             if (p6eUserResultDto == null || p6eUserResultDto.getError() != null) {
                 return P6eResultModel.build(P6eResultConfig.ERROR_RESOURCES_NOT_EXISTENCE);
             } else {
-                return P6eResultModel.build(P6eResultConfig.SUCCESS, p6eUserResultDto);
+                return P6eResultModel.build(P6eResultConfig.SUCCESS,
+                        CopyUtil.run(p6eUserResultDto, P6eUserResultVo.class));
             }
         } catch (Exception e) {
             e.printStackTrace();

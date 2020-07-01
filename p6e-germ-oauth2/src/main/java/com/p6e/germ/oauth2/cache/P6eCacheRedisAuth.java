@@ -41,4 +41,19 @@ public class P6eCacheRedisAuth extends P6eCacheRedis implements IP6eCacheAuth {
     public void delCodeVoucher(String key) {
         p6eRedisTemplate.getRedisTemplate().delete(AUTH_NAME + "CODE:VOUCHER:" + key);
     }
+
+    @Override
+    public void setTokenMark(String key, String value) {
+        p6eRedisTemplate.getRedisTemplate().opsForValue().set(AUTH_NAME + "TOKEN:MARK:" + key, value, AUTH_TIME, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public String getTokenMark(String key) {
+        return p6eRedisTemplate.getRedisTemplate().opsForValue().get(AUTH_NAME + "TOKEN:MARK:" + key);
+    }
+
+    @Override
+    public void delTokenMark(String key) {
+        p6eRedisTemplate.getRedisTemplate().delete(AUTH_NAME + "TOKEN:MARK:" + key);
+    }
 }

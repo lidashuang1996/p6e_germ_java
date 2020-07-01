@@ -4,6 +4,8 @@ import com.p6e.germ.oauth2.controller.support.P6eBaseController;
 import com.p6e.germ.oauth2.model.P6eResultConfig;
 import com.p6e.germ.oauth2.model.dto.P6eAuthParamDto;
 import com.p6e.germ.oauth2.model.dto.P6eAuthResultDto;
+import com.p6e.germ.oauth2.model.dto.P6eAuthTokenParamDto;
+import com.p6e.germ.oauth2.model.dto.P6eAuthTokenResultDto;
 import com.p6e.germ.oauth2.model.vo.P6eAuthParamVo;
 import com.p6e.germ.oauth2.service.P6eAuthService;
 import com.p6e.germ.oauth2.utils.CopyUtil;
@@ -45,12 +47,21 @@ public class P6eAuthController extends P6eBaseController {
                     switch (responseType.toUpperCase()) {
                         // CODE 的认证模式
                         case "CODE":
-                            P6eAuthResultDto p6eAuthResultDto
+                            P6eAuthResultDto p6eAuthResultDtoCode
                                     = p6eAuthService.code(CopyUtil.run(param, P6eAuthParamDto.class));
-                            if (p6eAuthResultDto.getError() != null) {
-                                return errorPage(p6eAuthResultDto.getError());
+                            if (p6eAuthResultDtoCode.getError() != null) {
+                                return errorPage(p6eAuthResultDtoCode.getError());
                             } else {
-                                return loginPage(p6eAuthResultDto.getMark());
+                                return loginPage(p6eAuthResultDtoCode.getMark(), "CODE");
+                            }
+                        // 简化模式
+                        case "TOKEN":
+                            P6eAuthTokenResultDto p6eAuthTokenResultDto
+                                    = p6eAuthService.token(CopyUtil.run(param, P6eAuthTokenParamDto.class));
+                            if (p6eAuthTokenResultDto.getError() != null) {
+                                return errorPage(p6eAuthTokenResultDto.getError());
+                            } else {
+                                return loginPage(p6eAuthTokenResultDto.getMark(), "TOKEN");
                             }
                         case "PASSWORD":
                         default:
@@ -66,9 +77,10 @@ public class P6eAuthController extends P6eBaseController {
         }
     }
 
-    private ModelAndView loginPage(final String mark) {
+    private ModelAndView loginPage(final String mark, final String mode) {
         final Map<String, String> map = new HashMap<>(1);
         map.put("mark", mark);
+        map.put("mode", mode);
         return new ModelAndView(LOGIN_JSP_PAGE, map);
     }
 

@@ -65,17 +65,18 @@ public class P6eSignController extends P6eBaseController {
                         // 账号/密码错误
                         return P6eResultModel.build(P6eResultConfig.ERROR_ACCOUNT_OR_PASSWORD);
                     } else {
-                        final String mode = param.getMode();
+                        final String mode = param.getMode().toUpperCase();
+                        System.out.println(mode);
                         switch (mode) {
                             case "CODE":
-                                final String mark = param.getMark();
-                                if (mark == null) {
+                                final String codeMark = param.getMark();
+                                if (codeMark == null) {
                                     // 参数异常
                                     return P6eResultModel.build(P6eResultConfig.ERROR_PARAM_EXCEPTION);
                                 } else {
                                     // 读取记号
                                     P6eAuthManageCodeParamDto p6eAuthManageCodeParamDto = new P6eAuthManageCodeParamDto();
-                                    p6eAuthManageCodeParamDto.setMark(mark);
+                                    p6eAuthManageCodeParamDto.setMark(codeMark);
                                     p6eAuthManageCodeParamDto.setData(CopyUtil.toMap(p6eSignResultDto));
 
                                     // 验证 code
@@ -91,7 +92,33 @@ public class P6eSignController extends P6eBaseController {
                                                         + "?code=" + p6eAuthManageCodeResultDto.getCode());
                                     }
                                 }
-                            case "2":
+                            case "TOKEN":
+                                final String tokenMark = param.getMark();
+                                if (tokenMark == null) {
+                                    // 参数异常
+                                    return P6eResultModel.build(P6eResultConfig.ERROR_PARAM_EXCEPTION);
+                                } else {
+
+                                    System.out.println(tokenMark);
+                                    System.out.println(p6eSignResultDto);
+
+                                    // 读取记号
+                                    P6eAuthManageTokenParamDto p6eAuthManageTokenParamDto = new P6eAuthManageTokenParamDto();
+                                    p6eAuthManageTokenParamDto.setMark(tokenMark);
+                                    p6eAuthManageTokenParamDto.setData(CopyUtil.toMap(p6eSignResultDto));
+
+                                    // 验证 code
+                                    P6eAuthManageTokenResultDto p6eAuthManageTokenResultDto
+                                            = p6eAuthService.manageToken(p6eAuthManageTokenParamDto);
+
+                                    if (p6eAuthManageTokenResultDto == null) {
+                                        return P6eResultModel.build(P6eResultConfig.ERROR_PARAM_EXCEPTION);
+                                    } else {
+                                        // 缓存用户信息---code
+                                        return P6eResultModel.build(P6eResultConfig.SUCCESS,
+                                                p6eAuthManageTokenResultDto.toUri());
+                                    }
+                                }
                             default:
                                 return P6eResultModel.build(P6eResultConfig.ERROR_SERVICE_INSIDE);
                         }

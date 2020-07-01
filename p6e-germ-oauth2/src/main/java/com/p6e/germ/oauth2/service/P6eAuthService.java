@@ -26,4 +26,11 @@ public interface P6eAuthService {
      * 处理 code 的模式
      */
     public P6eAuthCollateCodeResultDto collateCode(P6eAuthCollateCodeParamDto param);
+
+    public P6eAuthTokenResultDto token(P6eAuthTokenParamDto param);
+
+    public P6eAuthManageTokenResultDto manageToken(P6eAuthManageTokenParamDto param);
+
+
+    public P6eAuthCollatePasswordResultDto collatePassword(P6eAuthCollatePasswordParamDto param);
 }

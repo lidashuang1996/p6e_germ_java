@@ -12,22 +12,45 @@ import java.util.*;
  */
 public final class CopyUtil {
 
+    public static <T> T run(Object data, Class<T> c) {
+        if (data == null) {
+            // 判断是否为 null
+            return null;
+        }
+        try {
+            return run(data, c.newInstance());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     @SuppressWarnings("all")
-    public static <T> T run(Object data, Class<T> c) {
-        if (data == null) return null; // 判断是否为 null
+    public static <T> T run(Object data, T co) {
+        if (data == null || co == null) {
+            return null; // 判断是否为 null
+        }
         try {
             boolean b1 = true, b2 = true;
             Class<?> dataClass = data.getClass();
+            Class<?> c = co.getClass();
             // 判断是否接口于 java.io.Serializable
-            for (Class<?> anInterface : dataClass.getInterfaces())
+            for (Class<?> anInterface : dataClass.getInterfaces()){
                 if (anInterface == Serializable.class) { b1 = false; break; }
-            for (Class<?> anInterface : c.getInterfaces())
+            }
+
+            for (Class<?> anInterface : c.getInterfaces()) {
                 if (anInterface == Serializable.class) { b2 = false; break; }
-            if (b1 || b2) throw new RuntimeException("copy no interface java.io.Serializable");
+            }
+
+            if (b1 || b2) {
+                throw new RuntimeException("copy no interface java.io.Serializable");
+            }
             Field[] dataFields = obtainFields(dataClass); // 获取自类和父类里面的 Field
             Field[] cFields = obtainFields(c); // 获取自类和父类里面的 Field
-            T t = c.newInstance(); // 创建一个源 class 对象
+
+            T t = co; // 创建一个源 class 对象
+
             for (Field f1 : dataFields) {
                 for (Field f2 : cFields) {
                     // 根据名字匹配
@@ -36,7 +59,9 @@ public final class CopyUtil {
                         f2.setAccessible(true);
                         Object o = f1.get(data); // 读取源数据对象
                         boolean bool = f1.getGenericType().equals(f2.getGenericType()); // 判断类型是否相同
-                        if (bool && o != null) f2.set(t, o); // 对象不为 null 且类型相同，执行赋值操作
+                        if (bool && o != null) {
+                            f2.set(t, o); // 对象不为 null 且类型相同，执行赋值操作
+                        }
                         else if (!bool && o != null) {
                             if (f1.getGenericType().getTypeName().startsWith("java.util.List") &&
                                     f2.getGenericType().getTypeName().startsWith("java.util.List")) {
@@ -86,14 +111,16 @@ public final class CopyUtil {
                                         break;
                                 }
 
-                            } else f2.set(t, run(o, Class.forName(f2.getGenericType().getTypeName()))); // 如果类型不同，我们尝试再转换一次
+                            } else {
+                                f2.set(t, run(o, Class.forName(f2.getGenericType().getTypeName()))); // 如果类型不同，我们尝试再转换一次
+                            }
                         }
                         break;
                     }
                 }
             }
             return t;
-        } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
+        } catch (IllegalAccessException | ClassNotFoundException e) {
             e.printStackTrace();
             return null;
         }
@@ -108,7 +135,9 @@ public final class CopyUtil {
      * @return List<T>
      */
     public static <W, T> List<T> run(List<W> data, Class<T> c) {
-        if (data == null) return null; // 判断是否为 null
+        if (data == null) {
+            return null; // 判断是否为 null
+        }
         List<T> list = new ArrayList<>();
         // 读取每一个对象， COPY 后返回写入
         data.forEach(item -> list.add(run(item, c)));

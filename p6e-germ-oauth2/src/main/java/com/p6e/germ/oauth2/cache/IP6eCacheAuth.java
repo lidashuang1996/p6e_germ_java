@@ -26,4 +26,8 @@ public interface IP6eCacheAuth {
     public String getCodeVoucher(String key);
     public void delCodeVoucher(String key);
 
+    public void setTokenMark(String key, String value);
+    public String getTokenMark(String key);
+    public void delTokenMark(String key);
+
 }

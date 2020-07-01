@@ -15,6 +15,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -46,22 +48,41 @@ public class P6eHttpLogInterceptor {
 
         @Override
         public String toString() {
-            return "{"
-                    + "\"url\":\""
-                    + url + '\"'
-                    + ",\"path\":\""
-                    + path + '\"'
-                    + ",\"body\":"
-                    + body
-                    + ",\"result\":"
-                    + result
-                    + ",\"ip\":\""
-                    + ip + '\"'
-                    + ",\"startDateTime\":\""
-                    + startDateTime + '\"'
-                    + ",\"endDateTime\":\""
-                    + endDateTime + '\"'
-                    + "}";
+            try {
+                return "{"
+                        + "\"url\":\""
+                        + URLDecoder.decode(url, "UTF-8") + '\"'
+                        + ",\"path\":\""
+                        + path + '\"'
+                        + ",\"body\":"
+                        + GsonUtil.toJson(body)
+                        + ",\"result\":"
+                        + GsonUtil.toJson(result)
+                        + ",\"ip\":\""
+                        + ip + '\"'
+                        + ",\"startDateTime\":\""
+                        + startDateTime + '\"'
+                        + ",\"endDateTime\":\""
+                        + endDateTime + '\"'
+                        + "}";
+            } catch (UnsupportedEncodingException e) {
+                return "{"
+                        + "\"url\":\""
+                        + url + '\"'
+                        + ",\"path\":\""
+                        + path + '\"'
+                        + ",\"body\":"
+                        + GsonUtil.toJson(body)
+                        + ",\"result\":"
+                        + GsonUtil.toJson(result)
+                        + ",\"ip\":\""
+                        + ip + '\"'
+                        + ",\"startDateTime\":\""
+                        + startDateTime + '\"'
+                        + ",\"endDateTime\":\""
+                        + endDateTime + '\"'
+                        + "}";
+            }
         }
     }
 
@@ -145,7 +166,7 @@ public class P6eHttpLogInterceptor {
             httpLogModel.result = ret;
             httpLogModel.endDateTime = LocalDateTime.now()
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
-            logger.info(GsonUtil.toJson(httpLogModel));
+            logger.info(httpLogModel.toString());
         }
         // 如果压力测试时候对内存成为阶梯状可以在考虑在这里 GC 一下
         // System.gc(); // GC 一下 ？ Spring 管理了吗 ？
