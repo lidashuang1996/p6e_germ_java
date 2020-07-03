@@ -1,6 +1,8 @@
 package com.p6e.germ.oauth2.service.impl;
 
 import com.p6e.germ.oauth2.cache.IP6eCacheToken;
+import com.p6e.germ.oauth2.model.dto.P6eTokenClientParamDto;
+import com.p6e.germ.oauth2.model.dto.P6eTokenClientResultDto;
 import com.p6e.germ.oauth2.model.dto.P6eTokenParamDto;
 import com.p6e.germ.oauth2.model.dto.P6eTokenResultDto;
 import com.p6e.germ.oauth2.service.P6eTokenService;
@@ -57,6 +59,21 @@ public class P6eTokenServiceImpl implements P6eTokenService {
 
     @Override
     public P6eTokenResultDto refresh(P6eTokenParamDto param) {
+        return null;
+    }
+
+    @Override
+    public P6eTokenClientResultDto setClient(P6eTokenClientParamDto param) {
+        return null;
+    }
+
+    @Override
+    public P6eTokenClientResultDto getClient(P6eTokenClientParamDto param) {
+        return null;
+    }
+
+    @Override
+    public P6eTokenClientResultDto delClient(P6eTokenClientParamDto param) {
         return null;
     }
 }

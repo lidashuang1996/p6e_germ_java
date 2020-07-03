@@ -19,5 +19,5 @@ public class P6eListResultVo<T> extends P6eBaseResultVo implements Serializable 
     private List<T> list;
     private Integer page;
     private Integer size;
-    private Integer total;
+    private Long total;
 }

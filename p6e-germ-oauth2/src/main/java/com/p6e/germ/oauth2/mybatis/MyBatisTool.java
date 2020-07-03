@@ -1,7 +1,9 @@
 package com.p6e.germ.oauth2.mybatis;
 
+import com.p6e.germ.oauth2.model.base.P6eBaseDb;
 import org.springframework.util.DigestUtils;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Pattern;
 
 /**
  * 该类为 MyBatis 工具类
@@ -25,6 +27,30 @@ public final class MyBatisTool {
         final String md5Pwd2 = md5Pwd.substring(8);
         // 对 0-8 的内容再 md5 加密一次，8 以后的内容不进行加密
         return DigestUtils.md5DigestAsHex(md5Pwd1.getBytes(StandardCharsets.UTF_8)) + md5Pwd2;
+    }
+
+    public static int[] obtainPagingData(P6eBaseDb db) {
+        if (db == null) {
+            return new int[] { 0, 0 };
+        } else {
+            final int page = db.getPage();
+            final int size = db.getSize();
+            return new int[] { (page / size) + 1, size };
+        }
+    }
+
+    private static final Pattern PATTERN_PHONE
+            = Pattern.compile("^[1][3-5,7-8][0-9]{9}$");
+
+    private static final Pattern PATTERN_EMAIL
+            = Pattern.compile("^([a-z0-9A-Z]+[-|.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$");
+
+    public static boolean isPhone(String content) {
+        return PATTERN_PHONE.matcher(content).matches();
+    }
+
+    public static boolean isEmail(String content) {
+        return PATTERN_EMAIL.matcher(content).matches();
     }
 
     public static void main(String[] args) {

@@ -19,5 +19,5 @@ public class P6eListResultDto<T> extends P6eBaseResultDto implements Serializabl
     private List<T> list;
     private Integer page;
     private Integer size;
-    private Integer total;
+    private Long total;
 }

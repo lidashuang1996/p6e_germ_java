@@ -10,9 +10,9 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
  * @author lidashuang
  * @version 1.0
  */
-@MapperScan("com.p6e.germ.oauth2.mapper")
 @ServletComponentScan
 @SpringBootApplication
+@MapperScan("com.p6e.germ.oauth2.mapper")
 public class P6eOauth2Application {
 
     public static void main(String[] args) {

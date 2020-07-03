@@ -5,12 +5,12 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 认证数据模型
+ * 用户 [ USER ] 认证数据模型
  * @author lidashuang
  * @version 1.0
  */
 @Data
-public class P6eAuthModel implements Serializable {
+public class P6eUserAuthModel implements Serializable {
     private Integer id;
     private Integer status;
     private String avatar;

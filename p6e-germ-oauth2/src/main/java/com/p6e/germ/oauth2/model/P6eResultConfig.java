@@ -22,6 +22,9 @@ public final class P6eResultConfig implements Serializable {
     /** 资源不存在 */
     public static final String ERROR_RESOURCES_NOT_EXISTENCE = "400-ERROR_RESOURCES_NOT_EXISTENCE";
 
+    /** 账号已经存在 */
+    public static final String ERROR_ACCOUNT_EXISTENCE = "400-ERROR_ACCOUNT_EXISTENCE";
+
     /** 认证出现异常 */
     public static final String ERROR_AUTH_NO_EXISTENCE = "400-ERROR_AUTH_NO_EXISTENCE";
 
@@ -34,6 +37,8 @@ public final class P6eResultConfig implements Serializable {
     /** 凭证生成失败 */
     public static final String ERROR_ACCOUNT_OR_PASSWORD = "500-ERROR_ACCOUNT_OR_PASSWORD";
 
+    /** 默认数据无法删除 */
+    public static final String ERROR_BAN_DEFAULT_DATA_OPERATE = "400-ERROR_BAN_DEFAULT_DATA_OPERATE";
 
 
 }

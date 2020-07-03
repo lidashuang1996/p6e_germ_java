@@ -1,7 +1,7 @@
 package com.p6e.germ.oauth2.controller;
 
-import com.p6e.germ.oauth2.auth.P6eAuth;
-import com.p6e.germ.oauth2.auth.P6eAuthModel;
+import com.p6e.germ.oauth2.auth.P6eUserAuth;
+import com.p6e.germ.oauth2.auth.P6eUserAuthModel;
 import com.p6e.germ.oauth2.controller.support.P6eBaseController;
 import com.p6e.germ.oauth2.model.P6eResultConfig;
 import com.p6e.germ.oauth2.model.P6eResultModel;
@@ -29,14 +29,14 @@ public class P6eUserController extends P6eBaseController {
     @Resource
     private P6eUserService p6eUserService;
 
-    @P6eAuth
+    @P6eUserAuth
     @GetMapping
-    public P6eResultModel get(P6eAuthModel p6eAuthModel) {
+    public P6eResultModel get(P6eUserAuthModel p6EUserAuthModel) {
         try {
             // 查询用户信息
             // 查询和平台的关系
             final P6eUserResultDto p6eUserResultDto
-                    = p6eUserService.select(new P6eUserParamDto(p6eAuthModel.getId()));
+                    = p6eUserService.select(new P6eUserParamDto(p6EUserAuthModel.getId()));
             if (p6eUserResultDto == null || p6eUserResultDto.getError() != null) {
                 return P6eResultModel.build(P6eResultConfig.ERROR_RESOURCES_NOT_EXISTENCE);
             } else {

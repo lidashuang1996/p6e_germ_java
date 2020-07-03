@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.p6e.germ.oauth2.mapper.P6eAdminUserMapper">
+
+    <select id="selectByAccountAndPassword" parameterType="com.p6e.germ.oauth2.model.db.P6eAdminUserDb"
+            resultType="com.p6e.germ.oauth2.model.db.P6eAdminUserDb">
+        SELECT
+            `A`.`id`,
+            `A`.`status`,
+            `A`.`avatar`,
+            `A`.`name`,
+            `A`.`nickname`,
+            `A`.`sex`,
+            `A`.`birthday`,
+            `A`.`role`,
+            `B`.`email`,
+            `B`.`phone`
+        FROM
+            `p6e_germ_oauth2_admin_user` AS `A`
+            LEFT JOIN `p6e_germ_oauth2_admin_user_auth` AS `B` ON `A`.`id` = `B`.`id`
+        WHERE
+            (
+                `B`.`email` = #{DB.account}
+                OR
+                `B`.`phone` = #{DB.account}
+            )
+            AND `B`.`password` = #{DB.password}
+            AND `A`.`status` != -1
+        LIMIT 0, 1;
+    </select>
+
+    <select id="selectById" parameterType="com.p6e.germ.oauth2.model.db.P6eAdminUserDb"
+            resultType="com.p6e.germ.oauth2.model.db.P6eAdminUserDb">
+        SELECT
+            `A`.`id`,
+            `A`.`status`,
+            `A`.`avatar`,
+            `A`.`name`,
+            `A`.`nickname`,
+            `A`.`sex`,
+            `A`.`birthday`,
+            `A`.`role`,
+            `B`.`email`,
+            `B`.`phone`
+        FROM
+            `p6e_germ_oauth2_admin_user` AS `A`
+            LEFT JOIN `p6e_germ_oauth2_admin_user_auth` AS `B` ON `A`.`id` = `B`.`id`
+        WHERE
+            `A`.`id` = #{DB.id}
+            AND `A`.`status` != -1
+        LIMIT 0, 1;
+    </select>
+
+    <select id="selectByAccount" parameterType="com.p6e.germ.oauth2.model.db.P6eAdminUserDb"
+            resultType="com.p6e.germ.oauth2.model.db.P6eAdminUserDb">
+        SELECT
+            `A`.`id`,
+            `A`.`status`,
+            `A`.`avatar`,
+            `A`.`name`,
+            `A`.`nickname`,
+            `A`.`sex`,
+            `A`.`birthday`,
+            `A`.`role`,
+            `B`.`email`,
+            `B`.`phone`
+        FROM
+            `p6e_germ_oauth2_admin_user` AS `A`
+            LEFT JOIN `p6e_germ_oauth2_admin_user_auth` AS `B` ON `A`.`id` = `B`.`id`
+        WHERE
+            (
+                B.`email` = #{DB.account}
+                OR
+                B.`phone` = #{DB.account}
+            )
+            AND `A`.`status` != -1
+        LIMIT 0, 1;
+    </select>
+
+    <select id="select" parameterType="com.p6e.germ.oauth2.model.db.P6eAdminUserDb"
+            resultType="com.p6e.germ.oauth2.model.db.P6eAdminUserDb">
+        SELECT
+            `A`.`id`,
+            `A`.`status`,
+            `A`.`avatar`,
+            `A`.`name`,
+            `A`.`nickname`,
+            `A`.`sex`,
+            `A`.`birthday`,
+            `A`.`role`,
+            `B`.`email`,
+            `B`.`phone`
+        FROM
+            `p6e_germ_oauth2_admin_user` AS `A`
+            LEFT JOIN `p6e_germ_oauth2_admin_user_auth` AS `B` ON `A`.`id` = `B`.`id`
+        <trim prefix="WHERE" prefixOverrides="AND| OR">
+            <if test="DB != null">AND `A`.`status` != -1</if>
+            <if test="DB.id != null">AND `A`.`id` = #{DB.id}</if>
+            <if test="DB.status != null">AND `A`.`status` = #{DB.status}</if>
+            <if test="DB.role != null">AND `A`.`role` = #{DB.role}</if>
+            <if test="DB.search != null">
+                AND (
+                    `A`.`name` LIKE CONCAT(#{DB.search}, '%')
+                    OR
+                    `A`.`nickname` LIKE CONCAT(#{DB.search}, '%')
+                )
+            </if>
+        </trim>
+        LIMIT #{DB.page}, #{DB.size};
+    </select>
+
+    <select id="count" parameterType="com.p6e.germ.oauth2.model.db.P6eAdminUserDb" resultType="long">
+        SELECT
+            COUNT(`A`.`id`) AS `count`
+        FROM
+            `p6e_germ_oauth2_admin_user` AS `A`
+        <trim prefix="WHERE" prefixOverrides="AND| OR">
+            <if test="DB != null">AND `A`.`status` != -1</if>
+            <if test="DB.id != null">AND `A`.`id` = #{DB.id}</if>
+            <if test="DB.status != null">AND `A`.`status` = #{DB.status}</if>
+            <if test="DB.role != null">AND `A`.`role` = #{DB.role}</if>
+            <if test="DB.search != null">
+                AND (
+                    `A`.`name` LIKE CONCAT(#{DB.search}, '%')
+                    OR
+                    `A`.`nickname` LIKE CONCAT(#{DB.search}, '%')
+                )
+            </if>
+        </trim>;
+    </select>
+
+    <insert id="createInfo" parameterType="com.p6e.germ.oauth2.model.db.P6eAdminUserDb"
+            keyProperty="id" keyColumn="id" useGeneratedKeys="true">
+        INSERT INTO `p6e_germ_oauth2_admin_user` (
+            `name`,
+            `nickname`,
+            `sex`,
+            `birthday`,
+            `role`
+        ) VALUE (
+            #{DB.name},
+            #{DB.nickname},
+            #{DB.sex},
+            #{DB.birthday},
+            #{DB.role}
+        );
+    </insert>
+
+    <insert id="createAuth" parameterType="com.p6e.germ.oauth2.model.db.P6eAdminUserDb">
+        INSERT INTO `p6e_germ_oauth2_admin_user_auth` (
+            `id`,
+            `password`
+            <if test="DB.email != null">,`email`</if>
+            <if test="DB.phone != null">,`phone`</if>
+        ) VALUE (
+            #{DB.id},
+            #{DB.password}
+            <if test="DB.email != null">,#{DB.email}</if>
+            <if test="DB.phone != null">,#{DB.phone}</if>
+        );
+    </insert>
+
+    <update id="delete" parameterType="com.p6e.germ.oauth2.model.db.P6eAdminUserDb">
+        UPDATE `p6e_germ_oauth2_admin_user` SET `status` = '-1' WHERE `id` = #{DB.id};
+    </update>
+
+    <update id="update" parameterType="com.p6e.germ.oauth2.model.db.P6eAdminUserDb">
+        UPDATE `p6e_germ_oauth2_admin_user`
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="DB.status != null">`status` = #{DB.status},</if>
+            <if test="DB.avatar != null">`avatar` = #{DB.avatar},</if>
+            <if test="DB.name != null">`name` = #{DB.name},</if>
+            <if test="DB.nickname != null">`nickname` = #{DB.nickname},</if>
+            <if test="DB.sex != null">`sex` = #{DB.sex},</if>
+            <if test="DB.birthday != null">`birthday` = #{DB.birthday},</if>
+            <if test="DB.role != null">`role` = #{DB.role},</if>
+        </trim>
+        WHERE `id` = #{DB.id};
+    </update>
+</mapper>
