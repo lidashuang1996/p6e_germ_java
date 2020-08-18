@@ -1,0 +1,55 @@
+server:
+  port: 6100
+
+spring:
+  # 项目名称
+  application:
+    name: CLUB_ACTIVITY_SERVICE
+  cache:
+    ehcache:
+      config: ehcache.xml
+    type: ehcache
+  # 执行的环境
+  #  profiles:
+  #    active: pro
+  # Redis 数据源的配置
+  redis:
+    data-source:
+      # 数据源1配置
+      source-1:
+        database: 11
+        host: 111.229.238.242
+        port: 6379
+        password: Root1234!@#$
+        # 连接超时时间（毫秒）
+        timeout: 60000
+        # 线程池配置
+        jedis:
+          pool:
+            # 连接池最大连接数（使用负值表示没有限制）
+            max-active: 20
+            # 连接池最大阻塞等待时间（使用负值表示没有限制）
+            max-wait: -1
+            # 连接池中的最大空闲连接
+            max-idle: 20
+            # 连接池中的最小空闲连接
+            min-idle: 5
+      # 数据源2配置
+      source-2:
+        database: 10
+        host: 111.229.238.242
+        port: 6379
+        password: Root1234!@#$
+        # 连接超时时间（毫秒）
+        timeout: 60000
+        # 线程池配置
+        lettuce:
+          pool:
+            # 连接池最大连接数（使用负值表示没有限制）
+            max-active: 20
+            # 连接池最大阻塞等待时间（使用负值表示没有限制）
+            max-wait: -1
+            # 连接池中的最大空闲连接
+            max-idle: 20
+            # 连接池中的最小空闲连接
+            min-idle: 5
