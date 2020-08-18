@@ -38,7 +38,7 @@ public class P6eUserController extends P6eBaseController {
             final P6eUserResultDto p6eUserResultDto
                     = p6eUserService.select(new P6eUserParamDto(p6EUserAuthModel.getId()));
             if (p6eUserResultDto == null || p6eUserResultDto.getError() != null) {
-                return P6eResultModel.build(P6eResultConfig.ERROR_RESOURCES_NOT_EXISTENCE);
+                return P6eResultModel.build(P6eResultConfig.ERROR_RESOURCES_NO_EXIST);
             } else {
                 return P6eResultModel.build(P6eResultConfig.SUCCESS,
                         CopyUtil.run(p6eUserResultDto, P6eUserResultVo.class));

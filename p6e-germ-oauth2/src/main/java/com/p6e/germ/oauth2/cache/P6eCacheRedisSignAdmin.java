@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class P6eCacheRedisSignAdmin extends P6eCacheRedis implements IP6eCacheSignAdmin {
 
     /** 选择的认证缓存方式 */
-    private static final P6eCacheRedisSignModel.Type TYPE = P6eCacheRedisSignModel.Type.U;
+    private static final P6eCacheRedisSignModel.Type TYPE = P6eCacheRedisSignModel.Type.M;
 
     @Override
     public P6eCacheRedisSignModel.Core set(P6eCacheRedisSignModel.Contract contract, Object data) {

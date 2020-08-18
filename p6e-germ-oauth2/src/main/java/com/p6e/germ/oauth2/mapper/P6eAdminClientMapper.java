@@ -20,6 +20,13 @@ public interface P6eAdminClientMapper {
     public List<P6eAdminUserDb> select(@Param("DB") P6eAdminUserDb db);
 
     /**
+     * 单条记录查询
+     * @param db 查询对象
+     * @return 操作查询结果
+     */
+    public P6eAdminUserDb selectById(@Param("DB") P6eAdminUserDb db);
+
+    /**
      * 条数查询
      * @param db 查询对象
      * @return 操作结果对象

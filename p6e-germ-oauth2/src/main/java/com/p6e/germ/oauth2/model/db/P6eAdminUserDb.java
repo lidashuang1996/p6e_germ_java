@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author lidashuang
@@ -27,11 +28,15 @@ public class P6eAdminUserDb extends P6eBaseDb implements Serializable {
     private String birthday;
     private Integer role;
 
+    /** 关联的属性扩展 */
     private String email;
     private String phone;
 
-
+    /** 登陆账号密码查询的扩展 */
     private String account;
     private String password;
+
+    /** 连表的扩展 */
+    private List<P6eClientDb> clientDbList;
 
 }

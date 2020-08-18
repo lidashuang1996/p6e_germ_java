@@ -1,5 +1,7 @@
 package com.p6e.germ.oauth2.service.impl;
 
+import com.p6e.germ.oauth2.cache.IP6eCacheSignAdmin;
+import com.p6e.germ.oauth2.cache.P6eCacheRedisSignModel;
 import com.p6e.germ.oauth2.mapper.P6eOauth2AdminUserMapper;
 import com.p6e.germ.oauth2.model.db.P6eOauth2AdminUserDb;
 import com.p6e.germ.oauth2.model.dto.P6eAdminSignParamDto;
@@ -19,13 +21,25 @@ import javax.annotation.Resource;
 public class P6eAdminSignServiceImpl implements P6eAdminSignService {
 
     @Resource
+    private IP6eCacheSignAdmin cacheSignAdmin;
+
+    @Resource
     private P6eOauth2AdminUserMapper adminUserMapper;
 
     @Override
     public P6eAdminSignResultDto in(P6eAdminSignParamDto param) {
-        P6eOauth2AdminUserDb db = adminUserMapper.select(CopyUtil.run(param, P6eOauth2AdminUserDb.class));
-
-        return null;
+        final P6eOauth2AdminUserDb db = adminUserMapper.select(CopyUtil.run(param, P6eOauth2AdminUserDb.class));
+        if (db != null) {
+            final P6eAdminSignResultDto p6eAdminSignResultDto = CopyUtil.run(db, P6eAdminSignResultDto.class);
+            final P6eCacheRedisSignModel.Core core = cacheSignAdmin.set(
+                    new P6eCacheRedisSignModel.Contract(db.getId(), null, null), P6eOauth2AdminUserDb.class);
+            p6eAdminSignResultDto.setToken(core.getToken());
+            p6eAdminSignResultDto.setRefreshToken(core.getRefreshToken());
+            p6eAdminSignResultDto.setTimestamp(core.getExpiration());
+            return p6eAdminSignResultDto;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -35,6 +49,8 @@ public class P6eAdminSignServiceImpl implements P6eAdminSignService {
 
     @Override
     public P6eAdminSignResultDto out(P6eAdminSignParamDto param) {
+        final P6eCacheRedisSignModel.Core core = cacheSignAdmin.del(
+                new P6eCacheRedisSignModel.Contract(null, param.getToken(), null), P6eOauth2AdminUserDb.class);
         return null;
     }
 

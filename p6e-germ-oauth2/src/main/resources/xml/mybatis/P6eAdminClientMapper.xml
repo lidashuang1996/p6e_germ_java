@@ -22,7 +22,7 @@
             LEFT JOIN `p6e_germ_oauth2_admin_user_auth` AS `B` ON `A`.`id` = `B`.`id`
         <trim prefix="WHERE" prefixOverrides="AND| OR">
             <if test="DB != null">AND `A`.`status` != -1</if>
-            <if test="DB.id != null">AND `A`.`id` = #{DB.id}</if>
+            <if test="DB.id != null">AND `A`.`id` = #{DB.idq</if>
             <if test="DB.status != null">AND `A`.`status` = #{DB.status}</if>
             <if test="DB.role != null">AND `A`.`role` = #{DB.role}</if>
             <if test="DB.search != null">

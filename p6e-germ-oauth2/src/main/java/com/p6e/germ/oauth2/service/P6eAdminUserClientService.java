@@ -8,8 +8,25 @@ import com.p6e.germ.oauth2.model.dto.*;
  */
 public interface P6eAdminUserClientService {
 
+    /**
+     *
+     * @param param
+     * @return
+     */
     public P6eAdminUserClientResultDto get(P6eAdminUserClientParamDto param);
+
+    /**
+     *
+     * @param param
+     * @return
+     */
     public P6eListResultDto<P6eAdminUserClientResultDto> list(P6eAdminUserClientParamDto param);
+
+    /**
+     *
+     * @param param
+     * @return
+     */
     public P6eAdminUserClientResultDto create(P6eAdminUserClientParamDto param);
     public P6eAdminUserClientResultDto delete(P6eAdminUserClientParamDto param);
     public P6eAdminUserClientResultDto update(P6eAdminUserClientParamDto param);

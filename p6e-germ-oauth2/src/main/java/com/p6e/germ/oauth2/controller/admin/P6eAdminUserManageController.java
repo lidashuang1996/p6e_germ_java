@@ -91,7 +91,7 @@ public class P6eAdminUserManageController extends P6eBaseController {
             final P6eAdminUserManageResultDto p6eAdminUserManageResultDto
                     = p6eAdminUserManageService.get(new P6eAdminUserManageParamDto(id));
             if (p6eAdminUserManageResultDto == null) {
-                return P6eResultModel.build(P6eResultConfig.ERROR_RESOURCES_NOT_EXISTENCE);
+                return P6eResultModel.build(P6eResultConfig.ERROR_RESOURCES_NO_EXIST);
             } else {
                 return P6eResultModel.build(P6eResultConfig.SUCCESS,
                         CopyUtil.run(p6eAdminUserManageResultDto, P6eAdminUserManageResultVo.class));
@@ -113,7 +113,7 @@ public class P6eAdminUserManageController extends P6eBaseController {
                 final P6eAdminUserManageResultDto p6eAdminUserManageResultDto
                         = p6eAdminUserManageService.delete(new P6eAdminUserManageParamDto(id));
                 if (p6eAdminUserManageResultDto == null) {
-                    return P6eResultModel.build(P6eResultConfig.ERROR_RESOURCES_NOT_EXISTENCE);
+                    return P6eResultModel.build(P6eResultConfig.ERROR_RESOURCES_NO_EXIST);
                 } else {
                     return P6eResultModel.build(P6eResultConfig.SUCCESS,
                             CopyUtil.run(p6eAdminUserManageResultDto, P6eAdminUserManageResultVo.class));
@@ -138,7 +138,7 @@ public class P6eAdminUserManageController extends P6eBaseController {
             final P6eAdminUserManageResultDto p6eAdminUserManageResultDto
                     = p6eAdminUserManageService.update(CopyUtil.run(param, P6eAdminUserManageParamDto.class));
             if (p6eAdminUserManageResultDto == null) {
-                return P6eResultModel.build(P6eResultConfig.ERROR_RESOURCES_NOT_EXISTENCE);
+                return P6eResultModel.build(P6eResultConfig.ERROR_RESOURCES_NO_EXIST);
             } else {
                 return P6eResultModel.build(P6eResultConfig.SUCCESS,
                         CopyUtil.run(p6eAdminUserManageResultDto, P6eAdminUserManageResultVo.class));

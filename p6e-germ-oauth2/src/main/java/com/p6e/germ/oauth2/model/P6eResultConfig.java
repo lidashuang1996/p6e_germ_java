@@ -11,16 +11,17 @@ public final class P6eResultConfig implements Serializable {
     /** 参数异常 */
     public static final String ERROR_PARAM_EXCEPTION = "400-ERROR_PARAM_EXCEPTION";
     /** 资源不存在 */
-    public static final String ERROR_RESOURCES_INEXISTENCE = "400-ERROR_RESOURCES_INEXISTENCE";
-
+    public static final String ERROR_RESOURCES_NO_EXIST = "400-ERROR_RESOURCES_NO_EXIST";
     /** 服务器内部出现异常 */
     public static final String ERROR_SERVICE_INSIDE = "500-ERROR_SERVICE_INSIDE";
-
+    /** 该功能已被禁用 */
+    public static final String ERROR_FUNCTION_DISABLE = "400-ERROR_FUNCTION_DISABLE";
     /** 认证出现异常 */
     public static final String ERROR_AUTH = "400-ERROR_AUTH";
 
-    /** 资源不存在 */
-    public static final String ERROR_RESOURCES_NOT_EXISTENCE = "400-ERROR_RESOURCES_NOT_EXISTENCE";
+
+
+
 
     /** 账号已经存在 */
     public static final String ERROR_ACCOUNT_EXISTENCE = "400-ERROR_ACCOUNT_EXISTENCE";
