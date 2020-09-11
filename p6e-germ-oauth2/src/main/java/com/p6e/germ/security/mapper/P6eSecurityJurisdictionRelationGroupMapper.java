@@ -19,6 +19,13 @@ public interface P6eSecurityJurisdictionRelationGroupMapper {
     public Long count(@Param("DB") P6eSecurityJurisdictionRelationGroupDb db);
 
     /**
+     * 创建安全组关系用户的数据
+     * @param db 安全组关系用户的参数
+     * @return 安全组关系用户的结果
+     */
+    public Integer create(@Param("DB") P6eSecurityJurisdictionRelationGroupDb db);
+
+    /**
      * 条件删除安全组关系用户的数据
      * @param db 安全组关系用户的参数
      * @return 安全组关系用户的结果
@@ -31,5 +38,12 @@ public interface P6eSecurityJurisdictionRelationGroupMapper {
      * @return 安全组关系用户的结果
      */
     public List<P6eSecurityJurisdictionRelationGroupDb> select(@Param("DB") P6eSecurityJurisdictionRelationGroupDb db);
+
+    /**
+     * 条件查询安全组关系用户的数据
+     * @param db 安全组关系用户的参数
+     * @return 安全组关系用户的结果
+     */
+    public P6eSecurityJurisdictionRelationGroupDb selectOneData(@Param("DB") P6eSecurityJurisdictionRelationGroupDb db);
 
 }

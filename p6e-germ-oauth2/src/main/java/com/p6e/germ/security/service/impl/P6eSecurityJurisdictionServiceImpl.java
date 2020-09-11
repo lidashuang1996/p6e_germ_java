@@ -31,7 +31,9 @@ public class P6eSecurityJurisdictionServiceImpl implements P6eSecurityJurisdicti
     @Override
     public P6eSecurityJurisdictionResultDto create(P6eSecurityJurisdictionParamDto param) {
         final P6eSecurityJurisdictionDb paramDb = CopyUtil.run(param, P6eSecurityJurisdictionDb.class);
-        if (securityJurisdictionMapper.create(paramDb) > 0) {
+        final P6eSecurityJurisdictionDb p6eSecurityJurisdictionDb =
+                securityJurisdictionMapper.selectOneData(new P6eSecurityJurisdictionDb().setCode(paramDb.getCode()));
+        if (p6eSecurityJurisdictionDb == null && securityJurisdictionMapper.create(paramDb) > 0) {
             return CopyUtil.run(securityJurisdictionMapper.selectOneData(paramDb), P6eSecurityJurisdictionResultDto.class);
         } else {
             return null;
@@ -40,8 +42,17 @@ public class P6eSecurityJurisdictionServiceImpl implements P6eSecurityJurisdicti
 
     @Override
     public P6eSecurityJurisdictionResultDto update(P6eSecurityJurisdictionParamDto param) {
+        P6eSecurityJurisdictionDb p6eSecurityJurisdictionDb = null;
         final P6eSecurityJurisdictionDb paramDb = CopyUtil.run(param, P6eSecurityJurisdictionDb.class);
-        if (securityJurisdictionMapper.update(paramDb) > 0) {
+        if (paramDb != null && paramDb.getCode() != null) {
+            p6eSecurityJurisdictionDb =
+                    securityJurisdictionMapper.selectOneData(new P6eSecurityJurisdictionDb().setCode(paramDb.getCode()));
+            if (p6eSecurityJurisdictionDb != null
+                    && p6eSecurityJurisdictionDb.getId().equals(paramDb.getId())) {
+                p6eSecurityJurisdictionDb = null;
+            }
+        }
+        if (p6eSecurityJurisdictionDb == null && securityJurisdictionMapper.update(paramDb) > 0) {
             return CopyUtil.run(securityJurisdictionMapper.selectOneData(paramDb), P6eSecurityJurisdictionResultDto.class);
         } else {
             return null;

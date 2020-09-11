@@ -82,8 +82,12 @@ public class P6eSecurityJurisdictionController extends P6eBaseController {
             } else {
                 final P6eSecurityJurisdictionResultDto p6eSecurityJurisdictionResultDto =
                         securityJurisdictionService.create(CopyUtil.run(param, P6eSecurityJurisdictionParamDto.class));
-                return P6eResultModel.build(P6eResultConfig.SUCCESS,
-                        CopyUtil.run(p6eSecurityJurisdictionResultDto, P6eSecurityJurisdictionResultVo.class));
+                if (p6eSecurityJurisdictionResultDto == null) {
+                    return P6eResultModel.build(P6eResultConfig.ERROR_PARAM_EXCEPTION);
+                } else {
+                    return P6eResultModel.build(P6eResultConfig.SUCCESS,
+                            CopyUtil.run(p6eSecurityJurisdictionResultDto, P6eSecurityJurisdictionResultVo.class));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -101,7 +105,7 @@ public class P6eSecurityJurisdictionController extends P6eBaseController {
                 final P6eSecurityJurisdictionResultDto p6eSecurityJurisdictionResultDto =
                         securityJurisdictionService.update(CopyUtil.run(param, P6eSecurityJurisdictionParamDto.class).setId(id));
                 if (p6eSecurityJurisdictionResultDto == null) {
-                    return P6eResultModel.build(P6eResultConfig.ERROR_RESOURCES_NO_EXIST);
+                    return P6eResultModel.build(P6eResultConfig.ERROR_PARAM_EXCEPTION);
                 } else {
                     return P6eResultModel.build(P6eResultConfig.SUCCESS,
                             CopyUtil.run(p6eSecurityJurisdictionResultDto, P6eSecurityJurisdictionResultVo.class));

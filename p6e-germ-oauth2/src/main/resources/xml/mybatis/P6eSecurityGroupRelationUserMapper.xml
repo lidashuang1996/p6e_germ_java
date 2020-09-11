@@ -30,7 +30,28 @@
         LIMIT #{DB.page}, #{DB.size};
     </select>
 
+    <select id="selectOneData" parameterType="com.p6e.germ.security.model.db.P6eSecurityGroupRelationUserDb"
+            resultType="com.p6e.germ.security.model.db.P6eSecurityGroupRelationUserDb">
+        SELECT
+            `uid` AS `uid`,
+            `gid` AS `gid`,
+            `create_date` AS `createDate`,
+            `update_date` AS `updateDate`,
+            `operate` AS `operate`
+        FROM
+            `p6e_germ_security_group_relation_user`
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="DB.uid != null">AND `uid` = #{DB.uid}</if>
+            <if test="DB.gid != null">AND `gid` = #{DB.gid}</if>
+        </trim>
+        LIMIT 0, 1;
+    </select>
+
     <delete id="delete" parameterType="com.p6e.germ.security.model.db.P6eSecurityGroupRelationUserDb">
         DELETE FROM `p6e_germ_security_group_relation_user` WHERE `uid` = #{DB.uid};
     </delete>
+
+    <insert id="create" parameterType="com.p6e.germ.security.model.db.P6eSecurityGroupRelationUserDb">
+        INSERT INTO `p6e_germ_security_group_relation_user`(`uid`, `gid`) VALUE(#{DB.uid}, #{DB.gid});
+    </insert>
 </mapper>

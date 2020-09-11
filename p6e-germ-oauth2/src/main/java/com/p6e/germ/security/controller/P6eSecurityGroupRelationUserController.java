@@ -50,6 +50,31 @@ public class P6eSecurityGroupRelationUserController extends P6eBaseController {
         }
     }
 
+    @DeleteMapping("/create")
+    public P6eResultModel create(@RequestBody P6eSecurityGroupRelationUserParamVo param) {
+        try {
+            if (param == null
+                    || param.getGid() == null
+                    || param.getUid() == null) {
+                return P6eResultModel.build(P6eResultConfig.ERROR_PARAM_EXCEPTION);
+            } else {
+                final P6eSecurityGroupRelationUserResultDto p6eSecurityGroupRelationUserResultDto =
+                        securityGroupRelationUserService.create(
+                                CopyUtil.run(param, P6eSecurityGroupRelationUserParamDto.class));
+                if (p6eSecurityGroupRelationUserResultDto == null) {
+                    return P6eResultModel.build(P6eResultConfig.ERROR_RESOURCES_NO_EXIST);
+                } else {
+                    return P6eResultModel.build(P6eResultConfig.SUCCESS, CopyUtil.run(
+                            p6eSecurityGroupRelationUserResultDto, P6eSecurityGroupRelationUserResultVo.class));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            return P6eResultModel.build(P6eResultConfig.ERROR_SERVICE_INSIDE, e.getMessage());
+        }
+    }
+
     @DeleteMapping("/delete/{id}")
     public P6eResultModel delete(@PathVariable Integer id) {
         try {

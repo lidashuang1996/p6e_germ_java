@@ -6,9 +6,12 @@ import com.p6e.germ.security.model.db.P6eSecurityGroupDb;
 import com.p6e.germ.security.model.dto.*;
 import com.p6e.germ.security.service.P6eSecurityGroupRelationUserService;
 import com.p6e.germ.security.service.P6eSecurityGroupService;
+import com.p6e.germ.security.service.P6eSecurityJurisdictionRelationGroupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -26,6 +29,9 @@ public class P6eSecurityGroupServiceImpl implements P6eSecurityGroupService {
 
     @Resource
     private P6eSecurityGroupRelationUserService securityGroupRelationUserService;
+
+    @Resource
+    private P6eSecurityJurisdictionRelationGroupService securityJurisdictionRelationGroupService;
 
     @Override
     public P6eSecurityGroupResultDto create(P6eSecurityGroupParamDto param) {
@@ -48,6 +54,7 @@ public class P6eSecurityGroupServiceImpl implements P6eSecurityGroupService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public P6eSecurityGroupResultDto delete(P6eSecurityGroupParamDto param) {
         final P6eSecurityGroupResultDto p6eSecurityGroupResultDto = new P6eSecurityGroupResultDto();
         final P6eSecurityGroupDb paramDb = CopyUtil.run(param, P6eSecurityGroupDb.class);
@@ -60,7 +67,11 @@ public class P6eSecurityGroupServiceImpl implements P6eSecurityGroupService {
             // 判断是否存在关联的数据
             if (p6eListResultDto.getTotal() == 0) {
                 // 判断是否删除成功
-                if (securityGroupMapper.delete(paramDb) > 0) {
+                final List<P6eSecurityJurisdictionRelationGroupResultDto> p6eSecurityJurisdictionRelationGroupResultDtoList =
+                        securityJurisdictionRelationGroupService.delete(
+                                new P6eSecurityJurisdictionRelationGroupParamDto().setGid(resultDb.getId()));
+                if (p6eSecurityJurisdictionRelationGroupResultDtoList != null
+                        && securityGroupMapper.delete(paramDb) > 0) {
                     CopyUtil.run(resultDb, p6eSecurityGroupResultDto);
                 } else {
                     p6eSecurityGroupResultDto.setError("ERROR_SERVICE_INSIDE");

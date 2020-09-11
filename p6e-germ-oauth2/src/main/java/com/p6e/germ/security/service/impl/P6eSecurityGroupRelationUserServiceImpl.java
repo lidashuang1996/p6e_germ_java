@@ -3,10 +3,10 @@ package com.p6e.germ.security.service.impl;
 import com.p6e.germ.oauth2.utils.CopyUtil;
 import com.p6e.germ.security.mapper.P6eSecurityGroupRelationUserMapper;
 import com.p6e.germ.security.model.db.P6eSecurityGroupRelationUserDb;
-import com.p6e.germ.security.model.dto.P6eListResultDto;
-import com.p6e.germ.security.model.dto.P6eSecurityGroupRelationUserParamDto;
-import com.p6e.germ.security.model.dto.P6eSecurityGroupRelationUserResultDto;
+import com.p6e.germ.security.model.db.P6eSecurityJurisdictionRelationGroupDb;
+import com.p6e.germ.security.model.dto.*;
 import com.p6e.germ.security.service.P6eSecurityGroupRelationUserService;
+import com.p6e.germ.security.service.P6eSecurityGroupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,6 +25,8 @@ public class P6eSecurityGroupRelationUserServiceImpl implements P6eSecurityGroup
     private final static Logger LOGGER = LoggerFactory.getLogger(P6eSecurityGroupRelationUserService.class);
 
     @Resource
+    private P6eSecurityGroupService securityGroupService;
+    @Resource
     private P6eSecurityGroupRelationUserMapper securityGroupRelationUserMapper;
 
     @Override
@@ -39,6 +41,21 @@ public class P6eSecurityGroupRelationUserServiceImpl implements P6eSecurityGroup
         p6eListResultDto.setList(
                 CopyUtil.run(p6eSecurityGroupRelationUserDbList, P6eSecurityGroupRelationUserResultDto.class));
         return p6eListResultDto;
+    }
+
+    @Override
+    public P6eSecurityGroupRelationUserResultDto create(P6eSecurityGroupRelationUserParamDto param) {
+        final P6eSecurityGroupRelationUserDb paramDb = CopyUtil.run(param, P6eSecurityGroupRelationUserDb.class);
+        final P6eSecurityGroupResultDto p6eSecurityGroupResultDto =
+                securityGroupService.selectOneData(new P6eSecurityGroupParamDto().setId(paramDb.getGid()));
+        if (p6eSecurityGroupResultDto != null
+                && securityGroupRelationUserMapper.create(paramDb) > 0) {
+            final P6eSecurityGroupRelationUserDb p6eSecurityGroupRelationUserDb =
+                    securityGroupRelationUserMapper.selectOneData(paramDb);
+            return CopyUtil.run(p6eSecurityGroupRelationUserDb, P6eSecurityGroupRelationUserResultDto.class);
+        } else {
+            return null;
+        }
     }
 
     @Override

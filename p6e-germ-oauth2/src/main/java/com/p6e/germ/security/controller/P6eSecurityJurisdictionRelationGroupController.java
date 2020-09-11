@@ -49,6 +49,32 @@ public class P6eSecurityJurisdictionRelationGroupController extends P6eBaseContr
         }
     }
 
+    @DeleteMapping("/create")
+    public P6eResultModel create(@RequestBody P6eSecurityJurisdictionRelationGroupParamVo param) {
+        try {
+            if (param == null
+                || param.getGid() == null
+                || param.getJurisdictionId() == null) {
+                return P6eResultModel.build(P6eResultConfig.ERROR_PARAM_EXCEPTION);
+            } else {
+                final P6eSecurityJurisdictionRelationGroupResultDto p6eSecurityJurisdictionRelationGroupResultDto =
+                        securityJurisdictionRelationGroupService.create(
+                                CopyUtil.run(param, P6eSecurityJurisdictionRelationGroupParamDto.class));
+                if (p6eSecurityJurisdictionRelationGroupResultDto == null) {
+                    return P6eResultModel.build(P6eResultConfig.ERROR_RESOURCES_NO_EXIST);
+                } else {
+                    return P6eResultModel.build(P6eResultConfig.SUCCESS,
+                            CopyUtil.run(p6eSecurityJurisdictionRelationGroupResultDto,
+                                    P6eSecurityJurisdictionRelationGroupResultVo.class));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            return P6eResultModel.build(P6eResultConfig.ERROR_SERVICE_INSIDE, e.getMessage());
+        }
+    }
+
     @DeleteMapping("/delete/{id}")
     public P6eResultModel delete(@PathVariable Integer id) {
         try {

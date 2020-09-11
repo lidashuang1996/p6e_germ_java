@@ -33,7 +33,30 @@
         LIMIT #{DB.page}, #{DB.size};
     </select>
 
+    <select id="selectOneData" parameterType="com.p6e.germ.security.model.db.P6eSecurityJurisdictionRelationGroupDb"
+            resultType="com.p6e.germ.security.model.db.P6eSecurityJurisdictionRelationGroupDb">
+        SELECT
+            `gid` AS `gid`,
+            `jurisdiction_id` AS `jurisdictionId`,
+            `jurisdiction_param` AS `jurisdictionParam`,
+            `create_date` AS `createDate`,
+            `update_date` AS `updateDate`,
+            `operate` AS `operate`
+        FROM
+            `p6e_germ_security_jurisdiction_relation_group`
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="DB.gid != null">AND `gid` = #{DB.gid}</if>
+            <if test="DB.jurisdictionId != null">AND `jurisdiction_id` = #{DB.jurisdictionId}</if>
+        </trim>
+        LIMIT 0, 1;
+    </select>
+
     <delete id="delete" parameterType="com.p6e.germ.security.model.db.P6eSecurityJurisdictionRelationGroupDb">
         DELETE FROM `p6e_germ_security_jurisdiction_relation_group` WHERE `gid` = #{DB.gid};
     </delete>
+
+    <insert id="create" parameterType="com.p6e.germ.security.model.db.P6eSecurityJurisdictionRelationGroupDb">
+        INSERT INTO `p6e_germ_security_jurisdiction_relation_group`(`gid`, `jurisdiction_id`, `jurisdiction_param`)
+        VALUE (#{DB.gid}, #{DB.jurisdictionId}, #{DB.jurisdictionParam});
+    </insert>
 </mapper>

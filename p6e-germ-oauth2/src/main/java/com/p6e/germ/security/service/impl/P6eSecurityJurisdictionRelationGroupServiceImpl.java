@@ -3,11 +3,11 @@ package com.p6e.germ.security.service.impl;
 import com.p6e.germ.oauth2.utils.CopyUtil;
 import com.p6e.germ.security.mapper.P6eSecurityJurisdictionRelationGroupMapper;
 import com.p6e.germ.security.model.db.P6eSecurityJurisdictionRelationGroupDb;
-import com.p6e.germ.security.model.dto.P6eListResultDto;
-import com.p6e.germ.security.model.dto.P6eSecurityJurisdictionRelationGroupParamDto;
-import com.p6e.germ.security.model.dto.P6eSecurityJurisdictionRelationGroupResultDto;
+import com.p6e.germ.security.model.dto.*;
 import com.p6e.germ.security.service.P6eSecurityGroupRelationUserService;
+import com.p6e.germ.security.service.P6eSecurityGroupService;
 import com.p6e.germ.security.service.P6eSecurityJurisdictionRelationGroupService;
+import com.p6e.germ.security.service.P6eSecurityJurisdictionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,6 +25,10 @@ public class P6eSecurityJurisdictionRelationGroupServiceImpl implements P6eSecur
     private final static Logger LOGGER = LoggerFactory.getLogger(P6eSecurityGroupRelationUserService.class);
 
     @Resource
+    private P6eSecurityGroupService securityGroupService;
+    @Resource
+    private P6eSecurityJurisdictionService securityJurisdictionService;
+    @Resource
     private P6eSecurityJurisdictionRelationGroupMapper securityJurisdictionRelationGroupMapper;
 
     @Override
@@ -41,6 +45,26 @@ public class P6eSecurityJurisdictionRelationGroupServiceImpl implements P6eSecur
         p6eListResultDto.setList(CopyUtil.run(p6eSecurityJurisdictionRelationGroupDbList,
                 P6eSecurityJurisdictionRelationGroupResultDto.class));
         return p6eListResultDto;
+    }
+
+    @Override
+    public P6eSecurityJurisdictionRelationGroupResultDto create(P6eSecurityJurisdictionRelationGroupParamDto param) {
+        final P6eSecurityJurisdictionRelationGroupDb paramDb =
+                CopyUtil.run(param, P6eSecurityJurisdictionRelationGroupDb.class);
+        final P6eSecurityGroupResultDto p6eSecurityGroupResultDto =
+                securityGroupService.selectOneData(new P6eSecurityGroupParamDto().setId(paramDb.getGid()));
+        final P6eSecurityJurisdictionResultDto p6eSecurityJurisdictionResultDto =
+                securityJurisdictionService.selectOneData(
+                        new P6eSecurityJurisdictionParamDto().setId(paramDb.getJurisdictionId()));
+        if (p6eSecurityGroupResultDto != null
+                && p6eSecurityJurisdictionResultDto != null
+                && securityJurisdictionRelationGroupMapper.create(paramDb) > 0) {
+            final P6eSecurityJurisdictionRelationGroupDb p6eSecurityJurisdictionRelationGroupDb =
+                    securityJurisdictionRelationGroupMapper.selectOneData(paramDb);
+            return CopyUtil.run(p6eSecurityJurisdictionRelationGroupDb, P6eSecurityJurisdictionRelationGroupResultDto.class);
+        } else {
+            return null;
+        }
     }
 
     @Override

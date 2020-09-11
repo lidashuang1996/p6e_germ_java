@@ -18,6 +18,14 @@ public interface P6eSecurityJurisdictionRelationGroupService {
     public P6eListResultDto<P6eSecurityJurisdictionRelationGroupResultDto>
                                 select(P6eSecurityJurisdictionRelationGroupParamDto param);
 
+
+    /**
+     * 创建权限关联权限组的数据
+     * @param param 权限关联权限组参数对象
+     * @return 权限关联权限组结果对象
+     */
+    public P6eSecurityJurisdictionRelationGroupResultDto create(P6eSecurityJurisdictionRelationGroupParamDto param);
+
     /**
      * 删除权限关联权限组数据
      * @param param 权限关联权限组参数对象
