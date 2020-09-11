@@ -3,16 +3,13 @@ package com.p6e.germ.security.service.impl;
 import com.p6e.germ.oauth2.utils.CopyUtil;
 import com.p6e.germ.security.mapper.P6eSecurityGroupMapper;
 import com.p6e.germ.security.model.db.P6eSecurityGroupDb;
-import com.p6e.germ.security.model.dto.P6eListResultDto;
-import com.p6e.germ.security.model.dto.P6eSecurityGroupParamDto;
-import com.p6e.germ.security.model.dto.P6eSecurityGroupResultDto;
+import com.p6e.germ.security.model.dto.*;
+import com.p6e.germ.security.service.P6eSecurityGroupRelationUserService;
 import com.p6e.germ.security.service.P6eSecurityGroupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,6 +23,9 @@ public class P6eSecurityGroupServiceImpl implements P6eSecurityGroupService {
 
     @Resource
     private P6eSecurityGroupMapper securityGroupMapper;
+
+    @Resource
+    private P6eSecurityGroupRelationUserService securityGroupRelationUserService;
 
     @Override
     public P6eSecurityGroupResultDto create(P6eSecurityGroupParamDto param) {
@@ -49,32 +49,31 @@ public class P6eSecurityGroupServiceImpl implements P6eSecurityGroupService {
 
     @Override
     public P6eSecurityGroupResultDto delete(P6eSecurityGroupParamDto param) {
+        final P6eSecurityGroupResultDto p6eSecurityGroupResultDto = new P6eSecurityGroupResultDto();
         final P6eSecurityGroupDb paramDb = CopyUtil.run(param, P6eSecurityGroupDb.class);
         final P6eSecurityGroupDb resultDb = securityGroupMapper.selectOneData(paramDb);
-        if (resultDb != null && securityGroupMapper.delete(paramDb) > 0) {
-            return CopyUtil.run(resultDb, P6eSecurityGroupResultDto.class);
+        // 判断是否存在删除的数据资源
+        if (resultDb != null) {
+            final P6eListResultDto<P6eSecurityGroupRelationUserResultDto>
+                    p6eListResultDto = securityGroupRelationUserService.select(
+                            new P6eSecurityGroupRelationUserParamDto().setGid(resultDb.getId()));
+            // 判断是否存在关联的数据
+            if (p6eListResultDto.getTotal() == 0) {
+                // 判断是否删除成功
+                if (securityGroupMapper.delete(paramDb) > 0) {
+                    CopyUtil.run(resultDb, p6eSecurityGroupResultDto);
+                } else {
+                    p6eSecurityGroupResultDto.setError("ERROR_SERVICE_INSIDE");
+                }
+            } else {
+                p6eSecurityGroupResultDto.setError("ERROR_RESOURCES_EXISTENCE_RELATION_DATA");
+            }
         } else {
-            return null;
+            p6eSecurityGroupResultDto.setError("ERROR_RESOURCES_NO_EXIST");
         }
+        return p6eSecurityGroupResultDto;
     }
 
-    @Override
-    public List<P6eSecurityGroupResultDto> clean() {
-        int page = 1;
-        final List<P6eSecurityGroupResultDto> resultDtoList = new ArrayList<>();
-        final P6eSecurityGroupDb p6eSecurityGroupDb = new P6eSecurityGroupDb();
-        p6eSecurityGroupDb.setSize(200);
-        p6eSecurityGroupDb.setPage(page);
-        List<P6eSecurityGroupDb> p6eSecurityGroupDbList = securityGroupMapper.select(p6eSecurityGroupDb);
-        while (p6eSecurityGroupDbList != null && p6eSecurityGroupDbList.size() > 0) {
-            resultDtoList.addAll(CopyUtil.run(p6eSecurityGroupDbList, P6eSecurityGroupResultDto.class));
-            p6eSecurityGroupDb.setSize(200);
-            p6eSecurityGroupDb.setPage(++page);
-            p6eSecurityGroupDbList = securityGroupMapper.select(p6eSecurityGroupDb);
-        }
-        LOGGER.debug("clean ==> 1: " + securityGroupMapper.clean() + ", 2: " + resultDtoList.size());
-        return resultDtoList;
-    }
 
     @Override
     public P6eListResultDto<P6eSecurityGroupResultDto> select(P6eSecurityGroupParamDto param) {

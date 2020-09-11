@@ -40,12 +40,6 @@ public interface P6eSecurityGroupMapper {
     public Integer delete(@Param("DB") P6eSecurityGroupDb db);
 
     /**
-     * 删除全部安全组的数据
-     * @return 安全组的结果
-     */
-    public Integer clean();
-
-    /**
      * 条件查询安全组的数据
      * @param db 安全组参数
      * @return 安全组的结果

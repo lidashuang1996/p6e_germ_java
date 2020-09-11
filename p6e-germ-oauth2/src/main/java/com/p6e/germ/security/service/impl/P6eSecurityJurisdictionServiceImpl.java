@@ -3,16 +3,14 @@ package com.p6e.germ.security.service.impl;
 import com.p6e.germ.oauth2.utils.CopyUtil;
 import com.p6e.germ.security.mapper.P6eSecurityJurisdictionMapper;
 import com.p6e.germ.security.model.db.P6eSecurityJurisdictionDb;
-import com.p6e.germ.security.model.dto.P6eListResultDto;
-import com.p6e.germ.security.model.dto.P6eSecurityJurisdictionParamDto;
-import com.p6e.germ.security.model.dto.P6eSecurityJurisdictionResultDto;
+import com.p6e.germ.security.model.dto.*;
+import com.p6e.germ.security.service.P6eSecurityJurisdictionRelationGroupService;
 import com.p6e.germ.security.service.P6eSecurityJurisdictionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,6 +24,9 @@ public class P6eSecurityJurisdictionServiceImpl implements P6eSecurityJurisdicti
 
     @Resource
     private P6eSecurityJurisdictionMapper securityJurisdictionMapper;
+
+    @Resource
+    private P6eSecurityJurisdictionRelationGroupService securityJurisdictionRelationGroupService;
 
     @Override
     public P6eSecurityJurisdictionResultDto create(P6eSecurityJurisdictionParamDto param) {
@@ -49,31 +50,29 @@ public class P6eSecurityJurisdictionServiceImpl implements P6eSecurityJurisdicti
 
     @Override
     public P6eSecurityJurisdictionResultDto delete(P6eSecurityJurisdictionParamDto param) {
+        final P6eSecurityJurisdictionResultDto p6eSecurityJurisdictionResultDto = new P6eSecurityJurisdictionResultDto();
         final P6eSecurityJurisdictionDb paramDb = CopyUtil.run(param, P6eSecurityJurisdictionDb.class);
         final P6eSecurityJurisdictionDb resultDb = securityJurisdictionMapper.selectOneData(paramDb);
-        if (resultDb != null && securityJurisdictionMapper.delete(paramDb) > 0) {
-            return CopyUtil.run(resultDb, P6eSecurityJurisdictionResultDto.class);
+        // 判断是否存在删除的数据资源
+        if (resultDb != null) {
+            final P6eListResultDto<P6eSecurityJurisdictionRelationGroupResultDto>
+                    p6eListResultDto = securityJurisdictionRelationGroupService.select(
+                            new P6eSecurityJurisdictionRelationGroupParamDto().setJurisdictionId(resultDb.getId()));
+            // 判断是否存在关联的数据
+            if (p6eListResultDto.getTotal() == 0) {
+                // 判断是否删除成功
+                if (securityJurisdictionMapper.delete(paramDb) > 0) {
+                    CopyUtil.run(resultDb, p6eSecurityJurisdictionResultDto);
+                } else {
+                    p6eSecurityJurisdictionResultDto.setError("ERROR_SERVICE_INSIDE");
+                }
+            } else {
+                p6eSecurityJurisdictionResultDto.setError("ERROR_RESOURCES_EXISTENCE_RELATION_DATA");
+            }
         } else {
-            return null;
+            p6eSecurityJurisdictionResultDto.setError("ERROR_RESOURCES_NO_EXIST");
         }
-    }
-
-    @Override
-    public List<P6eSecurityJurisdictionResultDto> clean() {
-        int page = 1;
-        final List<P6eSecurityJurisdictionResultDto> resultDtoList = new ArrayList<>();
-        final P6eSecurityJurisdictionDb p6eSecurityJurisdictionDb = new P6eSecurityJurisdictionDb();
-        p6eSecurityJurisdictionDb.setSize(200);
-        p6eSecurityJurisdictionDb.setPage(page);
-        List<P6eSecurityJurisdictionDb> p6eSecurityJurisdictionDbList = securityJurisdictionMapper.select(p6eSecurityJurisdictionDb);
-        while (p6eSecurityJurisdictionDbList != null && p6eSecurityJurisdictionDbList.size() > 0) {
-            resultDtoList.addAll(CopyUtil.run(p6eSecurityJurisdictionDbList, P6eSecurityJurisdictionResultDto.class));
-            p6eSecurityJurisdictionDb.setSize(200);
-            p6eSecurityJurisdictionDb.setPage(++page);
-            p6eSecurityJurisdictionDbList = securityJurisdictionMapper.select(p6eSecurityJurisdictionDb);
-        }
-        LOGGER.debug("clean ==> 1: " + securityJurisdictionMapper.clean() + ", 2: " + resultDtoList.size());
-        return resultDtoList;
+        return p6eSecurityJurisdictionResultDto;
     }
 
     @Override

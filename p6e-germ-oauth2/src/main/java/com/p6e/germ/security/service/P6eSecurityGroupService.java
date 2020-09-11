@@ -35,12 +35,6 @@ public interface P6eSecurityGroupService {
     public P6eSecurityGroupResultDto delete(P6eSecurityGroupParamDto param);
 
     /**
-     * 删除全部安全组
-     * @return 安全组结果对象
-     */
-    public List<P6eSecurityGroupResultDto> clean();
-
-    /**
      * 查询安全组数据
      * @param param 安全组参数对象
      * @return 安全组结果对象

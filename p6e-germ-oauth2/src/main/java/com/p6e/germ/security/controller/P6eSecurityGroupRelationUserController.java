@@ -11,11 +11,10 @@ import com.p6e.germ.security.model.vo.P6eListResultVo;
 import com.p6e.germ.security.model.vo.P6eSecurityGroupRelationUserParamVo;
 import com.p6e.germ.security.model.vo.P6eSecurityGroupRelationUserResultVo;
 import com.p6e.germ.security.service.P6eSecurityGroupRelationUserService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author lidashuang
@@ -43,7 +42,25 @@ public class P6eSecurityGroupRelationUserController extends P6eBaseController {
             p6eListResultVo.setSize(p6eListResultDto.getSize());
             p6eListResultVo.setTotal(p6eListResultDto.getTotal());
             p6eListResultVo.setList(CopyUtil.run(p6eListResultDto.getList(), P6eSecurityGroupRelationUserResultVo.class));
-            return P6eResultModel.build(P6eResultConfig.SUCCESS);
+            return P6eResultModel.build(P6eResultConfig.SUCCESS, p6eListResultVo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            return P6eResultModel.build(P6eResultConfig.ERROR_SERVICE_INSIDE, e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public P6eResultModel delete(@PathVariable Integer id) {
+        try {
+            final List<P6eSecurityGroupRelationUserResultDto> p6eSecurityGroupRelationUserResultDtoList =
+                    securityGroupRelationUserService.delete(new P6eSecurityGroupRelationUserParamDto().setUid(id));
+            if (p6eSecurityGroupRelationUserResultDtoList == null) {
+                return P6eResultModel.build(P6eResultConfig.ERROR_RESOURCES_OPERATION);
+            } else {
+                return P6eResultModel.build(P6eResultConfig.SUCCESS, CopyUtil.run(
+                        p6eSecurityGroupRelationUserResultDtoList, P6eSecurityGroupRelationUserResultVo.class));
+            }
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());

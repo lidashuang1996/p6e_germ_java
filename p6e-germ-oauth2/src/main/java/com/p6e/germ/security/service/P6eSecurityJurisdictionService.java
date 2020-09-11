@@ -32,12 +32,6 @@ public interface P6eSecurityJurisdictionService {
     public P6eSecurityJurisdictionResultDto delete(P6eSecurityJurisdictionParamDto param);
 
     /**
-     * 删除全部安全组
-     * @return 安全组结果对象
-     */
-    public List<P6eSecurityJurisdictionResultDto> clean();
-
-    /**
      * 查询安全组数据
      * @param param 安全组参数对象
      * @return 安全组结果对象

@@ -20,7 +20,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 public class P6eSecurityJurisdictionRelationGroupResultVo extends P6eBaseResultVo implements Serializable {
     private Integer gid;
-    private String jurisdictionId;
+    private Integer jurisdictionId;
     private String jurisdictionParam;
     private String createDate;
     private String updateDate;

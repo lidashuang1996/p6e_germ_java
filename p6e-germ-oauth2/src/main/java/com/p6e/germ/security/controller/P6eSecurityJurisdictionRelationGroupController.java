@@ -8,11 +8,10 @@ import com.p6e.germ.security.model.dto.*;
 import com.p6e.germ.security.model.vo.*;
 import com.p6e.germ.security.service.P6eSecurityGroupRelationUserService;
 import com.p6e.germ.security.service.P6eSecurityJurisdictionRelationGroupService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author lidashuang
@@ -43,6 +42,25 @@ public class P6eSecurityJurisdictionRelationGroupController extends P6eBaseContr
             p6eListResultVo.setList(
                     CopyUtil.run(p6eListResultDto.getList(), P6eSecurityJurisdictionRelationGroupResultVo.class));
             return P6eResultModel.build(P6eResultConfig.SUCCESS, p6eListResultVo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            return P6eResultModel.build(P6eResultConfig.ERROR_SERVICE_INSIDE, e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public P6eResultModel delete(@PathVariable Integer id) {
+        try {
+            final List<P6eSecurityJurisdictionRelationGroupResultDto> p6eSecurityJurisdictionRelationGroupResultDtoList =
+                    securityJurisdictionRelationGroupService.delete(new P6eSecurityJurisdictionRelationGroupParamDto().setGid(id));
+            if (p6eSecurityJurisdictionRelationGroupResultDtoList == null) {
+                return P6eResultModel.build(P6eResultConfig.ERROR_RESOURCES_OPERATION);
+            } else {
+                return P6eResultModel.build(P6eResultConfig.SUCCESS,
+                        CopyUtil.run(p6eSecurityJurisdictionRelationGroupResultDtoList,
+                                P6eSecurityJurisdictionRelationGroupResultVo.class));
+            }
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());

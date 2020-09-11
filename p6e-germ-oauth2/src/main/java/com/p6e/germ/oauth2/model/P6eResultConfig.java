@@ -12,6 +12,10 @@ public final class P6eResultConfig implements Serializable {
     public static final String ERROR_PARAM_EXCEPTION = "400-ERROR_PARAM_EXCEPTION";
     /** 资源不存在 */
     public static final String ERROR_RESOURCES_NO_EXIST = "400-ERROR_RESOURCES_NO_EXIST";
+    /** 资源操作错误 */
+    public static final String ERROR_RESOURCES_OPERATION = "400-ERROR_RESOURCES_OPERATION";
+    /** 资源存在关联数据 */
+    public static final String ERROR_RESOURCES_EXISTENCE_RELATION_DATA = "400-ERROR_RESOURCES_EXISTENCE_RELATION_DATA";
     /** 服务器内部出现异常 */
     public static final String ERROR_SERVICE_INSIDE = "500-ERROR_SERVICE_INSIDE";
     /** 该功能已被禁用 */

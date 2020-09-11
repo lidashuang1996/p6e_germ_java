@@ -14,7 +14,6 @@ import com.p6e.germ.security.service.P6eSecurityGroupService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * @author lidashuang
@@ -23,6 +22,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/security/group")
 public class P6eSecurityGroupController extends P6eBaseController {
+
+    /** 资源不存在 */
+    public static final String ERROR_RESOURCES_NO_EXIST = "400-ERROR_RESOURCES_NO_EXIST";
+    /** 资源存在关联数据 */
+    public static final String ERROR_RESOURCES_EXISTENCE_RELATION_DATA = "ERROR_RESOURCES_EXISTENCE_RELATION_DATA";
+    /** 服务器内部出现异常 */
+    public static final String ERROR_SERVICE_INSIDE = "ERROR_SERVICE_INSIDE";
 
     @Resource
     private P6eSecurityGroupService securityGroupService;
@@ -88,10 +94,7 @@ public class P6eSecurityGroupController extends P6eBaseController {
     @PutMapping("/update/{id}")
     public P6eResultModel update(@PathVariable Integer id, @RequestBody P6eSecurityGroupParamVo param) {
         try {
-            if (param == null
-                    || param.getName() == null
-                    || param.getDescribe() == null
-                    || param.getWeight() == null) {
+            if (param == null) {
                 return P6eResultModel.build(P6eResultConfig.ERROR_PARAM_EXCEPTION);
             } else {
                 final P6eSecurityGroupResultDto p6eSecurityGroupResultDto =
@@ -110,25 +113,18 @@ public class P6eSecurityGroupController extends P6eBaseController {
         }
     }
 
-    @DeleteMapping("/delete")
-    public P6eResultModel delete() {
-        try {
-            final List<P6eSecurityGroupResultDto> p6eSecurityGroupResultDtoList = securityGroupService.clean();
-            return P6eResultModel.build(P6eResultConfig.SUCCESS,
-                    CopyUtil.run(p6eSecurityGroupResultDtoList, P6eSecurityGroupResultVo.class));
-        } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error(e.getMessage());
-            return P6eResultModel.build(P6eResultConfig.ERROR_SERVICE_INSIDE, e.getMessage());
-        }
-    }
-
     @DeleteMapping("/delete/{id}")
     public P6eResultModel delete(@PathVariable Integer id) {
         try {
             final P6eSecurityGroupResultDto p6eSecurityGroupResultDto =
                     securityGroupService.delete(new P6eSecurityGroupParamDto().setId(id));
             if (p6eSecurityGroupResultDto == null) {
+                return P6eResultModel.build(P6eResultConfig.ERROR_RESOURCES_NO_EXIST);
+            } else if (ERROR_SERVICE_INSIDE.equals(p6eSecurityGroupResultDto.getError())) {
+                return P6eResultModel.build(P6eResultConfig.ERROR_SERVICE_INSIDE);
+            } else if (ERROR_RESOURCES_EXISTENCE_RELATION_DATA.equals(p6eSecurityGroupResultDto.getError())) {
+                return P6eResultModel.build(P6eResultConfig.ERROR_RESOURCES_EXISTENCE_RELATION_DATA);
+            } else if (ERROR_RESOURCES_NO_EXIST.equals(p6eSecurityGroupResultDto.getError())) {
                 return P6eResultModel.build(P6eResultConfig.ERROR_RESOURCES_NO_EXIST);
             } else {
                 return P6eResultModel.build(P6eResultConfig.SUCCESS,

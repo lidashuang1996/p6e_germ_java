@@ -43,25 +43,28 @@ public class P6eSecurityGroupRelationUserServiceImpl implements P6eSecurityGroup
 
     @Override
     public List<P6eSecurityGroupRelationUserResultDto> delete(P6eSecurityGroupRelationUserParamDto param) {
-        int page = 1;
-        final List<P6eSecurityGroupRelationUserResultDto> resultDtoList = new ArrayList<>();
-        final P6eSecurityGroupRelationUserDb paramDb = CopyUtil.run(param, P6eSecurityGroupRelationUserDb.class);
-        paramDb.setSize(200);
-        paramDb.setPage(page);
-        List<P6eSecurityGroupRelationUserDb> p6eSecurityGroupRelationUserDbList =
-                securityGroupRelationUserMapper.select(paramDb);
-        while (p6eSecurityGroupRelationUserDbList != null && p6eSecurityGroupRelationUserDbList.size() > 0) {
-            resultDtoList.addAll(
-                    CopyUtil.run(p6eSecurityGroupRelationUserDbList, P6eSecurityGroupRelationUserResultDto.class));
+        if (param.getUid() == null) {
+            // 只能通过 uid 删除数据，不能通过 gid 删除数据
+            return null;
+        } else {
+            // 只能通过 uid 删除数据，不能通过 gid 删除数据
+            int page = 1;
+            final List<P6eSecurityGroupRelationUserResultDto> resultDtoList = new ArrayList<>();
+            final P6eSecurityGroupRelationUserDb paramDb = CopyUtil.run(param, P6eSecurityGroupRelationUserDb.class);
             paramDb.setSize(200);
-            paramDb.setPage(++page);
-            p6eSecurityGroupRelationUserDbList = securityGroupRelationUserMapper.select(paramDb);
+            paramDb.setPage(page);
+            List<P6eSecurityGroupRelationUserDb> p6eSecurityGroupRelationUserDbList =
+                    securityGroupRelationUserMapper.select(paramDb);
+            while (p6eSecurityGroupRelationUserDbList != null && p6eSecurityGroupRelationUserDbList.size() > 0) {
+                resultDtoList.addAll(
+                        CopyUtil.run(p6eSecurityGroupRelationUserDbList, P6eSecurityGroupRelationUserResultDto.class));
+                paramDb.setSize(200);
+                paramDb.setPage(++page);
+                p6eSecurityGroupRelationUserDbList = securityGroupRelationUserMapper.select(paramDb);
+            }
+            LOGGER.debug("delete ==> 1: " + securityGroupRelationUserMapper.delete(paramDb) + ", 2: " + resultDtoList.size());
+            return resultDtoList;
         }
-        if (paramDb.getUid() != null) {
-            LOGGER.debug("delete ==> 1: " + securityGroupRelationUserMapper.delete(paramDb)
-                    + ", 2: " + resultDtoList.size());
-        }
-        return resultDtoList;
     }
 
 }
