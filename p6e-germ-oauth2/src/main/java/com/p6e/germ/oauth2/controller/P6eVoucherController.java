@@ -41,7 +41,7 @@ public class P6eVoucherController extends P6eBaseController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             return P6eResultModel.build(P6eResultConfig.ERROR_SERVICE_INSIDE);
         }
     }

@@ -1,0 +1,53 @@
+package com.p6e.germ.security.controller;
+
+import com.p6e.germ.oauth2.controller.support.P6eBaseController;
+import com.p6e.germ.oauth2.model.P6eResultConfig;
+import com.p6e.germ.oauth2.model.P6eResultModel;
+import com.p6e.germ.oauth2.utils.CopyUtil;
+import com.p6e.germ.security.model.dto.*;
+import com.p6e.germ.security.model.vo.*;
+import com.p6e.germ.security.service.P6eSecurityGroupRelationUserService;
+import com.p6e.germ.security.service.P6eSecurityJurisdictionRelationGroupService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+
+/**
+ * @author lidashuang
+ * @version 1.0
+ */
+@RestController
+@RequestMapping("/security/jurisdiction/group")
+public class P6eSecurityJurisdictionRelationGroupController extends P6eBaseController {
+
+    @Resource
+    private P6eSecurityJurisdictionRelationGroupService securityJurisdictionRelationGroupService;
+
+    @GetMapping("/")
+    public P6eResultModel def(P6eSecurityJurisdictionRelationGroupParamVo param) {
+        return list(param);
+    }
+
+    @GetMapping("/list")
+    public P6eResultModel list(P6eSecurityJurisdictionRelationGroupParamVo param) {
+        try {
+            final P6eListResultDto<P6eSecurityJurisdictionRelationGroupResultDto> p6eListResultDto =
+                    securityJurisdictionRelationGroupService.select(
+                            CopyUtil.run(param, P6eSecurityJurisdictionRelationGroupParamDto.class));
+            final P6eListResultVo<P6eSecurityJurisdictionRelationGroupResultVo> p6eListResultVo = new P6eListResultVo<>();
+            p6eListResultVo.setPage(p6eListResultDto.getPage());
+            p6eListResultVo.setSize(p6eListResultDto.getSize());
+            p6eListResultVo.setTotal(p6eListResultDto.getTotal());
+            p6eListResultVo.setList(
+                    CopyUtil.run(p6eListResultDto.getList(), P6eSecurityJurisdictionRelationGroupResultVo.class));
+            return P6eResultModel.build(P6eResultConfig.SUCCESS, p6eListResultVo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            return P6eResultModel.build(P6eResultConfig.ERROR_SERVICE_INSIDE, e.getMessage());
+        }
+    }
+
+}

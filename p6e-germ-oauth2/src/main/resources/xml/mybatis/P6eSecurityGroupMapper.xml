@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.p6e.germ.security.mapper.P6eSecurityGroupMapper">
+
+    <select id="count" parameterType="com.p6e.germ.security.model.db.P6eSecurityGroupDb" resultType="long">
+        SELECT COUNT(*) FROM `p6e_germ_security_group`
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="DB.id != null">AND `id` = #{DB.id}</if>
+            <if test="DB.name != null">AND `name` = #{DB.name}</if>
+        </trim>;
+    </select>
+
+    <insert id="create" parameterType="com.p6e.germ.security.model.db.P6eSecurityGroupDb"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO `p6e_germ_security_group`(`name`, `describe`, `weight`)
+        VALUE (#{DB.name}, #{DB.describe}, #{DB.weight});
+    </insert>
+
+    <update id="update" parameterType="com.p6e.germ.security.model.db.P6eSecurityGroupDb">
+        UPDATE `p6e_germ_security_group`
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="DB.name != null">`name` = #{DB.name},</if>
+            <if test="DB.describe != null">`describe` = #{DB.describe},</if>
+            <if test="DB.weight != null">`weight` = #{DB.weight},</if>
+        </trim>
+        WHERE `id` = #{DB.id};
+    </update>
+
+    <delete id="delete" parameterType="com.p6e.germ.security.model.db.P6eSecurityGroupDb">
+        DELETE FROM `p6e_germ_security_group` WHERE `id` = #{DB.id};
+    </delete>
+
+    <delete id="clean" parameterType="com.p6e.germ.security.model.db.P6eSecurityGroupDb">
+        DELETE FROM `p6e_germ_security_group`;
+    </delete>
+
+    <select id="select" parameterType="com.p6e.germ.security.model.db.P6eSecurityGroupDb"
+            resultType="com.p6e.germ.security.model.db.P6eSecurityGroupDb">
+        SELECT
+            `id` AS `id`,
+            `name` AS `name`,
+            `describe` AS `describe`,
+            `weight` AS `weight`,
+            `create_date` AS `createDate`,
+            `update_date` AS `updateDate`,
+            `operate` AS `operate`
+        FROM
+            `p6e_germ_security_group`
+            <trim prefix="WHERE" prefixOverrides="AND |OR">
+                <if test="DB.id != null">AND `id` = #{DB.id}</if>
+                <if test="DB.name != null">AND `name` = #{DB.name}</if>
+            </trim>
+        LIMIT #{DB.page}, #{DB.size};
+    </select>
+
+    <select id="selectOneData" parameterType="com.p6e.germ.security.model.db.P6eSecurityGroupDb"
+            resultType="com.p6e.germ.security.model.db.P6eSecurityGroupDb">
+        SELECT
+            `id` AS `id`,
+            `name` AS `name`,
+            `describe` AS `describe`,
+            `weight` AS `weight`,
+            `create_date` AS `createDate`,
+            `update_date` AS `updateDate`,
+            `operate` AS `operate`
+        FROM
+            `p6e_germ_security_group`
+            <trim prefix="WHERE" prefixOverrides="AND |OR">
+                <if test="DB.id != null">AND `id` = #{DB.id}</if>
+            </trim>
+        LIMIT 0, 1;
+    </select>
+</mapper>

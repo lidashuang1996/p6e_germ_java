@@ -72,7 +72,7 @@ public class P6eAuthController extends P6eBaseController {
             return errorPage(P6eResultConfig.ERROR_SERVICE_INSIDE);
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             return errorPage(P6eResultConfig.ERROR_SERVICE_INSIDE);
         }
     }

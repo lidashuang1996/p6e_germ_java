@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.p6e.germ.security.mapper.P6eSecurityJurisdictionMapper">
+
+    <select id="count" parameterType="com.p6e.germ.security.model.db.P6eSecurityJurisdictionDb" resultType="long">
+        SELECT COUNT(*) FROM `p6e_germ_security_jurisdiction`
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="DB.id != null">AND `id` = #{DB.id}</if>
+            <if test="DB.code != null">AND `code` = #{DB.code}</if>
+            <if test="DB.name != null">AND `name` = #{DB.name}</if>
+        </trim>;
+    </select>
+
+    <insert id="create" parameterType="com.p6e.germ.security.model.db.P6eSecurityJurisdictionDb"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO `p6e_germ_security_jurisdiction`(`code`, `name`, `describe`, `content`)
+        VALUE (#{DB.code}, #{DB.name}, #{DB.describe}, #{DB.content});
+    </insert>
+
+    <update id="update" parameterType="com.p6e.germ.security.model.db.P6eSecurityJurisdictionDb">
+        UPDATE `p6e_germ_security_jurisdiction`
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="DB.code != null">`code` = #{DB.code},</if>
+            <if test="DB.name != null">`name` = #{DB.name},</if>
+            <if test="DB.describe != null">`describe` = #{DB.describe},</if>
+            <if test="DB.content != null">`content` = #{DB.content},</if>
+        </trim>
+        WHERE `id` = #{DB.id};
+    </update>
+
+    <delete id="delete" parameterType="com.p6e.germ.security.model.db.P6eSecurityJurisdictionDb">
+        DELETE FROM `p6e_germ_security_jurisdiction` WHERE `id` = #{DB.id};
+    </delete>
+
+    <delete id="clean" parameterType="com.p6e.germ.security.model.db.P6eSecurityJurisdictionDb">
+        DELETE FROM `p6e_germ_security_jurisdiction`;
+    </delete>
+
+    <select id="select" parameterType="com.p6e.germ.security.model.db.P6eSecurityJurisdictionDb"
+            resultType="com.p6e.germ.security.model.db.P6eSecurityJurisdictionDb">
+        SELECT
+            `id` AS `id`,
+            `code` AS `code`,
+            `name` AS `name`,
+            `describe` AS `describe`,
+            `content` AS `content`,
+            `create_date` AS `createDate`,
+            `update_date` AS `updateDate`,
+            `operate` AS `operate`
+        FROM
+            `p6e_germ_security_jurisdiction`
+            <trim prefix="WHERE" prefixOverrides="AND |OR">
+                <if test="DB.id != null">AND `id` = #{DB.id}</if>
+                <if test="DB.code != null">AND `code` = #{DB.code}</if>
+                <if test="DB.name != null">AND `name` = #{DB.name}</if>
+            </trim>
+        LIMIT #{DB.page}, #{DB.size};
+    </select>
+
+    <select id="selectOneData" parameterType="com.p6e.germ.security.model.db.P6eSecurityJurisdictionDb"
+            resultType="com.p6e.germ.security.model.db.P6eSecurityJurisdictionDb">
+        SELECT
+            `id` AS `id`,
+            `code` AS `code`,
+            `name` AS `name`,
+            `describe` AS `describe`,
+            `content` AS `content`,
+            `create_date` AS `createDate`,
+            `update_date` AS `updateDate`,
+            `operate` AS `operate`
+        FROM
+            `p6e_germ_security_jurisdiction`
+            <trim prefix="WHERE" prefixOverrides="AND |OR">
+                <if test="DB.id != null">AND `id` = #{DB.id}</if>
+                <if test="DB.code != null">AND `code` = #{DB.code}</if>
+            </trim>
+        LIMIT 0, 1;
+    </select>
+</mapper>

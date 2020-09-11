@@ -12,6 +12,7 @@ mybatis:
 logging:
   level:
     com.p6e.germ.oauth.mapper: debug
+    com.p6e.germ.security.mapper: debug
 
 spring:
   mvc:

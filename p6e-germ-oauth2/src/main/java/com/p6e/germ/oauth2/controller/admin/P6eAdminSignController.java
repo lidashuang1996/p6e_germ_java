@@ -61,7 +61,7 @@ public class P6eAdminSignController extends P6eBaseController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             return P6eResultModel.build(P6eResultConfig.ERROR_SERVICE_INSIDE, e.getMessage());
         }
     }
@@ -80,7 +80,7 @@ public class P6eAdminSignController extends P6eBaseController {
             // 匹配参数
             switch (registerStatus) {
                 case -1:
-                    logger.info("registration has been prohibited. " +
+                    LOGGER.info("registration has been prohibited. " +
                             "if you want to use registration, please modify the configuration file" +
                             "[ register-status = 0 / 1 ]");
                     return P6eResultModel.build(P6eResultConfig.ERROR_FUNCTION_DISABLE);
@@ -102,12 +102,12 @@ public class P6eAdminSignController extends P6eBaseController {
                                 CopyUtil.run(p6eAdminSignResultDto, P6eAdminSignResultVo.class));
                     }
                 default:
-                    logger.error("no corresponding state processor was found.");
+                    LOGGER.error("no corresponding state processor was found.");
                     return P6eResultModel.build(P6eResultConfig.ERROR_SERVICE_INSIDE);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             return P6eResultModel.build(P6eResultConfig.ERROR_SERVICE_INSIDE, e.getMessage());
         }
     }
@@ -129,7 +129,7 @@ public class P6eAdminSignController extends P6eBaseController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             return P6eResultModel.build(P6eResultConfig.ERROR_SERVICE_INSIDE, e.getMessage());
         }
     }
@@ -147,7 +147,7 @@ public class P6eAdminSignController extends P6eBaseController {
             return result(p6eAdminSignResultDto);
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             return P6eResultModel.build(P6eResultConfig.ERROR_SERVICE_INSIDE);
         }
     }

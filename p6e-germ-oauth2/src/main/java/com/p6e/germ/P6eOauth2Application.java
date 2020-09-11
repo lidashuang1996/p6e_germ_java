@@ -1,4 +1,4 @@
-package com.p6e.germ.oauth2;
+package com.p6e.germ;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -12,7 +12,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
  */
 @ServletComponentScan
 @SpringBootApplication
-@MapperScan("com.p6e.germ.oauth2.mapper")
+@MapperScan({"com.p6e.germ.oauth2.mapper", "com.p6e.germ.security.mapper"})
 public class P6eOauth2Application {
 
     public static void main(String[] args) {

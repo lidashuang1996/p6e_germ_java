@@ -41,7 +41,7 @@ public class MybatisPagingInterceptor implements Interceptor {
     /** 默认的查询长度 */
     private static final int DEFAULT_SIZE = 16;
     /** 默认的查询最大长度 */
-    private static final int DEFAULT_MAX_SIZE = 50;
+    private static final int DEFAULT_MAX_SIZE = 300;
 
 
     /**
@@ -79,6 +79,19 @@ public class MybatisPagingInterceptor implements Interceptor {
     private void execute(Object param) {
         if (param instanceof P6eBaseDb) {
             P6eBaseDb db = (P6eBaseDb) param;
+            if (db.getPage() == null || db.getPage() <= 0) {
+                db.setPage(DEFAULT_PAGE);
+            }
+            if (db.getSize() == null || db.getSize() < 0) {
+                db.setSize(DEFAULT_SIZE);
+            }
+            if (db.getSize() > DEFAULT_MAX_SIZE) {
+                db.setSize(DEFAULT_MAX_SIZE);
+            }
+            db.setPage((db.getPage() - 1) * db.getSize());
+        }
+        if (param instanceof com.p6e.germ.security.model.base.P6eBaseDb) {
+            com.p6e.germ.security.model.base.P6eBaseDb db = (com.p6e.germ.security.model.base.P6eBaseDb) param;
             if (db.getPage() == null || db.getPage() <= 0) {
                 db.setPage(DEFAULT_PAGE);
             }
