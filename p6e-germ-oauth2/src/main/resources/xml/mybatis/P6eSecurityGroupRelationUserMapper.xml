@@ -48,7 +48,8 @@
     </select>
 
     <delete id="delete" parameterType="com.p6e.germ.security.model.db.P6eSecurityGroupRelationUserDb">
-        DELETE FROM `p6e_germ_security_group_relation_user` WHERE `uid` = #{DB.uid};
+        DELETE FROM `p6e_germ_security_group_relation_user`
+        WHERE `uid` = #{DB.uid} <if test="DB.gid != null">AND `gid` = #{DB.gid}</if>;
     </delete>
 
     <insert id="create" parameterType="com.p6e.germ.security.model.db.P6eSecurityGroupRelationUserDb">

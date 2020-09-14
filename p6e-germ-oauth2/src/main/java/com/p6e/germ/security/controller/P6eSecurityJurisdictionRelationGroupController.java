@@ -6,7 +6,6 @@ import com.p6e.germ.oauth2.model.P6eResultModel;
 import com.p6e.germ.oauth2.utils.CopyUtil;
 import com.p6e.germ.security.model.dto.*;
 import com.p6e.germ.security.model.vo.*;
-import com.p6e.germ.security.service.P6eSecurityGroupRelationUserService;
 import com.p6e.germ.security.service.P6eSecurityJurisdictionRelationGroupService;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,12 +48,13 @@ public class P6eSecurityJurisdictionRelationGroupController extends P6eBaseContr
         }
     }
 
-    @DeleteMapping("/create")
+    @PostMapping("/create")
     public P6eResultModel create(@RequestBody P6eSecurityJurisdictionRelationGroupParamVo param) {
         try {
             if (param == null
                 || param.getGid() == null
-                || param.getJurisdictionId() == null) {
+                || param.getJurisdictionId() == null
+                || param.getJurisdictionParam() == null) {
                 return P6eResultModel.build(P6eResultConfig.ERROR_PARAM_EXCEPTION);
             } else {
                 final P6eSecurityJurisdictionRelationGroupResultDto p6eSecurityJurisdictionRelationGroupResultDto =
@@ -75,11 +75,12 @@ public class P6eSecurityJurisdictionRelationGroupController extends P6eBaseContr
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public P6eResultModel delete(@PathVariable Integer id) {
+    @DeleteMapping("/delete")
+    public P6eResultModel delete(P6eSecurityJurisdictionRelationGroupParamVo param) {
         try {
             final List<P6eSecurityJurisdictionRelationGroupResultDto> p6eSecurityJurisdictionRelationGroupResultDtoList =
-                    securityJurisdictionRelationGroupService.delete(new P6eSecurityJurisdictionRelationGroupParamDto().setGid(id));
+                    securityJurisdictionRelationGroupService.delete(
+                            CopyUtil.run(param, P6eSecurityJurisdictionRelationGroupParamDto.class));
             if (p6eSecurityJurisdictionRelationGroupResultDtoList == null) {
                 return P6eResultModel.build(P6eResultConfig.ERROR_RESOURCES_OPERATION);
             } else {

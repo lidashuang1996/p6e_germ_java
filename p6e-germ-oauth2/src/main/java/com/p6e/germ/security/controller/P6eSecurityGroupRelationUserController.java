@@ -50,7 +50,7 @@ public class P6eSecurityGroupRelationUserController extends P6eBaseController {
         }
     }
 
-    @DeleteMapping("/create")
+    @PostMapping("/create")
     public P6eResultModel create(@RequestBody P6eSecurityGroupRelationUserParamVo param) {
         try {
             if (param == null
@@ -75,11 +75,11 @@ public class P6eSecurityGroupRelationUserController extends P6eBaseController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public P6eResultModel delete(@PathVariable Integer id) {
+    @DeleteMapping("/delete")
+    public P6eResultModel delete(P6eSecurityGroupRelationUserParamVo param) {
         try {
             final List<P6eSecurityGroupRelationUserResultDto> p6eSecurityGroupRelationUserResultDtoList =
-                    securityGroupRelationUserService.delete(new P6eSecurityGroupRelationUserParamDto().setUid(id));
+                    securityGroupRelationUserService.delete(CopyUtil.run(param, P6eSecurityGroupRelationUserParamDto.class));
             if (p6eSecurityGroupRelationUserResultDtoList == null) {
                 return P6eResultModel.build(P6eResultConfig.ERROR_RESOURCES_OPERATION);
             } else {

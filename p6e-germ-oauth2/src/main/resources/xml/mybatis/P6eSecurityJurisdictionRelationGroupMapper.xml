@@ -52,7 +52,8 @@
     </select>
 
     <delete id="delete" parameterType="com.p6e.germ.security.model.db.P6eSecurityJurisdictionRelationGroupDb">
-        DELETE FROM `p6e_germ_security_jurisdiction_relation_group` WHERE `gid` = #{DB.gid};
+        DELETE FROM `p6e_germ_security_jurisdiction_relation_group`
+        WHERE `gid` = #{DB.gid} <if test="DB.jurisdictionId != null">AND `jurisdiction_id` = #{DB.jurisdictionId}</if>;
     </delete>
 
     <insert id="create" parameterType="com.p6e.germ.security.model.db.P6eSecurityJurisdictionRelationGroupDb">

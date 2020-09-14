@@ -21,4 +21,5 @@ import java.io.Serializable;
 public class P6eSecurityJurisdictionRelationGroupParamVo extends P6eBaseParamVo implements Serializable {
     private Integer gid;
     private Integer jurisdictionId;
+    private String jurisdictionParam;
 }
