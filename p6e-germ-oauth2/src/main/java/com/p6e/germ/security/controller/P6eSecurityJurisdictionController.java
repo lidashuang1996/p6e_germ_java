@@ -4,9 +4,13 @@ import com.p6e.germ.oauth2.controller.support.P6eBaseController;
 import com.p6e.germ.oauth2.model.P6eResultConfig;
 import com.p6e.germ.oauth2.model.P6eResultModel;
 import com.p6e.germ.oauth2.utils.CopyUtil;
+import com.p6e.germ.security.config.P6eSecurityConstant;
 import com.p6e.germ.security.model.dto.*;
 import com.p6e.germ.security.model.vo.*;
 import com.p6e.germ.security.service.P6eSecurityJurisdictionService;
+import com.p6e.germ.starter.oauth2.P6eAuth;
+import com.p6e.germ.starter.security.P6eSecurity;
+import com.p6e.germ.starter.security.P6eSecurityType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -26,15 +30,28 @@ public class P6eSecurityJurisdictionController extends P6eBaseController {
     /** 服务器内部出现异常 */
     public static final String ERROR_SERVICE_INSIDE = "ERROR_SERVICE_INSIDE";
 
+    /**
+     * 注入的服务对象
+     */
     @Resource
     private P6eSecurityJurisdictionService securityJurisdictionService;
 
+    @P6eAuth
     @GetMapping("/")
+    @P6eSecurity(values = {
+            P6eSecurityConstant.ADMIN_AUTH_OWN,
+            P6eSecurityConstant.ADMIN_JURISDICTION_SELECT_OWN
+    }, condition = P6eSecurityType.Condition.AND)
     public P6eResultModel def(P6eSecurityJurisdictionParamVo param) {
         return select(param);
     }
 
+    @P6eAuth
     @GetMapping("/list")
+    @P6eSecurity(values = {
+            P6eSecurityConstant.ADMIN_AUTH_OWN,
+            P6eSecurityConstant.ADMIN_JURISDICTION_SELECT_OWN
+    }, condition = P6eSecurityType.Condition.AND)
     public P6eResultModel select(P6eSecurityJurisdictionParamVo param) {
         try {
             final P6eListResultDto<P6eSecurityJurisdictionResultDto> p6eListResultDto =
@@ -52,7 +69,12 @@ public class P6eSecurityJurisdictionController extends P6eBaseController {
         }
     }
 
+    @P6eAuth
     @GetMapping("/{id}")
+    @P6eSecurity(values = {
+            P6eSecurityConstant.ADMIN_AUTH_OWN,
+            P6eSecurityConstant.ADMIN_JURISDICTION_SELECT_OWN
+    }, condition = P6eSecurityType.Condition.AND)
     public P6eResultModel select(@PathVariable Integer id) {
         try {
             final P6eSecurityJurisdictionResultDto p6eSecurityJurisdictionResultDto =
@@ -70,7 +92,12 @@ public class P6eSecurityJurisdictionController extends P6eBaseController {
         }
     }
 
+    @P6eAuth
     @PostMapping("/create")
+    @P6eSecurity(values = {
+            P6eSecurityConstant.ADMIN_AUTH_OWN,
+            P6eSecurityConstant.ADMIN_JURISDICTION_CREATE_OWN
+    }, condition = P6eSecurityType.Condition.AND)
     public P6eResultModel create(@RequestBody P6eSecurityJurisdictionParamVo param) {
         try {
             if (param == null
@@ -96,7 +123,12 @@ public class P6eSecurityJurisdictionController extends P6eBaseController {
         }
     }
 
+    @P6eAuth
     @PutMapping("/update/{id}")
+    @P6eSecurity(values = {
+            P6eSecurityConstant.ADMIN_AUTH_OWN,
+            P6eSecurityConstant.ADMIN_JURISDICTION_UPDATE_OWN
+    }, condition = P6eSecurityType.Condition.AND)
     public P6eResultModel update(@PathVariable Integer id, @RequestBody P6eSecurityJurisdictionParamVo param) {
         try {
             if (param == null) {
@@ -118,7 +150,12 @@ public class P6eSecurityJurisdictionController extends P6eBaseController {
         }
     }
 
+    @P6eAuth
     @DeleteMapping("/delete/{id}")
+    @P6eSecurity(values = {
+            P6eSecurityConstant.ADMIN_AUTH_OWN,
+            P6eSecurityConstant.ADMIN_JURISDICTION_DELETE_OWN
+    }, condition = P6eSecurityType.Condition.AND)
     public P6eResultModel delete(@PathVariable Integer id) {
         try {
             final P6eSecurityJurisdictionResultDto p6eSecurityJurisdictionResultDto =

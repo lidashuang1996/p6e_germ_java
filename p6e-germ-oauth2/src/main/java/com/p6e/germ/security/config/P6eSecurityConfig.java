@@ -39,36 +39,38 @@ public class P6eSecurityConfig extends P6eAopSecurityAbstract {
     public void interceptor() {
     }
 
+
     /**
      * 将从传入的数据中获取 P6eSecurityModel 对象
+     * @param httpServletRequest HTTP 对象
      * @param objects 传入的数据对象
      * @return P6eSecurityModel 对象
      */
     @Override
-    public P6eSecurityModel execute(Object[] objects) {
-        final P6eSecurityModel securityModel = new P6eSecurityModel();
-        for (final Object object : objects) {
-            if (object instanceof P6eAuthModel) {
-                final List<P6eSecurityModel.Jurisdiction> jurisdictionList = new ArrayList<>();
-                final P6eAuthModel authModel = (P6eAuthModel) object;
-                for (final Map<String, String> map : authModel.getJurisdictionList()) {
-                   try {
-                       final String code = map.get("code").toUpperCase();
-                       final String param = map.get("param").toUpperCase();
-                       final String content = map.get("content").toUpperCase();
-                       final Map<String, String> contentMap =
-                               P6eJsonUtil.fromJsonToMap(content, String.class, String.class);
-                       if (contentMap.get(param) != null) {
-                           jurisdictionList.add(P6eSecurityModel.buildJurisdiction(code, param));
-                       }
-                   } catch (Exception e) {
-                       // 忽略异常
-                   }
+    public P6eSecurityModel execute(HttpServletRequest httpServletRequest, Object[] objects) {
+        final Object object = httpServletRequest.getAttribute("AUTH");
+        if (object instanceof P6eAuthModel) {
+            final P6eSecurityModel securityModel = new P6eSecurityModel();
+            final List<P6eSecurityModel.Jurisdiction> jurisdictionList = new ArrayList<>();
+            final P6eAuthModel authModel = (P6eAuthModel) object;
+            for (final Map<String, String> map : authModel.getJurisdictionList()) {
+                try {
+                    final String code = map.get("code").toUpperCase();
+                    final String param = map.get("param").toUpperCase();
+                    final String content = map.get("content").toUpperCase();
+                    final Map<String, String> contentMap =
+                            P6eJsonUtil.fromJsonToMap(content, String.class, String.class);
+                    if (contentMap.get(param) != null) {
+                        jurisdictionList.add(P6eSecurityModel.buildJurisdiction(code, param));
+                    }
+                } catch (Exception e) {
+                    // 忽略异常
                 }
-                securityModel.setJurisdictionList(jurisdictionList);
             }
+            securityModel.setJurisdictionList(jurisdictionList);
+            return securityModel;
         }
-        return securityModel;
+        return null;
     }
 
     /**

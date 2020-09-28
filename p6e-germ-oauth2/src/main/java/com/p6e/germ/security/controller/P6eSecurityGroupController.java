@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 
 /**
+ * 权限组的接口
  * @author lidashuang
  * @version 1.0
  */
@@ -34,6 +35,9 @@ public class P6eSecurityGroupController extends P6eBaseController {
     /** 服务器内部出现异常 */
     public static final String ERROR_SERVICE_INSIDE = "ERROR_SERVICE_INSIDE";
 
+    /**
+     * 注入的服务对象
+     */
     @Resource
     private P6eSecurityGroupService securityGroupService;
 

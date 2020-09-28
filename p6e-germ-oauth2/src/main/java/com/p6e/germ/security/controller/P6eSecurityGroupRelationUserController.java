@@ -4,6 +4,7 @@ import com.p6e.germ.oauth2.controller.support.P6eBaseController;
 import com.p6e.germ.oauth2.model.P6eResultConfig;
 import com.p6e.germ.oauth2.model.P6eResultModel;
 import com.p6e.germ.oauth2.utils.CopyUtil;
+import com.p6e.germ.security.config.P6eSecurityConstant;
 import com.p6e.germ.security.model.dto.P6eListResultDto;
 import com.p6e.germ.security.model.dto.P6eSecurityGroupRelationUserParamDto;
 import com.p6e.germ.security.model.dto.P6eSecurityGroupRelationUserResultDto;
@@ -11,12 +12,16 @@ import com.p6e.germ.security.model.vo.P6eListResultVo;
 import com.p6e.germ.security.model.vo.P6eSecurityGroupRelationUserParamVo;
 import com.p6e.germ.security.model.vo.P6eSecurityGroupRelationUserResultVo;
 import com.p6e.germ.security.service.P6eSecurityGroupRelationUserService;
+import com.p6e.germ.starter.oauth2.P6eAuth;
+import com.p6e.germ.starter.security.P6eSecurity;
+import com.p6e.germ.starter.security.P6eSecurityType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
 
 /**
+ * 安全组关联用户接口
  * @author lidashuang
  * @version 1.0
  */
@@ -24,15 +29,28 @@ import java.util.List;
 @RequestMapping("/security/group/user")
 public class P6eSecurityGroupRelationUserController extends P6eBaseController {
 
+    /**
+     * 注入的服务对象
+     */
     @Resource
     private P6eSecurityGroupRelationUserService securityGroupRelationUserService;
 
+    @P6eAuth
     @GetMapping("/")
+    @P6eSecurity(values = {
+            P6eSecurityConstant.ADMIN_AUTH_OWN,
+            P6eSecurityConstant.ADMIN_USER_RELATION_GROUP_OWN
+    }, condition = P6eSecurityType.Condition.AND)
     public P6eResultModel def(P6eSecurityGroupRelationUserParamVo param) {
         return list(param);
     }
 
+    @P6eAuth
     @GetMapping("/list")
+    @P6eSecurity(values = {
+            P6eSecurityConstant.ADMIN_AUTH_OWN,
+            P6eSecurityConstant.ADMIN_USER_RELATION_GROUP_OWN
+    }, condition = P6eSecurityType.Condition.AND)
     public P6eResultModel list(P6eSecurityGroupRelationUserParamVo param) {
         try {
             final P6eListResultDto<P6eSecurityGroupRelationUserResultDto> p6eListResultDto =
@@ -50,7 +68,12 @@ public class P6eSecurityGroupRelationUserController extends P6eBaseController {
         }
     }
 
+    @P6eAuth
     @PostMapping("/create")
+    @P6eSecurity(values = {
+            P6eSecurityConstant.ADMIN_AUTH_OWN,
+            P6eSecurityConstant.ADMIN_USER_RELATION_GROUP_OWN
+    }, condition = P6eSecurityType.Condition.AND)
     public P6eResultModel create(@RequestBody P6eSecurityGroupRelationUserParamVo param) {
         try {
             if (param == null
@@ -75,7 +98,12 @@ public class P6eSecurityGroupRelationUserController extends P6eBaseController {
         }
     }
 
+    @P6eAuth
     @DeleteMapping("/delete")
+    @P6eSecurity(values = {
+            P6eSecurityConstant.ADMIN_AUTH_OWN,
+            P6eSecurityConstant.ADMIN_USER_RELATION_GROUP_OWN
+    }, condition = P6eSecurityType.Condition.AND)
     public P6eResultModel delete(P6eSecurityGroupRelationUserParamVo param) {
         try {
             final List<P6eSecurityGroupRelationUserResultDto> p6eSecurityGroupRelationUserResultDtoList =
@@ -92,5 +120,4 @@ public class P6eSecurityGroupRelationUserController extends P6eBaseController {
             return P6eResultModel.build(P6eResultConfig.ERROR_SERVICE_INSIDE, e.getMessage());
         }
     }
-
 }

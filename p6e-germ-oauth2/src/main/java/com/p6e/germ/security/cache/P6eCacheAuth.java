@@ -3,6 +3,7 @@ package com.p6e.germ.security.cache;
 import java.util.Map;
 
 /**
+ * 认证缓存的接口
  * @author lidashuang
  * @version 1.0
  */
