@@ -1,7 +1,7 @@
 package com.p6e.germ.oauth2.cache;
 
-import com.p6e.germ.oauth2.utils.CommonUtil;
-import com.p6e.germ.oauth2.utils.GsonUtil;
+import com.p6e.germ.oauth2.utils.P6eCommonUtil;
+import com.p6e.germ.oauth2.utils.P6eJsonUtil;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisCallback;
@@ -121,8 +121,8 @@ public class P6eCacheRedisSignModel {
         public Core set(final RedisTemplate<String, String> redisTemplate,
                         final String name, final Long time, final Contract contract, final Object data) {
             final Integer id = contract.getId();
-            final String token = CommonUtil.generateUUID();
-            final String refreshToken = CommonUtil.generateUUID();
+            final String token = P6eCommonUtil.generateUuid();
+            final String refreshToken = P6eCommonUtil.generateUuid();
             // 生产凭证对象
             final Voucher voucher = new Voucher(String.valueOf(id), token, refreshToken, time);
             // 开启 redis 管道流
@@ -131,11 +131,11 @@ public class P6eCacheRedisSignModel {
                 final byte[] userBytes = (name + "USER:" + id).getBytes(StandardCharsets.UTF_8);
                 final byte[] tokenBytes = (name + "TOKEN:" + token).getBytes(StandardCharsets.UTF_8);
                 final byte[] refreshTokenBytes = (name + "REFRESH_TOKEN:" + refreshToken).getBytes(StandardCharsets.UTF_8);
-                final byte[] voucherBytes = GsonUtil.toJson(voucher).getBytes(StandardCharsets.UTF_8);
+                final byte[] voucherBytes = P6eJsonUtil.toJson(voucher).getBytes(StandardCharsets.UTF_8);
                 final byte[] bytes = redisConnection.get(markBytes);
                 if (bytes != null) { // 如果存在用户信息，就把之前的用户的认证信息删除
                     try {
-                        Voucher v = GsonUtil.fromJson(new String(bytes, StandardCharsets.UTF_8), Voucher.class);
+                        Voucher v = P6eJsonUtil.fromJson(new String(bytes, StandardCharsets.UTF_8), Voucher.class);
                         redisConnection.del((name + "TOKEN:" + v.getToken()).getBytes(StandardCharsets.UTF_8));
                         redisConnection.del((name + "REFRESH_TOKEN:" + v.getRefreshToken()).getBytes(StandardCharsets.UTF_8));
                     } catch (Exception e) {
@@ -145,7 +145,7 @@ public class P6eCacheRedisSignModel {
                 redisConnection.set(markBytes, voucherBytes);
                 redisConnection.set(tokenBytes, voucherBytes);
                 redisConnection.set(refreshTokenBytes, voucherBytes);
-                redisConnection.set(userBytes, GsonUtil.toJson(data).getBytes(StandardCharsets.UTF_8));
+                redisConnection.set(userBytes, P6eJsonUtil.toJson(data).getBytes(StandardCharsets.UTF_8));
                 return null;
             });
             return new Core(contract.getId(), token, refreshToken, time, data);
@@ -163,14 +163,14 @@ public class P6eCacheRedisSignModel {
                             (name + "TOKEN:" + token).getBytes(StandardCharsets.UTF_8));
 
                     if (voucherBytes != null) {
-                        final Voucher voucher = GsonUtil.fromJson(
+                        final Voucher voucher = P6eJsonUtil.fromJson(
                                 new String(voucherBytes, StandardCharsets.UTF_8), Voucher.class);
                         if (voucher != null) {
                             final byte[] dataBytes = redisConnection.get(
                                     (name + "USER:" + voucher.getId()).getBytes(StandardCharsets.UTF_8));
 
                             if (dataBytes != null) {
-                                core.setData(GsonUtil.fromJson(new String(dataBytes, StandardCharsets.UTF_8), tClass));
+                                core.setData(P6eJsonUtil.fromJson(new String(dataBytes, StandardCharsets.UTF_8), tClass));
                             }
 
                             core.setId(Integer.valueOf(voucher.getId()));
@@ -208,7 +208,7 @@ public class P6eCacheRedisSignModel {
                     if (bytes != null) {
                         delVoucherCache(
                                 redisConnection,
-                                GsonUtil.fromJson(new String(bytes, StandardCharsets.UTF_8), Voucher.class),
+                                P6eJsonUtil.fromJson(new String(bytes, StandardCharsets.UTF_8), Voucher.class),
                                 name
                         );
                     }
@@ -235,8 +235,8 @@ public class P6eCacheRedisSignModel {
         public Core set(final RedisTemplate<String, String> redisTemplate,
                         final String name, Long time, final Contract contract, final Object data) {
             final Integer id = contract.getId();
-            final String token = CommonUtil.generateUUID();
-            final String refreshToken = CommonUtil.generateUUID();
+            final String token = P6eCommonUtil.generateUuid();
+            final String refreshToken = P6eCommonUtil.generateUuid();
             // 生产凭证对象
             final Voucher voucher = new Voucher(String.valueOf(id), token, refreshToken, time);
             // 开启 redis 管道流
@@ -247,12 +247,12 @@ public class P6eCacheRedisSignModel {
                 final byte[] markRefreshTokenBytes = (name + "MARK:" + id
                         + ":REFRESH_TOKEN_" + refreshToken).getBytes(StandardCharsets.UTF_8);
                 final byte[] refreshTokenBytes = (name + "REFRESH_TOKEN:" + refreshToken).getBytes(StandardCharsets.UTF_8);
-                final byte[] voucherBytes = GsonUtil.toJson(voucher).getBytes(StandardCharsets.UTF_8);
+                final byte[] voucherBytes = P6eJsonUtil.toJson(voucher).getBytes(StandardCharsets.UTF_8);
                 redisConnection.set(tokenBytes, voucherBytes);
                 redisConnection.set(refreshTokenBytes, voucherBytes);
                 redisConnection.set(markTokenBytes, voucherBytes);
                 redisConnection.set(markRefreshTokenBytes, voucherBytes);
-                redisConnection.set(userBytes, GsonUtil.toJson(data).getBytes(StandardCharsets.UTF_8));
+                redisConnection.set(userBytes, P6eJsonUtil.toJson(data).getBytes(StandardCharsets.UTF_8));
                 return null;
             });
             return new Core(contract.getId(), token, refreshToken, time, data);
@@ -270,7 +270,7 @@ public class P6eCacheRedisSignModel {
                             (name + "TOKEN:" + token).getBytes(StandardCharsets.UTF_8));
 
                     if (voucherBytes != null) {
-                        final Voucher voucher = GsonUtil.fromJson(
+                        final Voucher voucher = P6eJsonUtil.fromJson(
                                 new String(voucherBytes, StandardCharsets.UTF_8), Voucher.class);
                         if (voucher != null) {
                             core.setId(Integer.valueOf(voucher.getId()));
@@ -279,7 +279,7 @@ public class P6eCacheRedisSignModel {
                             final byte[] dataBytes = redisConnection.get(
                                     (name + "USER:" + voucher.getId()).getBytes(StandardCharsets.UTF_8));
                             if (dataBytes != null) {
-                                core.setData(GsonUtil.fromJson(new String(dataBytes, StandardCharsets.UTF_8), tClass));
+                                core.setData(P6eJsonUtil.fromJson(new String(dataBytes, StandardCharsets.UTF_8), tClass));
                             }
                             redisConnection.del((name + "MARK:" + voucher.getId()
                                     + ":TOKEN_" + voucher.getToken()).getBytes(StandardCharsets.UTF_8));
@@ -350,8 +350,8 @@ public class P6eCacheRedisSignModel {
                         final String name, final Long time, final Contract contract, final Object data) {
 
             final Integer id = contract.getId();
-            final String token = CommonUtil.generateUUID();
-            final String refreshToken = CommonUtil.generateUUID();
+            final String token = P6eCommonUtil.generateUuid();
+            final String refreshToken = P6eCommonUtil.generateUuid();
             // 生产凭证对象
             final Voucher voucher = new Voucher(String.valueOf(id), token, refreshToken, time);
             // 开启 redis 管道流
@@ -362,14 +362,14 @@ public class P6eCacheRedisSignModel {
                         + "REFRESH_TOKEN:" + refreshToken).getBytes(StandardCharsets.UTF_8);
                 final byte[] deviceBytes = (name + "DEVICE:"
                         + id + ":" + contract.getDevice()).getBytes(StandardCharsets.UTF_8);
-                final byte[] voucherBytes = GsonUtil.toJson(voucher).getBytes(StandardCharsets.UTF_8);
+                final byte[] voucherBytes = P6eJsonUtil.toJson(voucher).getBytes(StandardCharsets.UTF_8);
                 final byte[] deviceContentBytes = redisConnection.get(deviceBytes);
                 if (deviceContentBytes != null) {
                     // 删除之前的 token
                     try {
                         delVoucherCache(
                                 redisConnection,
-                                GsonUtil.fromJson(new String(deviceContentBytes, StandardCharsets.UTF_8), Voucher.class),
+                                P6eJsonUtil.fromJson(new String(deviceContentBytes, StandardCharsets.UTF_8), Voucher.class),
                                 name
                         );
                     } catch (Exception e) {
@@ -379,7 +379,7 @@ public class P6eCacheRedisSignModel {
                 redisConnection.set(tokenBytes, voucherBytes);
                 redisConnection.set(refreshTokenBytes, voucherBytes);
                 redisConnection.set(deviceBytes, voucherBytes);
-                redisConnection.set(userBytes, GsonUtil.toJson(data).getBytes(StandardCharsets.UTF_8));
+                redisConnection.set(userBytes, P6eJsonUtil.toJson(data).getBytes(StandardCharsets.UTF_8));
                 return null;
             });
             return new Core(contract.getId(), token, refreshToken, time, data);
@@ -397,7 +397,7 @@ public class P6eCacheRedisSignModel {
                             (name + "TOKEN:" + token).getBytes(StandardCharsets.UTF_8));
 
                     if (voucherBytes != null) {
-                        final Voucher voucher = GsonUtil.fromJson(
+                        final Voucher voucher = P6eJsonUtil.fromJson(
                                 new String(voucherBytes, StandardCharsets.UTF_8), Voucher.class);
                         if (voucher != null) {
                             core.setId(Integer.valueOf(voucher.getId()));
@@ -412,7 +412,7 @@ public class P6eCacheRedisSignModel {
                             final byte[] dataBytes = redisConnection.get(
                                     (name + "USER:" + voucher.getId()).getBytes(StandardCharsets.UTF_8));
                             if (dataBytes != null) {
-                                core.setData(GsonUtil.fromJson(new String(dataBytes, StandardCharsets.UTF_8), tClass));
+                                core.setData(P6eJsonUtil.fromJson(new String(dataBytes, StandardCharsets.UTF_8), tClass));
                             }
                         }
                     }
@@ -443,7 +443,7 @@ public class P6eCacheRedisSignModel {
                         if (bytes != null) {
                             byte[] byteContents = redisConnection.get(bytes);
                             if (byteContents != null) {
-                                Voucher v = GsonUtil.fromJson(
+                                Voucher v = P6eJsonUtil.fromJson(
                                         new String(byteContents, StandardCharsets.UTF_8), Voucher.class);
                                 redisConnection.del(bytes);
                                 redisConnection.del((name + "TOKEN:" + v.getToken()).getBytes(StandardCharsets.UTF_8));
@@ -478,14 +478,14 @@ public class P6eCacheRedisSignModel {
         core.setToken(token);
         final String voucherJson = redisTemplate.opsForValue().get(name + "TOKEN:" + token);
         if (voucherJson != null) {
-            final Voucher voucher = GsonUtil.fromJson(voucherJson, Voucher.class);
+            final Voucher voucher = P6eJsonUtil.fromJson(voucherJson, Voucher.class);
             if (voucher != null) {
                 core.setId(Integer.valueOf(voucher.getId()));
                 core.setExpiration(voucher.getExpiration());
                 core.setRefreshToken(voucher.getRefreshToken());
                 String dataJson = redisTemplate.opsForValue().get(name + "USER:" + voucher.getId());
                 if (dataJson != null) {
-                    core.setData(GsonUtil.fromJson(dataJson, tClass));
+                    core.setData(P6eJsonUtil.fromJson(dataJson, tClass));
                 }
             }
         }

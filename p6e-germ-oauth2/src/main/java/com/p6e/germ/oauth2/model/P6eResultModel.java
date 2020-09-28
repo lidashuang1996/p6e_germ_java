@@ -1,7 +1,5 @@
 package com.p6e.germ.oauth2.model;
 
-import com.p6e.germ.oauth2.controller.support.P6eBaseController;
-
 import java.io.Serializable;
 
 /**
@@ -79,8 +77,6 @@ public class P6eResultModel implements Serializable {
 
     public void setCode(Integer code) {
         this.code = code;
-        // 将 code 设置为返回的状态码
-        P6eBaseController.getResponse().setStatus(code);
     }
 
     public String getMessage() {

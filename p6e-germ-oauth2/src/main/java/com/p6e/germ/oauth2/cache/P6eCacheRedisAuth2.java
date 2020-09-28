@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
  * @version 1.0
  */
 @Component
-public class P6eCacheRedisAuth extends P6eCacheRedis implements IP6eCacheAuth {
+public class P6eCacheRedisAuth2 extends P6eCacheRedis implements IP6eCacheAuth2 {
 
     @Override
     public void setCodeMark(String key, String value) {

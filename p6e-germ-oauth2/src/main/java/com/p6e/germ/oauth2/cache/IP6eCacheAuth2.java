@@ -4,7 +4,7 @@ package com.p6e.germ.oauth2.cache;
  * @author lidashuang
  * @version 1.0
  */
-public interface IP6eCacheAuth {
+public interface IP6eCacheAuth2 {
 
     /** 缓存名称 */
     String AUTH_NAME = "P6E:AUTH:";

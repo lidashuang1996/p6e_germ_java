@@ -4,6 +4,7 @@ import com.p6e.germ.oauth2.controller.support.P6eBaseController;
 import com.p6e.germ.oauth2.model.P6eResultConfig;
 import com.p6e.germ.oauth2.model.P6eResultModel;
 import com.p6e.germ.oauth2.utils.CopyUtil;
+import com.p6e.germ.security.config.P6eSecurityConstant;
 import com.p6e.germ.security.model.dto.P6eListResultDto;
 import com.p6e.germ.security.model.dto.P6eSecurityGroupParamDto;
 import com.p6e.germ.security.model.dto.P6eSecurityGroupResultDto;
@@ -11,6 +12,9 @@ import com.p6e.germ.security.model.vo.P6eListResultVo;
 import com.p6e.germ.security.model.vo.P6eSecurityGroupParamVo;
 import com.p6e.germ.security.model.vo.P6eSecurityGroupResultVo;
 import com.p6e.germ.security.service.P6eSecurityGroupService;
+import com.p6e.germ.starter.oauth2.P6eAuth;
+import com.p6e.germ.starter.security.P6eSecurity;
+import com.p6e.germ.starter.security.P6eSecurityType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -24,7 +28,7 @@ import javax.annotation.Resource;
 public class P6eSecurityGroupController extends P6eBaseController {
 
     /** 资源不存在 */
-    public static final String ERROR_RESOURCES_NO_EXIST = "400-ERROR_RESOURCES_NO_EXIST";
+    public static final String ERROR_RESOURCES_NO_EXIST = "ERROR_RESOURCES_NO_EXIST";
     /** 资源存在关联数据 */
     public static final String ERROR_RESOURCES_EXISTENCE_RELATION_DATA = "ERROR_RESOURCES_EXISTENCE_RELATION_DATA";
     /** 服务器内部出现异常 */
@@ -33,12 +37,22 @@ public class P6eSecurityGroupController extends P6eBaseController {
     @Resource
     private P6eSecurityGroupService securityGroupService;
 
+    @P6eAuth
     @GetMapping("/")
+    @P6eSecurity(values = {
+            P6eSecurityConstant.ADMIN_AUTH_OWN,
+            P6eSecurityConstant.ADMIN_GROUP_SELECT_OWN
+    }, condition = P6eSecurityType.Condition.AND)
     public P6eResultModel def(P6eSecurityGroupParamVo param) {
         return select(param);
     }
 
+    @P6eAuth
     @GetMapping("/list")
+    @P6eSecurity(values = {
+            P6eSecurityConstant.ADMIN_AUTH_OWN,
+            P6eSecurityConstant.ADMIN_GROUP_SELECT_OWN
+    }, condition = P6eSecurityType.Condition.AND)
     public P6eResultModel select(P6eSecurityGroupParamVo param) {
         try {
             final P6eListResultDto<P6eSecurityGroupResultDto> p6eListResultDto =
@@ -56,7 +70,12 @@ public class P6eSecurityGroupController extends P6eBaseController {
         }
     }
 
+    @P6eAuth
     @GetMapping("/{id}")
+    @P6eSecurity(values = {
+            P6eSecurityConstant.ADMIN_AUTH_OWN,
+            P6eSecurityConstant.ADMIN_GROUP_SELECT_OWN
+    }, condition = P6eSecurityType.Condition.AND)
     public P6eResultModel select(@PathVariable Integer id) {
         try {
             final P6eSecurityGroupResultDto p6eSecurityGroupResultDto =
@@ -70,7 +89,12 @@ public class P6eSecurityGroupController extends P6eBaseController {
         }
     }
 
+    @P6eAuth
     @PostMapping("/create")
+    @P6eSecurity(values = {
+            P6eSecurityConstant.ADMIN_AUTH_OWN,
+            P6eSecurityConstant.ADMIN_GROUP_CREATE_OWN
+    }, condition = P6eSecurityType.Condition.AND)
     public P6eResultModel create(@RequestBody P6eSecurityGroupParamVo param) {
         try {
             if (param == null
@@ -91,7 +115,12 @@ public class P6eSecurityGroupController extends P6eBaseController {
         }
     }
 
+    @P6eAuth
     @PutMapping("/update/{id}")
+    @P6eSecurity(values = {
+            P6eSecurityConstant.ADMIN_AUTH_OWN,
+            P6eSecurityConstant.ADMIN_GROUP_UPDATE_OWN
+    }, condition = P6eSecurityType.Condition.AND)
     public P6eResultModel update(@PathVariable Integer id, @RequestBody P6eSecurityGroupParamVo param) {
         try {
             if (param == null) {
@@ -113,7 +142,12 @@ public class P6eSecurityGroupController extends P6eBaseController {
         }
     }
 
+    @P6eAuth
     @DeleteMapping("/delete/{id}")
+    @P6eSecurity(values = {
+            P6eSecurityConstant.ADMIN_AUTH_OWN,
+            P6eSecurityConstant.ADMIN_GROUP_DELETE_OWN
+    }, condition = P6eSecurityType.Condition.AND)
     public P6eResultModel delete(@PathVariable Integer id) {
         try {
             final P6eSecurityGroupResultDto p6eSecurityGroupResultDto =

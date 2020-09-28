@@ -12,13 +12,13 @@ import java.util.UUID;
  * @author LiDaShuang
  * @version 1.0
  */
-public final class CommonUtil {
+public final class P6eCommonUtil {
 
     /**
      * 生成 uuid 的方法
      * @return uuid 结果
      */
-    public static String generateUUID() {
+    public static String generateUuid() {
         return UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
     }
 

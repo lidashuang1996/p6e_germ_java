@@ -3,7 +3,7 @@ package com.p6e.germ.oauth2.interceptor;
 import com.p6e.germ.oauth2.controller.support.P6eBaseController;
 import com.p6e.germ.oauth2.model.P6eResultModel;
 import com.p6e.germ.oauth2.model.base.P6eBaseParamVo;
-import com.p6e.germ.oauth2.utils.GsonUtil;
+import com.p6e.germ.oauth2.utils.P6eJsonUtil;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -55,9 +55,9 @@ public class P6eHttpLogInterceptor {
                         + ",\"path\":\""
                         + path + '\"'
                         + ",\"body\":"
-                        + GsonUtil.toJson(body)
+                        + P6eJsonUtil.toJson(body)
                         + ",\"result\":"
-                        + GsonUtil.toJson(result)
+                        + P6eJsonUtil.toJson(result)
                         + ",\"ip\":\""
                         + ip + '\"'
                         + ",\"startDateTime\":\""
@@ -72,9 +72,9 @@ public class P6eHttpLogInterceptor {
                         + ",\"path\":\""
                         + path + '\"'
                         + ",\"body\":"
-                        + GsonUtil.toJson(body)
+                        + P6eJsonUtil.toJson(body)
                         + ",\"result\":"
-                        + GsonUtil.toJson(result)
+                        + P6eJsonUtil.toJson(result)
                         + ",\"ip\":\""
                         + ip + '\"'
                         + ",\"startDateTime\":\""

@@ -7,7 +7,7 @@ import com.p6e.germ.oauth2.model.dto.P6eSignParamDto;
 import com.p6e.germ.oauth2.model.dto.P6eSignResultDto;
 import com.p6e.germ.oauth2.service.P6eSignService;
 import com.p6e.germ.oauth2.utils.CopyUtil;
-import com.p6e.germ.oauth2.utils.GsonUtil;
+import com.p6e.germ.oauth2.utils.P6eJsonUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -39,7 +39,7 @@ public class P6eSignServiceImpl implements P6eSignService {
         if (p6eOauth2UserDb == null) {
             p6eSignResultDto.setError("ERROR_ACCOUNT_OR_PASSWORD");
         } else {
-            p6eCacheSign.set(param.getCookie(), GsonUtil.toJson(p6eOauth2UserDb));
+            p6eCacheSign.set(param.getCookie(), P6eJsonUtil.toJson(p6eOauth2UserDb));
             p6eSignResultDto = CopyUtil.run(p6eOauth2UserDb, P6eSignResultDto.class);
         }
         return p6eSignResultDto;

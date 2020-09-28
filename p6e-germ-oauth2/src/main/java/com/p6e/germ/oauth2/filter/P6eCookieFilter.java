@@ -1,6 +1,6 @@
 package com.p6e.germ.oauth2.filter;
 
-import com.p6e.germ.oauth2.utils.CommonUtil;
+import com.p6e.germ.oauth2.utils.P6eCommonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +53,7 @@ public class P6eCookieFilter implements Filter {
         }
         // 不存在 cookie 就写入一个新的
         if (!bool) {
-            final String value = CommonUtil.generateUUID();
+            final String value = P6eCommonUtil.generateUuid();
             request.setAttribute(COOKIE_NAME, value);
             Cookie cookie = new Cookie(COOKIE_NAME, value);
             cookie.setHttpOnly(true);

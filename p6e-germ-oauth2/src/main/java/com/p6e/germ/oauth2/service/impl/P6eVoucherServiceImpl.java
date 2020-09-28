@@ -5,8 +5,8 @@ import com.p6e.germ.oauth2.cache.IP6eCacheVoucher;
 import com.p6e.germ.oauth2.model.dto.P6eVoucherParamDto;
 import com.p6e.germ.oauth2.model.dto.P6eVoucherResultDto;
 import com.p6e.germ.oauth2.service.P6eVoucherService;
-import com.p6e.germ.oauth2.utils.CommonUtil;
-import com.p6e.germ.oauth2.utils.GsonUtil;
+import com.p6e.germ.oauth2.utils.P6eCommonUtil;
+import com.p6e.germ.oauth2.utils.P6eJsonUtil;
 import com.p6e.germ.oauth2.utils.RsaUtil;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +29,7 @@ public class P6eVoucherServiceImpl implements P6eVoucherService {
     public P6eVoucherResultDto generate() {
         try {
             // voucher
-            final String voucher = CommonUtil.generateUUID();
+            final String voucher = P6eCommonUtil.generateUuid();
             // 初始化密钥的方法
             final Map<String, Object> rsaMap = RsaUtil.initRsaKey();
             // 读取公钥私钥的方法
@@ -55,7 +55,7 @@ public class P6eVoucherServiceImpl implements P6eVoucherService {
             final String voucherContent = p6eCacheVoucher.get(voucher);
             if (voucherContent != null && content != null) {
                 final Map<String, String> map
-                        = GsonUtil.fromJson(voucherContent, new TypeToken<Map<String, String>>() {}.getType());
+                        = P6eJsonUtil.fromJson(voucherContent, new TypeToken<Map<String, String>>() {}.getType());
                 // 缓存数据判断
                 if (map != null) {
                     final String privateKey = map.get("privateKey");

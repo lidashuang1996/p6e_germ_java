@@ -6,8 +6,8 @@ import com.p6e.germ.oauth2.model.dto.P6eTokenClientResultDto;
 import com.p6e.germ.oauth2.model.dto.P6eTokenParamDto;
 import com.p6e.germ.oauth2.model.dto.P6eTokenResultDto;
 import com.p6e.germ.oauth2.service.P6eTokenService;
-import com.p6e.germ.oauth2.utils.CommonUtil;
-import com.p6e.germ.oauth2.utils.GsonUtil;
+import com.p6e.germ.oauth2.utils.P6eCommonUtil;
+import com.p6e.germ.oauth2.utils.P6eJsonUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -26,8 +26,8 @@ public class P6eTokenServiceImpl implements P6eTokenService {
 
     @Override
     public P6eTokenResultDto set(P6eTokenParamDto param) {
-        final String accessToken = CommonUtil.generateUUID();
-        final String refreshToken = CommonUtil.generateUUID();
+        final String accessToken = P6eCommonUtil.generateUuid();
+        final String refreshToken = P6eCommonUtil.generateUuid();
         final P6eTokenResultDto p6eTokenResultDto = new P6eTokenResultDto();
         p6eTokenResultDto.setAccess_token(accessToken);
         p6eTokenResultDto.setExpires_in(3600);
@@ -44,9 +44,9 @@ public class P6eTokenServiceImpl implements P6eTokenService {
         map.put("accessToken", accessToken);
         map.put("refreshToken", refreshToken);
 
-        p6eCacheToken.setUserInfo(id, GsonUtil.toJson(data));
-        p6eCacheToken.setAccessToken(accessToken, GsonUtil.toJson(map));
-        p6eCacheToken.setRefreshToken(refreshToken, GsonUtil.toJson(map));
+        p6eCacheToken.setUserInfo(id, P6eJsonUtil.toJson(data));
+        p6eCacheToken.setAccessToken(accessToken, P6eJsonUtil.toJson(map));
+        p6eCacheToken.setRefreshToken(refreshToken, P6eJsonUtil.toJson(map));
         return p6eTokenResultDto;
     }
 

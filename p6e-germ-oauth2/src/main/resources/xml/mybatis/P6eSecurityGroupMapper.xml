@@ -7,8 +7,8 @@
     <select id="count" parameterType="com.p6e.germ.security.model.db.P6eSecurityGroupDb" resultType="long">
         SELECT COUNT(*) FROM `p6e_germ_security_group`
         <trim prefix="WHERE" prefixOverrides="AND |OR">
-            <if test="DB.id != null">AND `id` = #{DB.id}</if>
-            <if test="DB.name != null">AND `name` = #{DB.name}</if>
+            <if test="DB.search != null">OR `id` = #{DB.search}</if>
+            <if test="DB.search != null">OR `name` LIKE CONCAT(CONCAT('%', #{DB.search}), '%')</if>
         </trim>;
     </select>
 
@@ -49,8 +49,8 @@
         FROM
             `p6e_germ_security_group`
             <trim prefix="WHERE" prefixOverrides="AND |OR">
-                <if test="DB.id != null">AND `id` = #{DB.id}</if>
-                <if test="DB.name != null">AND `name` = #{DB.name}</if>
+                <if test="DB.search != null">OR `id` = #{DB.search}</if>
+                <if test="DB.search != null">OR `name` LIKE CONCAT(CONCAT('%', #{DB.search}), '%')</if>
             </trim>
         LIMIT #{DB.page}, #{DB.size};
     </select>

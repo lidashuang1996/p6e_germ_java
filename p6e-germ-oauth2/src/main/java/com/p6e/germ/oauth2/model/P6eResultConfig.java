@@ -29,9 +29,13 @@ public final class P6eResultConfig implements Serializable {
 
     /** 账号已经存在 */
     public static final String ERROR_ACCOUNT_EXISTENCE = "400-ERROR_ACCOUNT_EXISTENCE";
+    /** 账号密码错误 */
+    public static final String ERROR_ACCOUNT_OR_PASSWORD = "400-ERROR_ACCOUNT_OR_PASSWORD";
 
     /** 认证出现异常 */
     public static final String ERROR_AUTH_NO_EXISTENCE = "400-ERROR_AUTH_NO_EXISTENCE";
+    /** 权限出现异常 */
+    public static final String ERROR_JURISDICTION_NO_EXISTENCE = "400-ERROR_JURISDICTION_NO_EXISTENCE";
 
     /** 成功 */
     public static final String SUCCESS = "200-SUCCESS";
@@ -40,7 +44,7 @@ public final class P6eResultConfig implements Serializable {
     public static final String ERROR_VOUCHER_GENERATE = "500-ERROR_VOUCHER_GENERATE";
 
     /** 凭证生成失败 */
-    public static final String ERROR_ACCOUNT_OR_PASSWORD = "500-ERROR_ACCOUNT_OR_PASSWORD";
+    // public static final String ERROR_ACCOUNT_OR_PASSWORD = "500-ERROR_ACCOUNT_OR_PASSWORD";
 
     /** 默认数据无法删除 */
     public static final String ERROR_BAN_DEFAULT_DATA_OPERATE = "400-ERROR_BAN_DEFAULT_DATA_OPERATE";

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
@@ -15,11 +16,11 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
-public class P6eSecurityGroupParamVo extends P6eBaseParamVo implements Serializable {
+public class P6eOauth2AuthParamVo extends P6eBaseParamVo implements Serializable {
     private Integer id;
-    private String name;
-    private String describe;
-    private Integer weight;
-
+    private String account;
+    private String password;
+    private String token;
 }

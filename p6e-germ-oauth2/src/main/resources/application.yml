@@ -38,4 +38,9 @@ spring:
         max-wait: -1
         max-idle: 8
         min-idle: 0
-
+p6e:
+  security:
+    group:
+      url: http://127.0.0.1:${server.port}/security/group/list
+    jurisdiction:
+      url: http://127.0.0.1:${server.port}/security/jurisdiction/list

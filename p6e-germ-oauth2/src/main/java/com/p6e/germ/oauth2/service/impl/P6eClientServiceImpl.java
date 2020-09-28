@@ -7,7 +7,7 @@ import com.p6e.germ.oauth2.model.dto.P6eClientParamDto;
 import com.p6e.germ.oauth2.model.dto.P6eClientResultDto;
 import com.p6e.germ.oauth2.service.P6eClientService;
 import com.p6e.germ.oauth2.utils.CopyUtil;
-import com.p6e.germ.oauth2.utils.GsonUtil;
+import com.p6e.germ.oauth2.utils.P6eJsonUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -47,13 +47,13 @@ public class P6eClientServiceImpl implements P6eClientService {
                 return null;
             } else {
                 // 添加到缓存中
-                p6eCacheClient.set(clientId, GsonUtil.toJson(p6eClientDb));
+                p6eCacheClient.set(clientId, P6eJsonUtil.toJson(p6eClientDb));
                 // 返回查询出来的数据
                 return CopyUtil.run(p6eClientDb, P6eClientResultDto.class);
             }
         } else {
             // 缓存中存在数据
-            return GsonUtil.fromJson(clientJson, P6eClientResultDto.class);
+            return P6eJsonUtil.fromJson(clientJson, P6eClientResultDto.class);
         }
     }
 }

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.p6e.germ.security.mapper.P6eSecurityWholeDataMapper">
+    <select id="group" parameterType="com.p6e.germ.security.model.db.P6eSecurityWholeDataGroupDb"
+            resultType="com.p6e.germ.security.model.db.P6eSecurityWholeDataGroupDb">
+        SELECT
+            `A`.`id` AS `groupId`,
+            `A`.`name` AS `groupName`,
+            `A`.`describe`AS `groupDescribe`,
+            `A`.`weight` AS `groupWeight`,
+            `B`.`jurisdiction_param` AS `jurisdictionParam`,
+            `C`.`id` AS `jurisdictionId`,
+            `C`.`code` AS `jurisdictionCode`,
+            `C`.`name` AS `jurisdictionName`,
+            `C`.`describe` AS `jurisdictionDescribe`,
+            `C`.`content` AS `jurisdictionContent`
+        FROM
+            `p6e_germ_security_group` AS `A`
+            INNER JOIN `p6e_germ_security_jurisdiction_relation_group` AS `B` ON `A`.`id` = `B`.`gid`
+            INNER JOIN `p6e_germ_security_jurisdiction` AS `C` ON `B`.`jurisdiction_id` = `C`.`id`
+        WHERE `A`.`id` = #{DB.groupId};
+    </select>
+
+    <select id="user" parameterType="com.p6e.germ.security.model.db.P6eSecurityWholeDataUserDb"
+            resultType="com.p6e.germ.security.model.db.P6eSecurityWholeDataUserDb">
+        SELECT
+            `C`.`id` AS `groupId`,
+            `C`.`weight` AS `groupWeight`,
+            `D`.`jurisdiction_param` AS `groupParam`,
+            `E`.`id` AS `jurisdictionId`,
+            `E`.`code` AS `jurisdictionCode`,
+            `E`.`content` AS `jurisdictionContent`
+        FROM
+            `p6e_germ_oauth2_user` AS `A`
+            INNER JOIN `p6e_germ_security_group_relation_user` AS `B` ON `A`.`id` = `B`.`uid`
+            INNER JOIN `p6e_germ_security_group` AS `C` ON `B`.`gid` = `C`.`id`
+            INNER JOIN `p6e_germ_security_jurisdiction_relation_group` AS `D` ON `C`.`id` = `D`.`gid`
+            INNER JOIN `p6e_germ_security_jurisdiction` AS `E` ON `D`.`jurisdiction_id` = `E`.id
+        WHERE `A`.`id` = #{DB.userId}
+    </select>
+</mapper>

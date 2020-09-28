@@ -57,8 +57,10 @@ public class MybatisPagingInterceptor implements Interceptor {
         if (param instanceof HashMap) {
             @SuppressWarnings("all") // 忽略提示
             HashMap hashMap = (HashMap) param;
-            for (Object o : hashMap.values()) {
-                execute(o);
+            for (Object key : hashMap.keySet()) {
+                if ("DB".equals(String.valueOf(key))) {
+                    execute(hashMap.get(key));
+                }
             }
             invocation.getArgs()[1] = hashMap;
         } else {
