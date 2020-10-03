@@ -1,6 +1,6 @@
-package com.p6e.germ.security.model.db;
+package com.p6e.germ.security.model.vo;
 
-import com.p6e.germ.oauth2.model.base.P6eBaseDb;
+import com.p6e.germ.security.model.base.P6eBaseParamVo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,11 +14,11 @@ import java.io.Serializable;
  * @version 1.0
  */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
-public class P6eOauth2UserDb  extends P6eBaseDb implements Serializable {
+public class P6eSecurityUserParamVo extends P6eBaseParamVo implements Serializable {
     private Integer id;
     private Integer status;
     private String avatar;
@@ -27,7 +27,6 @@ public class P6eOauth2UserDb  extends P6eBaseDb implements Serializable {
     private String sex;
     private String birthday;
     private String role;
-
     private String account;
     private String password;
 }

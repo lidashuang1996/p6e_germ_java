@@ -7,7 +7,6 @@ mybatis:
   config-location: classpath:./xml/mybatis-config.xml
   mapper-locations: classpath:./xml/mybatis/*.xml
 
-
 # 日志
 logging:
   level:
@@ -40,7 +39,8 @@ spring:
         min-idle: 0
 p6e:
   security:
+    token: 1234567890
     group:
-      url: http://127.0.0.1:${server.port}/security/group/list
+      url: http://127.0.0.1:${server.port}/security/group/token
     jurisdiction:
-      url: http://127.0.0.1:${server.port}/security/jurisdiction/list
+      url: http://127.0.0.1:${server.port}/security/jurisdiction/token

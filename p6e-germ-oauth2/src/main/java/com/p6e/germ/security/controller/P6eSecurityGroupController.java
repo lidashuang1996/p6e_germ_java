@@ -12,6 +12,7 @@ import com.p6e.germ.security.model.vo.P6eListResultVo;
 import com.p6e.germ.security.model.vo.P6eSecurityGroupParamVo;
 import com.p6e.germ.security.model.vo.P6eSecurityGroupResultVo;
 import com.p6e.germ.security.service.P6eSecurityGroupService;
+import com.p6e.germ.starter.config.P6eConfig;
 import com.p6e.germ.starter.oauth2.P6eAuth;
 import com.p6e.germ.starter.security.P6eSecurity;
 import com.p6e.germ.starter.security.P6eSecurityType;
@@ -41,6 +42,9 @@ public class P6eSecurityGroupController extends P6eBaseController {
     @Resource
     private P6eSecurityGroupService securityGroupService;
 
+    @Resource
+    private P6eConfig config;
+
     @P6eAuth
     @GetMapping("/")
     @P6eSecurity(values = {
@@ -49,6 +53,19 @@ public class P6eSecurityGroupController extends P6eBaseController {
     }, condition = P6eSecurityType.Condition.AND)
     public P6eResultModel def(P6eSecurityGroupParamVo param) {
         return select(param);
+    }
+
+    @GetMapping("/token")
+    public P6eResultModel defToken(String token, P6eSecurityGroupParamVo param) {
+        if (token != null
+                && config != null
+                && config.getSecurity() != null
+                && config.getSecurity().getToken() != null
+                && token.equals(config.getSecurity().getToken())) {
+            return select(param);
+        } else {
+            return P6eResultModel.build(P6eResultConfig.ERROR_TOKEN_NO_EXISTENCE);
+        }
     }
 
     @P6eAuth

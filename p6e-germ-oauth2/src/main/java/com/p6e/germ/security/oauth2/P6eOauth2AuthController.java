@@ -34,6 +34,13 @@ public class P6eOauth2AuthController extends P6eBaseController {
     @Resource
     private P6eOauth2AuthService oauth2AuthService;
 
+    /**
+     * 如果是通过第三方登录的授权过来
+     * 那么可以把这里的这个接口注释掉
+     * 添加一个通过前段传如的 token 去通过第三方平台获取用户的数据信息
+     * @param param 请求的参数
+     * @return 请求的结果
+     */
     @PostMapping("/auth")
     public P6eResultModel auth(@RequestBody P6eOauth2AuthParamVo param) {
         try {
@@ -93,6 +100,11 @@ public class P6eOauth2AuthController extends P6eBaseController {
         }
     }
 
+    /**
+     * 对返回的结果进行统一的处理
+     * @param resultDto 返回的对象
+     * @return 返回的包装对象
+     */
     public P6eResultModel result(final P6eOauth2AuthResultDto resultDto) {
         if (resultDto == null) {
             return P6eResultModel.build(P6eResultConfig.ERROR_SERVICE_INSIDE);

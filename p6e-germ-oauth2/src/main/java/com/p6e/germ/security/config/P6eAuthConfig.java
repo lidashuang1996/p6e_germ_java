@@ -2,7 +2,6 @@ package com.p6e.germ.security.config;
 
 import com.p6e.germ.oauth2.model.P6eResultConfig;
 import com.p6e.germ.oauth2.model.P6eResultModel;
-import com.p6e.germ.oauth2.utils.P6eJsonUtil;
 import com.p6e.germ.security.cache.P6eCacheAuth;
 import com.p6e.germ.starter.config.P6eConfig;
 import com.p6e.germ.starter.oauth2.P6eAopOauth2Abstract;

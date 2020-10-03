@@ -1,6 +1,6 @@
 package com.p6e.germ.security.model.dto;
 
-import com.p6e.germ.security.model.base.P6eBaseParamDto;
+import com.p6e.germ.security.model.base.P6eBaseResultDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,11 +18,13 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
-public class P6eSecurityGroupParamDto extends P6eBaseParamDto implements Serializable {
-
+public class P6eSecurityUserResultDto extends P6eBaseResultDto implements Serializable {
     private Integer id;
+    private Integer status;
+    private String avatar;
     private String name;
-    private String describe;
-    private Integer weight;
-
+    private String nickname;
+    private String sex;
+    private String birthday;
+    private String role;
 }

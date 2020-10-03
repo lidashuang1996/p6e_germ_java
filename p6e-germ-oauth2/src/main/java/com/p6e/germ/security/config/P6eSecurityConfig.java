@@ -92,10 +92,14 @@ public class P6eSecurityConfig extends P6eAopSecurityAbstract {
     public ApplicationRunner runner(final WebServerApplicationContext context) {
         return args -> {
             final P6eConfig p6eConfig = context.getBean(P6eConfig.class);
+            final String token = p6eConfig.getSecurity().getToken();
             final P6eConfigSecurity.P6eConfigSecurityAchieveGroup group = p6eConfig.getSecurity().getGroup();
             final P6eConfigSecurity.P6eConfigSecurityAchieveJurisdiction jurisdiction = p6eConfig.getSecurity().getJurisdiction();
             final String gUrl;
             final String jUrl;
+            if (token == null) {
+                throw new RuntimeException("token param null.");
+            }
             if (group.getUrl() != null) {
                 gUrl = group.getUrl();
             } else {
@@ -107,7 +111,7 @@ public class P6eSecurityConfig extends P6eAopSecurityAbstract {
                 throw new RuntimeException("jurisdiction param null.");
             }
             // 生成文件后不再生成文件
-            P6eSecurityApplication.init(new P6eSecurityDataDefaultRequest(gUrl, jUrl));
+            P6eSecurityApplication.init(new P6eSecurityDataDefaultRequest(gUrl, jUrl, token));
             // 生成文件
             // P6eSecurityApplication.init(new P6eSecurityDataDefaultRequest(gUrl, jUrl),
             //         ()-> P6eSecurityApplication.generateJurisdictionFile("com.p6e.germ"));

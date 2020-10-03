@@ -18,11 +18,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
-public class P6eSecurityGroupParamDto extends P6eBaseParamDto implements Serializable {
-
+public class P6eSecurityUserParamDto extends P6eBaseParamDto implements Serializable {
     private Integer id;
-    private String name;
-    private String describe;
-    private Integer weight;
-
+    private String account;
 }

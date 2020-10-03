@@ -6,7 +6,9 @@ import com.p6e.germ.oauth2.model.P6eResultModel;
 import com.p6e.germ.oauth2.utils.CopyUtil;
 import com.p6e.germ.security.config.P6eSecurityConstant;
 import com.p6e.germ.security.model.dto.P6eSecurityWholeDataGroupResultDto;
+import com.p6e.germ.security.model.dto.P6eSecurityWholeDataUserResultDto;
 import com.p6e.germ.security.model.vo.P6eSecurityWholeDataGroupResultVo;
+import com.p6e.germ.security.model.vo.P6eSecurityWholeDataUserResultVo;
 import com.p6e.germ.security.service.P6eSecurityWholeDataService;
 import com.p6e.germ.starter.oauth2.P6eAuth;
 import com.p6e.germ.starter.security.P6eSecurity;
@@ -46,6 +48,26 @@ public class P6eSecurityWholeDataController extends P6eBaseController {
             final List<P6eSecurityWholeDataGroupResultDto> resultDtoList = securityWholeDataService.group(id);
             return P6eResultModel.build(P6eResultConfig.SUCCESS,
                     CopyUtil.run(resultDtoList, P6eSecurityWholeDataGroupResultVo.class));
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            return P6eResultModel.build(P6eResultConfig.ERROR_SERVICE_INSIDE, e.getMessage());
+        }
+    }
+
+    @P6eAuth
+    @GetMapping("/user/{id}")
+    @P6eSecurity(values = {
+            P6eSecurityConstant.ADMIN_AUTH_OWN,
+            P6eSecurityConstant.ADMIN_USER_SELECT_OWN,
+            P6eSecurityConstant.ADMIN_USER_RELATION_GROUP_OWN,
+            P6eSecurityConstant.ADMIN_GROUP_RELATION_JURISDICTION_OWN
+    }, condition = P6eSecurityType.Condition.AND)
+    public P6eResultModel user(@PathVariable Integer id) {
+        try {
+            final P6eSecurityWholeDataUserResultDto resultDto = securityWholeDataService.user(id);
+            return P6eResultModel.build(P6eResultConfig.SUCCESS,
+                    CopyUtil.run(resultDto, P6eSecurityWholeDataUserResultVo.class));
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());

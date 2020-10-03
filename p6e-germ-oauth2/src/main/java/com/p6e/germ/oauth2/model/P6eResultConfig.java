@@ -37,6 +37,9 @@ public final class P6eResultConfig implements Serializable {
     /** 权限出现异常 */
     public static final String ERROR_JURISDICTION_NO_EXISTENCE = "400-ERROR_JURISDICTION_NO_EXISTENCE";
 
+    /** TOKEN出现异常 */
+    public static final String ERROR_TOKEN_NO_EXISTENCE = "400-ERROR_TOKEN_NO_EXISTENCE";
+
     /** 成功 */
     public static final String SUCCESS = "200-SUCCESS";
 

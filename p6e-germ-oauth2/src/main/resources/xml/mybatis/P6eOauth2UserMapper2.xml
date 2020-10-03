@@ -29,4 +29,152 @@
             AND B.`password` = #{DB.password}
         LIMIT 0, 1;
     </select>
+
+    <insert id="createUserInfo" parameterType="com.p6e.germ.security.model.db.P6eOauth2UserDb"
+            keyProperty="id" keyColumn="id" useGeneratedKeys="true">
+        INSERT INTO `p6e_germ_oauth2_user`
+            (
+                <if test="DB.status != null">`status`,</if>
+                <if test="DB.avatar != null">`avatar`,</if>
+                <if test="DB.name != null">`name`,</if>
+                <if test="DB.nickname != null">`nickname`,</if>
+                <if test="DB.sex != null">`sex`,</if>
+                <if test="DB.birthday != null">`birthday`,</if>
+                <if test="DB.role != null">`role`,</if>
+            )
+        VALUE (
+                <if test="DB.status != null">#{DB.status},,</if>
+                <if test="DB.avatar != null">#{DB.avatar},</if>
+                <if test="DB.name != null">#{DB.name},</if>
+                <if test="DB.nickname != null">#{DB.nickname},</if>
+                <if test="DB.sex != null">#{DB.sex},</if>
+                <if test="DB.birthday != null">#{DB.birthday},</if>
+                <if test="DB.role != null">#{DB.role},</if>
+            );
+    </insert>
+    <insert id="createUserAuth" parameterType="com.p6e.germ.security.model.db.P6eOauth2UserDb">
+        INSERT INTO
+            `p6e_germ_oauth2_user_auth`
+            (
+                `id`,
+                `phone`,
+                `password`
+            )
+        VALUE (
+                    #{DB.id},
+                    #{DB.account},
+                    #{DB.password}
+            );
+    </insert>
+
+    <update id="updateUserInfo" parameterType="com.p6e.germ.security.model.db.P6eOauth2UserDb">
+        UPDATE `p6e_germ_oauth2_user`
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="DB.status != null">`status` = #{DB.status},</if>
+            <if test="DB.avatar != null">`avatar` = #{DB.avatar},</if>
+            <if test="DB.name != null">`name` = #{DB.name},</if>
+            <if test="DB.nickname != null">`nickname` = #{DB.nickname},</if>
+            <if test="DB.sex != null">`sex` = #{DB.sex},</if>
+            <if test="DB.birthday != null">`birthday` = #{DB.birthday},</if>
+            <if test="DB.role != null">`role` = #{DB.role},</if>
+        </trim>
+        WHERE `id` = #{DB.id};
+    </update>
+
+    <delete id="deleteUserInfo" parameterType="com.p6e.germ.security.model.db.P6eOauth2UserDb">
+        DELETE `p6e_germ_oauth2_user` WHERE `id` = #{DB.id};
+    </delete>
+    <delete id="deleteUserAuth" parameterType="com.p6e.germ.security.model.db.P6eOauth2UserDb">
+        DELETE `p6e_germ_oauth2_user_auth` WHERE `id` = #{DB.id};
+    </delete>
+
+    <select id="count" parameterType="com.p6e.germ.security.model.db.P6eOauth2UserDb" resultType="long">
+        SELECT
+            COUNT(`A`.`id`) AS `count`
+        FROM
+            `p6e_germ_oauth2_user` AS `A`
+            LEFT JOIN `p6e_germ_oauth2_user_auth` AS `B` ON `A`.`id` = `B`.`id`
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="DB.search != null">
+                `B`.`email` = #{DB.search}
+                OR
+                `B`.`phone` = #{DB.search}
+                OR
+                `A`.`id` = #{DB.search}
+                OR
+                `A`.`name` LIKE CONCAT(CONCAT('%', #{DB.search}), '%')
+                OR
+                `A`.`nickname` LIKE CONCAT(CONCAT('%', #{DB.search}), '%')
+            </if>
+            <if test="DB.status != null">
+                AND `A`.`status` = #{DB.status}
+            </if>
+        </trim>
+    </select>
+    <select id="select" parameterType="com.p6e.germ.security.model.db.P6eOauth2UserDb"
+            resultType="com.p6e.germ.security.model.db.P6eOauth2UserDb">
+        SELECT
+            `A`.`id`,
+            `A`.`status`,
+            `A`.`avatar`,
+            `A`.`name`,
+            `A`.`nickname`,
+            `A`.`sex`,
+            `A`.`birthday`,
+            `A`.`role`,
+            `B`.`email`,
+            `B`.`phone`
+        FROM
+            `p6e_germ_oauth2_user` AS `A`
+            LEFT JOIN `p6e_germ_oauth2_user_auth` AS `B` ON `A`.`id` = `B`.`id`
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="DB.search != null">
+                `B`.`email` = #{DB.search}
+                OR
+                `B`.`phone` = #{DB.search}
+                OR
+                `A`.`id` = #{DB.search}
+                OR
+                `A`.`name` LIKE CONCAT(CONCAT('%', #{DB.search}), '%')
+                OR
+                `A`.`nickname` LIKE CONCAT(CONCAT('%', #{DB.search}), '%')
+            </if>
+            <if test="DB.status != null">
+                AND `A`.`status` = #{DB.status}
+            </if>
+        </trim>
+        LIMIT #{DB.page}, #{DB.size};
+    </select>
+    <select id="selectOneData" parameterType="com.p6e.germ.security.model.db.P6eOauth2UserDb"
+            resultType="com.p6e.germ.security.model.db.P6eOauth2UserDb">
+        SELECT
+            `A`.`id`,
+            `A`.`status`,
+            `A`.`avatar`,
+            `A`.`name`,
+            `A`.`nickname`,
+            `A`.`sex`,
+            `A`.`birthday`,
+            `A`.`role`,
+            `B`.`email`,
+            `B`.`phone`
+        FROM
+            `p6e_germ_oauth2_user` AS `A`
+            LEFT JOIN `p6e_germ_oauth2_user_auth` AS `B` ON `A`.`id` = `B`.`id`
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="DB.account != null">
+                (
+                    `B`.`email` = #{DB.account}
+                    OR
+                    `B`.`phone` = #{DB.account}
+                )
+            </if>
+            <if test="DB.id != null">
+                AND `A`.`id` = #{DB.id}
+            </if>
+        </trim>
+        LIMIT 0, 1;
+    </select>
+
+
 </mapper>

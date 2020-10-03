@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class P6eCacheRedisAuth implements P6eCacheAuth {
 
-
     private final RedisTemplate<String, String> redisTemplate;
 
     public static class TokenModel {
@@ -121,7 +120,6 @@ public class P6eCacheRedisAuth implements P6eCacheAuth {
         resultMap.put("uid", tokenModel.getUid());
         resultMap.put("token", tokenModel.getToken());
         resultMap.put("refreshToken", tokenModel.getRefreshToken());
-        System.out.println("cccc" + resultMap);
         return resultMap;
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ import java.util.Map;
 public class P6eAuthConfig2 extends P6eAopOauth2Abstract<P6eAuthModel> {
 
     /** 认证头的名称 */
-    private static final String AUTH_HEADER = "AUTHENTICATION";
+    private static final String AUTH_HEADER = "authorization";
     private static final String AUTH_HEADER_PREFIX = "Bearer ";
 
     @Resource

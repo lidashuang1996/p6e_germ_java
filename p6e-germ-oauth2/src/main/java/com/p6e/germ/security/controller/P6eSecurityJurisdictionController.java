@@ -8,6 +8,7 @@ import com.p6e.germ.security.config.P6eSecurityConstant;
 import com.p6e.germ.security.model.dto.*;
 import com.p6e.germ.security.model.vo.*;
 import com.p6e.germ.security.service.P6eSecurityJurisdictionService;
+import com.p6e.germ.starter.config.P6eConfig;
 import com.p6e.germ.starter.oauth2.P6eAuth;
 import com.p6e.germ.starter.security.P6eSecurity;
 import com.p6e.germ.starter.security.P6eSecurityType;
@@ -36,6 +37,9 @@ public class P6eSecurityJurisdictionController extends P6eBaseController {
     @Resource
     private P6eSecurityJurisdictionService securityJurisdictionService;
 
+    @Resource
+    private P6eConfig config;
+
     @P6eAuth
     @GetMapping("/")
     @P6eSecurity(values = {
@@ -44,6 +48,19 @@ public class P6eSecurityJurisdictionController extends P6eBaseController {
     }, condition = P6eSecurityType.Condition.AND)
     public P6eResultModel def(P6eSecurityJurisdictionParamVo param) {
         return select(param);
+    }
+
+    @GetMapping("/token")
+    public P6eResultModel defToken(String token, P6eSecurityJurisdictionParamVo param) {
+        if (token != null
+                && config != null
+                && config.getSecurity() != null
+                && config.getSecurity().getToken() != null
+                && token.equals(config.getSecurity().getToken())) {
+            return select(param);
+        } else {
+            return P6eResultModel.build(P6eResultConfig.ERROR_TOKEN_NO_EXISTENCE);
+        }
     }
 
     @P6eAuth
