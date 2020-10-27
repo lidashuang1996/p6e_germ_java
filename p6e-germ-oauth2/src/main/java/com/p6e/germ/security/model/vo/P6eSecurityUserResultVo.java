@@ -25,4 +25,6 @@ public class P6eSecurityUserResultVo extends P6eBaseResultVo implements Serializ
     private String sex;
     private String birthday;
     private String role;
+    private String email;
+    private String phone;
 }

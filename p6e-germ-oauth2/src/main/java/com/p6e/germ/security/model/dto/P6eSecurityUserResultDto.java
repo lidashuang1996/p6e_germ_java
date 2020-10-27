@@ -27,4 +27,9 @@ public class P6eSecurityUserResultDto extends P6eBaseResultDto implements Serial
     private String sex;
     private String birthday;
     private String role;
+    private String email;
+    private String phone;
+
+    private String account;
+    private String password;
 }

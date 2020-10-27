@@ -21,4 +21,13 @@ import java.io.Serializable;
 public class P6eSecurityUserParamDto extends P6eBaseParamDto implements Serializable {
     private Integer id;
     private String account;
+    private String password;
+
+    private Integer status;
+    private String avatar;
+    private String name;
+    private String nickname;
+    private String sex;
+    private String birthday;
+    private String role;
 }

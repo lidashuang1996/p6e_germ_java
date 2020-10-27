@@ -96,8 +96,12 @@ public class P6eSecurityUserController extends P6eBaseController {
             } else {
                 final P6eSecurityUserResultDto p6eSecurityUserResultDto =
                         securityUserService.create(CopyUtil.run(param, P6eSecurityUserParamDto.class));
-                return P6eResultModel.build(P6eResultConfig.SUCCESS,
-                        CopyUtil.run(p6eSecurityUserResultDto, P6eSecurityUserResultVo.class));
+                if (p6eSecurityUserResultDto != null && p6eSecurityUserResultDto.getError() == null) {
+                    return P6eResultModel.build(P6eResultConfig.SUCCESS,
+                            CopyUtil.run(p6eSecurityUserResultDto, P6eSecurityUserResultVo.class));
+                } else {
+                    return P6eResultModel.build(P6eResultConfig.ERROR_ACCOUNT_EXISTENCE);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

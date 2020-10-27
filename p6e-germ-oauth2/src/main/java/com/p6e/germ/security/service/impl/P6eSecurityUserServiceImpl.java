@@ -35,8 +35,8 @@ public class P6eSecurityUserServiceImpl implements P6eSecurityUserService {
         final P6eOauth2UserDb resultDb =
                 oauth2UserMapper.selectOneData(new P6eOauth2UserDb().setAccount(paramDb.getAccount()));
         if (resultDb == null
-                && oauth2UserMapper.createUserAuth(paramDb) > 0
-                && oauth2UserMapper.createUserInfo(paramDb) > 0){
+                && oauth2UserMapper.createUserInfo(paramDb) > 0
+                && oauth2UserMapper.createUserAuth(paramDb) > 0){
             return CopyUtil.run(oauth2UserMapper.selectOneData(paramDb), P6eSecurityUserResultDto.class);
         }
         return null;
@@ -59,8 +59,8 @@ public class P6eSecurityUserServiceImpl implements P6eSecurityUserService {
         final P6eOauth2UserDb paramDb = CopyUtil.run(param, P6eOauth2UserDb.class);
         final P6eOauth2UserDb resultDb = oauth2UserMapper.selectOneData(paramDb);
         if (resultDb != null
-                && oauth2UserMapper.deleteUserAuth(paramDb) > 0
-                && oauth2UserMapper.deleteUserInfo(paramDb) > 0) {
+                && oauth2UserMapper.deleteUserInfo(paramDb) > 0
+                && oauth2UserMapper.deleteUserAuth(paramDb) > 0) {
             securityGroupRelationUserService.delete(new P6eSecurityGroupRelationUserParamDto().setUid(paramDb.getId()));
             return CopyUtil.run(resultDb, P6eSecurityUserResultDto.class);
         }

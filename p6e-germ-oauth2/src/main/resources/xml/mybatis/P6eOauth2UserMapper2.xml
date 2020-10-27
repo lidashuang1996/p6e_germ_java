@@ -34,22 +34,22 @@
             keyProperty="id" keyColumn="id" useGeneratedKeys="true">
         INSERT INTO `p6e_germ_oauth2_user`
             (
-                <if test="DB.status != null">`status`,</if>
-                <if test="DB.avatar != null">`avatar`,</if>
-                <if test="DB.name != null">`name`,</if>
-                <if test="DB.nickname != null">`nickname`,</if>
-                <if test="DB.sex != null">`sex`,</if>
-                <if test="DB.birthday != null">`birthday`,</if>
-                <if test="DB.role != null">`role`,</if>
+                `name`,
+                `nickname`
+                <if test="DB.status != null">,`status`</if>
+                <if test="DB.avatar != null">,`avatar`</if>
+                <if test="DB.sex != null">,`sex`</if>
+                <if test="DB.birthday != null">,`birthday`</if>
+                <if test="DB.role != null">,`role`</if>
             )
         VALUE (
-                <if test="DB.status != null">#{DB.status},,</if>
-                <if test="DB.avatar != null">#{DB.avatar},</if>
-                <if test="DB.name != null">#{DB.name},</if>
-                <if test="DB.nickname != null">#{DB.nickname},</if>
-                <if test="DB.sex != null">#{DB.sex},</if>
-                <if test="DB.birthday != null">#{DB.birthday},</if>
-                <if test="DB.role != null">#{DB.role},</if>
+                #{DB.name},
+                #{DB.nickname}
+                <if test="DB.status != null">,#{DB.status}</if>
+                <if test="DB.avatar != null">,#{DB.avatar}</if>
+                <if test="DB.sex != null">,#{DB.sex}</if>
+                <if test="DB.birthday != null">,#{DB.birthday}</if>
+                <if test="DB.role != null">,#{DB.role}</if>
             );
     </insert>
     <insert id="createUserAuth" parameterType="com.p6e.germ.security.model.db.P6eOauth2UserDb">
@@ -82,10 +82,10 @@
     </update>
 
     <delete id="deleteUserInfo" parameterType="com.p6e.germ.security.model.db.P6eOauth2UserDb">
-        DELETE `p6e_germ_oauth2_user` WHERE `id` = #{DB.id};
+        DELETE FROM `p6e_germ_oauth2_user` WHERE `id` = #{DB.id};
     </delete>
     <delete id="deleteUserAuth" parameterType="com.p6e.germ.security.model.db.P6eOauth2UserDb">
-        DELETE `p6e_germ_oauth2_user_auth` WHERE `id` = #{DB.id};
+        DELETE FROM `p6e_germ_oauth2_user_auth` WHERE `id` = #{DB.id};
     </delete>
 
     <select id="count" parameterType="com.p6e.germ.security.model.db.P6eOauth2UserDb" resultType="long">

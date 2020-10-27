@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.p6e.germ</groupId>
     <artifactId>oauth2</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.0.RELEASE</version>
     <name>oauth2</name>
     <description>Demo project for Spring Boot</description>
 
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.p6e.germ</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <version>1.0.2.RELEASE</version>
+            <version>1.1.0.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
