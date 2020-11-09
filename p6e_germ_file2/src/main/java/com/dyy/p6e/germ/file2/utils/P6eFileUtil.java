@@ -1,5 +1,8 @@
 package com.dyy.p6e.germ.file2.utils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 /**
  * 文件操作的常用的工具类
  * 1. 文件路径格式化
@@ -15,7 +18,7 @@ public final class P6eFileUtil {
      * @return 格式化后的文件路径
      */
     public static String filePathFormat(String filePath, String[] suffixList) {
-        final String[] filePathBlock = filePath.split("/");
+        final String[] filePathBlock = decodeUrl(filePath).split("/");
         if (filePathBlock.length > 0) {
             final StringBuilder result = new StringBuilder();
             // 遍历文件块
@@ -63,6 +66,36 @@ public final class P6eFileUtil {
             }
         }
         return null;
+    }
+
+    public static String folderPathFormat(String folderPath) {
+        final String[] folderPathBlock = decodeUrl(folderPath).split("/");
+        if (folderPathBlock.length > 0) {
+            final StringBuilder result = new StringBuilder();
+            // 遍历文件块
+            for (String block : folderPathBlock) {
+                // 替换掉敏感字符
+                block = block
+                        .replaceAll("\\\\", "")
+                        .replaceAll("\\.\\.", "")
+                        .replaceAll("\\.\\\\", "")
+                        .replaceAll("\\.\\.\\\\", "");
+                // 过滤掉无意义的字符
+                if (block.length() > 0 && !block.endsWith(".")) {
+                    result.append(block).append("/");
+                }
+            }
+            return result.toString();
+        }
+        return null;
+    }
+
+    private static String decodeUrl(String url) {
+        try {
+            return URLDecoder.decode(url, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return url;
+        }
     }
 
 }

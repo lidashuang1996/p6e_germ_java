@@ -39,10 +39,10 @@ public final class P6eResultConfig implements Serializable {
     public static final String ERROR_ACCOUNT_OR_PASSWORD = "400-ERROR_ACCOUNT_OR_PASSWORD";
 
     /** 认证出现异常 */
-    public static final String AUTH_NO_EXISTENCE = "ERROR_AUTH_NO_EXISTENCE";
+    public static final String AUTH_NO_EXISTENCE = "AUTH_NO_EXISTENCE";
     /** 认证出现异常 */
     public static final String ERROR_AUTH_NO_EXISTENCE = "400-ERROR_AUTH_NO_EXISTENCE";
-    public static final String JURISDICTION_NO_EXISTENCE = "ERROR_JURISDICTION_NO_EXISTENCE";
+    public static final String JURISDICTION_NO_EXISTENCE = "JURISDICTION_NO_EXISTENCE";
     /** 权限出现异常 */
     public static final String ERROR_JURISDICTION_NO_EXISTENCE = "400-ERROR_JURISDICTION_NO_EXISTENCE";
 

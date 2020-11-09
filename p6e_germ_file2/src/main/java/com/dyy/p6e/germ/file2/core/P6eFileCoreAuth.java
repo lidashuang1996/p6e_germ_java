@@ -11,7 +11,7 @@ import java.util.function.Function;
  */
 public class P6eFileCoreAuth {
 
-    public <T> Function<T, Mono<T>> execute(ServerHttpRequest request) {
+    public Function<String, Mono<String>> execute(ServerHttpRequest request) {
         return Mono::just;
     }
 

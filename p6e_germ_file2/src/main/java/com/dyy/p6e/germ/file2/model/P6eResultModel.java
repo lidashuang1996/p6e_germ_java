@@ -1,5 +1,9 @@
 package com.dyy.p6e.germ.file2.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
+
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 
@@ -98,14 +102,25 @@ public class P6eResultModel implements Serializable {
 
     @Override
     public String toString() {
-        return "{"
-                + "\"code\":"
-                + code
-                + ",\"message\":\""
-                + message + '\"'
-                + ",\"data\":"
-                + data
-                + "}";
+        try {
+            return "{"
+                    + "\"code\":"
+                    + code
+                    + ",\"message\":\""
+                    + message + '\"'
+                    + ",\"data\":"
+                    + (data == null ? null : new ObjectMapper().writeValueAsString(data))
+            + "}";
+        } catch (JsonProcessingException e) {
+            return "{"
+                    + "\"code\":"
+                    + code
+                    + ",\"message\":\""
+                    + message + '\"'
+                    + ",\"data\":"
+                    + null
+                    + "}";
+        }
     }
 
     public byte[] toBytes() {
