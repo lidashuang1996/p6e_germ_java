@@ -3,7 +3,10 @@ package com.dyy.p6e.germ.file2.core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.codec.multipart.FilePart;
+import reactor.core.publisher.Mono;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -56,10 +59,8 @@ public class P6eFileCoreContext {
         return bytes;
     }
 
-
-
-    public void write(String filePath) {
-
+    public void write(final FilePart filePart, final File file) {
+        p6eFileCoreFlow.write(filePart, file);
     }
 
 }

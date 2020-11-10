@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
+
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.function.Function;
@@ -60,6 +62,7 @@ public class P6eFileController extends P6eBaseController {
                 return response.writeWith(Mono.just(baseFilePath + "/" + filePath)
                         .flatMap(P6eFileCoreFactory.auth(request))
                         .flatMap(P6eFileCoreFactory.jurisdiction(request))
+                        .publishOn(Schedulers.parallel())
                         .flatMap((Function<String, Mono<DataBuffer>>) s -> {
                             final DataBuffer dataBuffer = new DefaultDataBufferFactory().allocateBuffer(2048);
                             switch (s) {

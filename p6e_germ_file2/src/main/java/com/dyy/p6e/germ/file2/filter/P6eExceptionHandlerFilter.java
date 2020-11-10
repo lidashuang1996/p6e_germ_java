@@ -31,11 +31,15 @@ public class P6eExceptionHandlerFilter implements WebFilter {
         return chain.filter(exchange).onErrorResume((Function<Throwable, Mono<Void>>) throwable -> {
             final ServerHttpRequest serverHttpRequest = exchange.getRequest();
             final ServerHttpResponse serverHttpResponse = exchange.getResponse();
+            throwable.printStackTrace();
             LOGGER.error(P6eBaseController.logBaseInfo(serverHttpRequest) + " " + throwable.getMessage());
             serverHttpResponse.getHeaders().setContentType(MediaType.APPLICATION_JSON);
             if (throwable instanceof MethodNotAllowedException) {
                 return serverHttpResponse.writeWith(Mono.just(new DefaultDataBufferFactory()
                         .allocateBuffer().write(P6eResultModel.build(P6eResultConfig.ERROR_405_ERROR_METHOD_NOT_ALLOWED).toBytes())));
+            } else if (throwable instanceof ServerWebInputException) {
+                return serverHttpResponse.writeWith(Mono.just(new DefaultDataBufferFactory()
+                        .allocateBuffer().write(P6eResultModel.build(P6eResultConfig.ERROR_400_ERROR_PARAM_EXCEPTION).toBytes())));
             } else if (throwable instanceof ResponseStatusException) {
                 return serverHttpResponse.writeWith(Mono.just(new DefaultDataBufferFactory()
                         .allocateBuffer().write(P6eResultModel.build(P6eResultConfig.ERROR_404_ERROR_NOT_FOUND).toBytes())));

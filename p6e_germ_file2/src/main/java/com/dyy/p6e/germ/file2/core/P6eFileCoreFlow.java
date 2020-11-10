@@ -1,11 +1,17 @@
 package com.dyy.p6e.germ.file2.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.codec.multipart.FilePart;
+import reactor.core.CoreSubscriber;
+import reactor.core.publisher.Mono;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.Arrays;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * @author lidashuang
@@ -13,6 +19,7 @@ import java.util.Arrays;
  */
 public class P6eFileCoreFlow {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(P6eFileCoreFlow.class);
     /**
      * 缓冲区的大小
      */
@@ -72,8 +79,13 @@ public class P6eFileCoreFlow {
         return cache;
     }
 
-    public void write(String filePath) {
-
+    public void write(final FilePart filePart, final File file) {
+        // 验证文件路径是否合法
+        if (!file.getParentFile().exists()) {
+            LOGGER.info("[ FilePath ==> " + file.getPath() + " ] " +
+                    "folder path create ? ==> " + file.getParentFile().mkdirs());
+        }
+        filePart.transferTo(file);
     }
 
 }

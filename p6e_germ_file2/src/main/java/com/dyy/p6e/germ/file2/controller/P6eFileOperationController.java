@@ -10,16 +10,16 @@ import com.dyy.p6e.germ.file2.utils.P6eFileUtil;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-
 import javax.annotation.Resource;
+import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -35,6 +35,8 @@ public class P6eFileOperationController extends P6eBaseController {
      */
     @Resource
     private P6eConfig p6eConfig;
+
+    private static final String CONTENT_LENGTH_HEADER = "Content-Length";
 
     @GetMapping("/operation/list/**")
     public Mono<Void> list(Integer start, Integer end,
@@ -83,8 +85,79 @@ public class P6eFileOperationController extends P6eBaseController {
     }
 
     @PostMapping("/operation/upload/**")
-    public Mono<Void> upload(final ServerHttpRequest request, final ServerHttpResponse response) {
-        return Mono.just("11111").then();
+    public Mono<Void> upload(@RequestPart("file") FilePart filePart,
+                             final ServerHttpRequest request, final ServerHttpResponse response) {
+        try {
+            response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+            final String baseFilePath = p6eConfig.getFile().getBaseFilePath();
+            final long uploadMaxSize = p6eConfig.getFile().getUpload().getMaxSize();
+            final String[] uploadSuffixes = p6eConfig.getFile().getUpload().getSuffixes();
+            // 读取请求的大小
+            long fSize = 0;
+            String fName = filePart.filename();
+            final List<String> sizeList = request.getHeaders().get(CONTENT_LENGTH_HEADER);
+            if (sizeList != null && sizeList.size() > 0) {
+                fSize = Long.parseLong(sizeList.get(0));
+            }
+            if (fSize == 0 || fSize > uploadMaxSize) {
+                return response.writeWith(Mono.just(P6eResultModel.build(P6eResultConfig.ERROR_FILE_SIZE_EXCEPTION))
+                        .flatMap((Function<P6eResultModel, Mono<DataBuffer>>) modal ->
+                                Mono.just(new DefaultDataBufferFactory().allocateBuffer().write(modal.toBytes()))));
+            }
+            if (P6eFileUtil.filePathFormat(fName, uploadSuffixes) == null) {
+                return response.writeWith(Mono.just(P6eResultModel.build(P6eResultConfig.ERROR_FILE_SUFFIX_EXCEPTION))
+                        .flatMap((Function<P6eResultModel, Mono<DataBuffer>>) modal ->
+                                Mono.just(new DefaultDataBufferFactory().allocateBuffer().write(modal.toBytes()))));
+            }
+            final String filePath = P6eFileUtil.filePathFormat(request.getPath().value(), uploadSuffixes);
+            if (filePath == null) {
+                return response.writeWith(Mono.just(P6eResultModel.build(P6eResultConfig.ERROR_PARAM_EXCEPTION))
+                        .flatMap((Function<P6eResultModel, Mono<DataBuffer>>) modal ->
+                                Mono.just(new DefaultDataBufferFactory().allocateBuffer().write(modal.toBytes()))));
+            } else {
+                // 创建 Mono 对象
+                Mono<String> mono = Mono.just(baseFilePath + "/" + filePath);
+                // 读取配置文件数据
+                if (p6eConfig.getFile().getUpload().isAuth()) {
+                    // 添加认证模块
+                    mono = mono.flatMap(P6eFileCoreFactory.manageAuth(request));
+                }
+                final long ffSize = fSize;
+                return response.writeWith(mono.flatMap(s -> {
+                    final DataBuffer dataBuffer = new DefaultDataBufferFactory().allocateBuffer(2048);
+                    if (P6eResultConfig.AUTH_NO_EXISTENCE.equals(s)) {
+                        LOGGER.info(logBaseInfo(request) + P6eResultConfig.AUTH_NO_EXISTENCE + ".");
+                        return Mono.just(dataBuffer.write(P6eResultModel.build(P6eResultConfig.ERROR_AUTH_NO_EXISTENCE).toBytes()));
+                    } else {
+                        // 下载文件到文件目录
+                        final File file = new File(P6eFileUtil.filePathRename(s.substring(17)));
+                        P6eFileCoreFactory.write(filePart, file);
+                        return Mono.just(file)
+                                .flatMap((Function<File, Mono<DataBuffer>>) f -> {
+                                    if (f.length() > ffSize) {
+                                        LOGGER.info(logBaseInfo(request) + "[** path: "
+                                                + file.getPath() + ", size: " + file.length() + " **] => "
+                                                + "file size error. file delete ? " + f.delete());
+                                        return Mono.just(dataBuffer.write(
+                                                P6eResultModel.build(P6eResultConfig.ERROR_FILE_SIZE_EXCEPTION).toBytes()));
+                                    } else {
+                                        final Map<String, Object> result = new HashMap<>(2);
+                                        result.put("size", f.length());
+                                        result.put("name", f.getName());
+                                        LOGGER.info(logBaseInfo(request) + "[** path: "
+                                                + file.getPath() + ", size: " + file.length() + " **] => success.");
+                                        return Mono.just(dataBuffer.write(
+                                                P6eResultModel.build(P6eResultConfig.SUCCESS, result).toBytes()));
+                                    }
+                                });
+                    }
+                }));
+            }
+        } catch (Exception e) {
+            LOGGER.error(logBaseInfo(request) + " ==> " + e.getMessage());
+            response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+            return response.writeWith(Mono.just(new DefaultDataBufferFactory().allocateBuffer()
+                    .write(P6eResultModel.build(P6eResultConfig.ERROR_AUTH_NO_EXISTENCE).toBytes())));
+        }
     }
-
 }

@@ -1,9 +1,11 @@
 package com.dyy.p6e.germ.file2.core;
 
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import reactor.core.publisher.Mono;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +51,14 @@ public final class P6eFileCoreFactory {
 
     public static byte[] read(String filePath, DataBuffer dataBuffer, boolean isCache) throws IOException {
         return P6E_FILE_CORE_CONTEXT.read(filePath, dataBuffer, isCache);
+    }
+
+    public static void write(final FilePart filePart, final File file) {
+        P6E_FILE_CORE_CONTEXT.write(filePart, file);
+    }
+
+    public static void addManageAuthToken(String... tokes) {
+        P6E_FILE_CORE_MANAGE.addAuthToken(tokes);
     }
 
     public static Function<String, Mono<String>> manageAuth(ServerHttpRequest request) {

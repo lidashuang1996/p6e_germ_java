@@ -2,6 +2,7 @@ package com.dyy.p6e.germ.file2.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.UUID;
 
 /**
  * 文件操作的常用的工具类
@@ -88,6 +89,28 @@ public final class P6eFileUtil {
             return result.toString();
         }
         return null;
+    }
+
+    public static String filePathRename(String filePath) {
+        return filePathRename(filePath, UUID.randomUUID().toString().replaceAll("-", ""));
+    }
+
+    public static String filePathRename(String filePath, String rename) {
+        int start = 0, end = 0;
+        for (int i = filePath.length() - 1; i >= 0; i--) {
+            if (filePath.charAt(i) == '.') {
+                end = i;
+            }
+            if (filePath.charAt(i) == '/') {
+                start = i;
+                break;
+            }
+        }
+        if (end > start) {
+            return filePath.substring(0, start) + (start > 0 ? "/" : "") + rename + filePath.substring(end);
+        } else {
+            return null;
+        }
     }
 
     private static String decodeUrl(String url) {

@@ -10,12 +10,19 @@ import java.io.Serializable;
 public final class P6eResultConfig implements Serializable {
     /** 参数异常 */
     public static final String ERROR_PARAM_EXCEPTION = "400-ERROR_PARAM_EXCEPTION";
+
+    /** 文件太大 */
+    public static final String ERROR_FILE_SIZE_EXCEPTION = "400-ERROR_FILE_SIZE_EXCEPTION";
+    /** 文件后缀名不符合 */
+    public static final String ERROR_FILE_SUFFIX_EXCEPTION = "400-ERROR_FILE_SUFFIX_EXCEPTION";
+
+
     /** 资源不存在 */
     public static final String RESOURCES_NO_EXIST = "RESOURCES_NO_EXIST";
     /** 资源不存在 */
     public static final String ERROR_RESOURCES_NO_EXIST = "400-ERROR_RESOURCES_NO_EXIST";
     /** 资源操作错误 */
-    public static final String ERROR_RESOURCES_OPERATION = "400-ERROR_RESOURCES_OPERATION";
+    public static final String ERROR_RESOURCES_OPERATION = "500-ERROR_RESOURCES_OPERATION";
     /** 资源存在关联数据 */
     public static final String ERROR_RESOURCES_EXISTENCE_RELATION_DATA = "400-ERROR_RESOURCES_EXISTENCE_RELATION_DATA";
     /** 服务器内部出现异常 */
@@ -30,6 +37,7 @@ public final class P6eResultConfig implements Serializable {
     public static final String ERROR_405_ERROR_METHOD_NOT_ALLOWED = "405-ERROR_METHOD_NOT_ALLOWED";
 
 
+    public static final String ERROR_400_ERROR_PARAM_EXCEPTION = "400-ERROR_PARAM_EXCEPTION";
 
 
 
