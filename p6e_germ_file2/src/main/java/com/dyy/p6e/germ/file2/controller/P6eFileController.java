@@ -1,6 +1,7 @@
 package com.dyy.p6e.germ.file2.controller;
 
 import com.dyy.p6e.germ.file2.config.P6eConfig;
+import com.dyy.p6e.germ.file2.config.P6eConfigFile;
 import com.dyy.p6e.germ.file2.controller.support.P6eBaseController;
 import com.dyy.p6e.germ.file2.core.P6eFileCoreFactory;
 import com.dyy.p6e.germ.file2.model.P6eResultConfig;
@@ -18,7 +19,6 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.util.function.Function;
 
 /**
@@ -35,24 +35,24 @@ public class P6eFileController extends P6eBaseController {
     @Resource
     private P6eConfig p6eConfig;
 
-    /**
-     */
-    private static final String JPG_SUFFIX = ".jpg";
-    private static final String PNG_SUFFIX = ".png";
-    private static final String GIF_SUFFIX = ".gif";
-    private static final String JPEG_SUFFIX = ".jpeg";
+    private static final String DOWNLOAD_TYPE = "DOWNLOAD";
+
+    @GetMapping("/download/**")
+    public Mono<Void> download(final ServerHttpRequest request, final ServerHttpResponse response) {
+        return resource(request, response, DOWNLOAD_TYPE);
+    }
 
     /**
      * 路由所有以 resource 开头的路径地址
-     * @return
      */
-    @SuppressWarnings("all")
     @GetMapping("/resource/**")
-    public Mono<Void> getResource(final ServerHttpRequest request, final ServerHttpResponse response) {
+    public Mono<Void> resource(final ServerHttpRequest request, final ServerHttpResponse response, String type) {
         try {
+            final String mType = type == null ? null : type.toUpperCase();
             final String baseFilePath = p6eConfig.getFile().getBaseFilePath();
-            final String[] downloadFileSuffixList = p6eConfig.getFile().getDownloadFileSuffixList();
-            final String filePath = P6eFileUtil.filePathFormat(request.getPath().value(), downloadFileSuffixList);
+            final String[] downloadSuffixes = p6eConfig.getFile().getDownload().getSuffixes();
+            final P6eConfigFile.Download.Open[] openSuffixes = p6eConfig.getFile().getDownload().getOpen();
+            final String filePath = P6eFileUtil.filePathFormat(request.getPath().value(), downloadSuffixes);
             if (filePath == null) {
                 response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
                 return response.writeWith(Mono.just(P6eResultModel.build(P6eResultConfig.ERROR_PARAM_EXCEPTION))
@@ -80,21 +80,26 @@ public class P6eFileController extends P6eBaseController {
                                     // 删除路径的固定前缀
                                     s = s.substring(9);
                                     try {
-                                        if (s.endsWith(JPG_SUFFIX)
-                                                || s.endsWith(JPEG_SUFFIX)) {
-                                            response.getHeaders().setContentType(MediaType.IMAGE_JPEG);
-                                        } else if (s.endsWith(PNG_SUFFIX)) {
-                                            response.getHeaders().setContentType(MediaType.IMAGE_PNG);
-                                        } else if (s.endsWith(GIF_SUFFIX)) {
-                                            response.getHeaders().setContentType(MediaType.IMAGE_GIF);
+                                        P6eConfigFile.Download.Open open = null;
+                                        for (P6eConfigFile.Download.Open openSuffix : openSuffixes) {
+                                            if (s.endsWith(openSuffix.getSuffix())) {
+                                                open = openSuffix;
+                                                break;
+                                            }
+                                        }
+                                        if (DOWNLOAD_TYPE.equals(mType) || open == null) {
+                                            response.getHeaders().setContentType(MediaType.valueOf("application/force-download"));
+                                            response.getHeaders().add("Content-Disposition",
+                                                    "attachment;fileName=" + P6eFileUtil.getFileName(s));
+                                        } else {
+                                            response.getHeaders().setContentType(MediaType.valueOf(open.getType()));
                                         }
                                         return Mono.just(dataBuffer);
                                     } finally {
-                                        try {
-                                            P6eFileCoreFactory.read(s, dataBuffer);
+                                        if (P6eFileCoreFactory.read(s, dataBuffer) == null) {
+                                            LOGGER.info(logBaseInfo(request) + "FILE: " + s + ", ERROR.");
+                                        } else {
                                             LOGGER.info(logBaseInfo(request) + "FILE: " + s + ", SUCCESS.");
-                                        } catch (IOException e) {
-                                            LOGGER.error(logBaseInfo(request) + "FILE: " + s + ", " + e.getMessage());
                                         }
                                     }
                             }

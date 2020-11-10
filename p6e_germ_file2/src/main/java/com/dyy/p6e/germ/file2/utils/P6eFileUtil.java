@@ -2,6 +2,7 @@ package com.dyy.p6e.germ.file2.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.UUID;
 
 /**
@@ -93,6 +94,16 @@ public final class P6eFileUtil {
 
     public static String filePathRename(String filePath) {
         return filePathRename(filePath, UUID.randomUUID().toString().replaceAll("-", ""));
+    }
+
+    public static String getFileName(String filePath) {
+        int index = filePath.lastIndexOf("/");
+        String fileName = index > 0 ? filePath.substring(index) : filePath;
+        try {
+            return URLEncoder.encode(fileName, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return fileName;
+        }
     }
 
     public static String filePathRename(String filePath, String rename) {

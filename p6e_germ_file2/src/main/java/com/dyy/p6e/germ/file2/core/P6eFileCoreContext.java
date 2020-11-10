@@ -33,11 +33,11 @@ public class P6eFileCoreContext {
         this.p6eFileCoreCache = p6eFileCoreCache;
     }
 
-    public byte[] read(String filePath, DataBuffer dataBuffer) throws IOException {
+    public byte[] read(String filePath, DataBuffer dataBuffer) {
         return read(filePath, dataBuffer, true);
     }
 
-    public byte[] read(String filePath, DataBuffer dataBuffer, boolean isCache) throws IOException {
+    public byte[] read(String filePath, DataBuffer dataBuffer, boolean isCache) {
         // 查询是否存在缓存数据
         if (isCache) {
             final byte[] bytes = p6eFileCoreCache.getCache(filePath);

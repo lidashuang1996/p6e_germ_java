@@ -25,14 +25,14 @@ public class P6eFileCoreFlow {
      */
     private static final int BUFFER_SIZE = 2048;
 
-    public byte[] read(final String filePath, final DataBuffer dataBuffer) throws IOException {
+    public byte[] read(final String filePath, final DataBuffer dataBuffer) {
         // 验证文件路径是否合法
         final File file = new File(filePath);
         if (!file.exists()) {
-            throw new IOException("[ FilePath ==> " + filePath + " ] file does not exist.");
+            LOGGER.error("[ FilePath ==> " + filePath + " ] file does not exist.");
         }
         if (!file.isFile()) {
-            throw new IOException("[ FilePath ==> " + filePath + " ] file path is not a file.");
+            LOGGER.error("[ FilePath ==> " + filePath + " ] file path is not a file.");
         }
         int cIndex = 0;
         final byte[] cache = new byte[Integer.parseInt(String.valueOf(file.length()))];
@@ -60,6 +60,10 @@ public class P6eFileCoreFlow {
                 }
                 byteBuffer.clear();
             }
+            return cache;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         } finally {
             try {
                 if (fileChannel != null) {
@@ -76,7 +80,6 @@ public class P6eFileCoreFlow {
                 e.printStackTrace();
             }
         }
-        return cache;
     }
 
     public void write(final FilePart filePart, final File file) {

@@ -51,9 +51,15 @@ public class P6eFileOperationController extends P6eBaseController {
                         .flatMap((Function<P6eResultModel, Mono<DataBuffer>>) modal ->
                                 Mono.just(new DefaultDataBufferFactory().allocateBuffer().write(modal.toBytes()))));
             } else {
-                return response.writeWith(Mono.just(baseFilePath + "/" + filePath)
-                        .flatMap(P6eFileCoreFactory.manageAuth(request))
-                        .flatMap(s -> {
+                // 创建 Mono 对象
+                Mono<String> mono = Mono.just(baseFilePath + "/" + filePath);
+                // 读取配置文件数据
+                if (p6eConfig.getFile().getUpload().isAuth()) {
+                    // 添加认证模块
+                    mono = mono.flatMap(P6eFileCoreFactory.manageAuth(request));
+                }
+                return response.writeWith(
+                        mono.flatMap(s -> {
                             final DataBuffer dataBuffer = new DefaultDataBufferFactory().allocateBuffer(2048);
                             if (P6eResultConfig.AUTH_NO_EXISTENCE.equals(s)) {
                                 LOGGER.info(logBaseInfo(request) + P6eResultConfig.AUTH_NO_EXISTENCE + ".");

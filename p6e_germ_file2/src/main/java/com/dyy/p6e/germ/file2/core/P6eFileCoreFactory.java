@@ -45,11 +45,11 @@ public final class P6eFileCoreFactory {
         return P6E_FILE_CORE_JURISDICTION.execute(request);
     }
 
-    public static byte[] read(String filePath, DataBuffer dataBuffer) throws IOException {
+    public static byte[] read(String filePath, DataBuffer dataBuffer) {
         return P6E_FILE_CORE_CONTEXT.read(filePath, dataBuffer);
     }
 
-    public static byte[] read(String filePath, DataBuffer dataBuffer, boolean isCache) throws IOException {
+    public static byte[] read(String filePath, DataBuffer dataBuffer, boolean isCache) {
         return P6E_FILE_CORE_CONTEXT.read(filePath, dataBuffer, isCache);
     }
 
