@@ -115,7 +115,7 @@ public class P6eFileOperationController extends P6eBaseController {
                         .flatMap((Function<P6eResultModel, Mono<DataBuffer>>) modal ->
                                 Mono.just(new DefaultDataBufferFactory().allocateBuffer().write(modal.toBytes()))));
             }
-            final String filePath = P6eFileUtil.filePathFormat(request.getPath().value(), uploadSuffixes);
+            final String filePath = P6eFileUtil.folderPathFormat(request.getPath().value());
             if (filePath == null) {
                 return response.writeWith(Mono.just(P6eResultModel.build(P6eResultConfig.ERROR_PARAM_EXCEPTION))
                         .flatMap((Function<P6eResultModel, Mono<DataBuffer>>) modal ->
