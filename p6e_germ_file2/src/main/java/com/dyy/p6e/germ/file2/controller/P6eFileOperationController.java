@@ -2,8 +2,8 @@ package com.dyy.p6e.germ.file2.controller;
 
 import com.dyy.p6e.germ.file2.config.P6eConfig;
 import com.dyy.p6e.germ.file2.controller.support.P6eBaseController;
+import com.dyy.p6e.germ.file2.core.P6eFileCoreContext;
 import com.dyy.p6e.germ.file2.core.P6eFileCoreFactory;
-import com.dyy.p6e.germ.file2.core.P6eFileCoreManage;
 import com.dyy.p6e.germ.file2.model.P6eResultConfig;
 import com.dyy.p6e.germ.file2.model.P6eResultModel;
 import com.dyy.p6e.germ.file2.utils.P6eFileUtil;
@@ -54,9 +54,9 @@ public class P6eFileOperationController extends P6eBaseController {
                 // 创建 Mono 对象
                 Mono<String> mono = Mono.just(baseFilePath + "/" + filePath);
                 // 读取配置文件数据
-                if (p6eConfig.getFile().getUpload().isAuth()) {
+                if (p6eConfig.getFile().getUpload().getAuth().isStatus()) {
                     // 添加认证模块
-                    mono = mono.flatMap(P6eFileCoreFactory.manageAuth(request));
+                    mono = mono.flatMap(P6eFileCoreFactory.auth(request, "UPLOAD"));
                 }
                 return response.writeWith(
                         mono.flatMap(s -> {
@@ -76,7 +76,7 @@ public class P6eFileOperationController extends P6eBaseController {
                                 if (end != null) {
                                     pEnd = end;
                                 }
-                                final List<P6eFileCoreManage.Pocket> list = P6eFileCoreFactory.manageList(s, pStart, pEnd);
+                                final List<P6eFileCoreContext.Pocket> list = P6eFileCoreFactory.list(s, pStart, pEnd);
                                 LOGGER.info(logBaseInfo(request) + "FOLDER: " + s + ", SUCCESS.");
                                 return Mono.just(dataBuffer.write(P6eResultModel.build(P6eResultConfig.SUCCESS, list).toBytes()));
                             }
@@ -124,9 +124,9 @@ public class P6eFileOperationController extends P6eBaseController {
                 // 创建 Mono 对象
                 Mono<String> mono = Mono.just(baseFilePath + "/" + filePath);
                 // 读取配置文件数据
-                if (p6eConfig.getFile().getUpload().isAuth()) {
+                if (p6eConfig.getFile().getUpload().getAuth().isStatus()) {
                     // 添加认证模块
-                    mono = mono.flatMap(P6eFileCoreFactory.manageAuth(request));
+                    mono = mono.flatMap(P6eFileCoreFactory.auth(request, "UPLOAD"));
                 }
                 final long ffSize = fSize;
                 return response.writeWith(mono.flatMap(s -> {
@@ -137,9 +137,11 @@ public class P6eFileOperationController extends P6eBaseController {
                     } else {
                         // 下载文件到文件目录
                         final File file = new File(P6eFileUtil.filePathRename(s.substring(17)));
+                        // 写入文件
                         P6eFileCoreFactory.write(filePart, file);
                         return Mono.just(file)
                                 .flatMap((Function<File, Mono<DataBuffer>>) f -> {
+                                    // 判断写入的文件长度跟读取的文件长度是否大（用户可以修改提交的头里面长度）
                                     if (f.length() > ffSize) {
                                         LOGGER.info(logBaseInfo(request) + "[** path: "
                                                 + file.getPath() + ", size: " + file.length() + " **] => "

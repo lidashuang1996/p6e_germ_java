@@ -10,11 +10,11 @@ public class P6eConfigFile implements Serializable {
     /** 基础的文件路径 */
     private String baseFilePath = "";
 
+    /** 核心上下文 */
+    private Manage context = new Manage();
+
     /** 上传页面的配置文件对象 */
     private Upload upload = new Upload();
-
-    /** 管理页面的配置文件对象 */
-    private Manage manage = new Manage();
 
     /** 下载页面的配置文件对象 */
     private Download download = new Download();
@@ -35,14 +35,6 @@ public class P6eConfigFile implements Serializable {
         this.upload = upload;
     }
 
-    public Manage getManage() {
-        return manage;
-    }
-
-    public void setManage(Manage manage) {
-        this.manage = manage;
-    }
-
     public Download getDownload() {
         return download;
     }
@@ -51,14 +43,24 @@ public class P6eConfigFile implements Serializable {
         this.download = download;
     }
 
+    public Manage getContext() {
+        return context;
+    }
+
+    public void setContext(Manage context) {
+        this.context = context;
+    }
+
     /**
      * 文件下载的配置
      */
     public static class Download {
-        /** 是否认证 */
-        private boolean auth = false;
-        /** 是否权限 */
-        private boolean jurisdiction = false;
+        /** 认证 */
+        private Manage auth = new Manage();
+        /** 权限 */
+        private Manage jurisdiction = new Manage();
+        /** 是否缓存 */
+        private Cache cache = new Cache();
         /** 允许浏览器直接打开的文件后缀 */
         private Open[] open = new Open[] {
                 new Open("jpg", "image/jpeg"),
@@ -70,28 +72,28 @@ public class P6eConfigFile implements Serializable {
         /** 允许下载的文件后缀 */
         private String[] suffixes = new String[] { "jpg", "png", "gif", "jpeg", "ico" };
 
-        public boolean isAuth() {
+        public Manage getAuth() {
             return auth;
         }
 
-        public void setAuth(boolean auth) {
+        public void setAuth(Manage auth) {
             this.auth = auth;
         }
 
-        public boolean isJurisdiction() {
+        public Manage getJurisdiction() {
             return jurisdiction;
         }
 
-        public void setJurisdiction(boolean jurisdiction) {
+        public void setJurisdiction(Manage jurisdiction) {
             this.jurisdiction = jurisdiction;
         }
 
-        public String[] getSuffixes() {
-            return suffixes;
+        public Cache getCache() {
+            return cache;
         }
 
-        public void setSuffixes(String[] suffixes) {
-            this.suffixes = suffixes;
+        public void setCache(Cache cache) {
+            this.cache = cache;
         }
 
         public Open[] getOpen() {
@@ -100,6 +102,14 @@ public class P6eConfigFile implements Serializable {
 
         public void setOpen(Open[] open) {
             this.open = open;
+        }
+
+        public String[] getSuffixes() {
+            return suffixes;
+        }
+
+        public void setSuffixes(String[] suffixes) {
+            this.suffixes = suffixes;
         }
 
         public static class Open {
@@ -130,6 +140,49 @@ public class P6eConfigFile implements Serializable {
                 this.type = type;
             }
         }
+
+        public static class Cache {
+            /** 是否开启缓存 */
+            private boolean status = true;
+            /** 缓存的最大值 */
+            private long maxSize = 2000;
+            /** 缓存的总值 */
+            private long totalSize = 2000;
+            /** 允许缓存的文件后缀 */
+            private String[] suffixes = new String[] { "jpg", "png", "gif", "jpeg", "ico" };
+
+            public boolean isStatus() {
+                return status;
+            }
+
+            public void setStatus(boolean status) {
+                this.status = status;
+            }
+
+            public long getMaxSize() {
+                return maxSize;
+            }
+
+            public void setMaxSize(long maxSize) {
+                this.maxSize = maxSize;
+            }
+
+            public long getTotalSize() {
+                return totalSize;
+            }
+
+            public void setTotalSize(long totalSize) {
+                this.totalSize = totalSize;
+            }
+
+            public String[] getSuffixes() {
+                return suffixes;
+            }
+
+            public void setSuffixes(String[] suffixes) {
+                this.suffixes = suffixes;
+            }
+        }
     }
 
     /**
@@ -137,17 +190,17 @@ public class P6eConfigFile implements Serializable {
      */
     public static class Upload {
         /** 是否认证 */
-        private boolean auth = false;
+        private Manage auth = new Manage();
         /** 允许上传的文件大小的最大值 */
         private long maxSize = 1024 * 1024 * 3;
         /** 允许上传的文件后缀 */
         private String[] suffixes = new String[] { "jpg", "png", "gif", "jpeg", "ico" };
 
-        public boolean isAuth() {
+        public Manage getAuth() {
             return auth;
         }
 
-        public void setAuth(boolean auth) {
+        public void setAuth(Manage auth) {
             this.auth = auth;
         }
 
@@ -168,19 +221,24 @@ public class P6eConfigFile implements Serializable {
         }
     }
 
-    /**
-     * 管理页面的配置
-     */
     public static class Manage {
-        /** 令牌盒子 */
-        private String[] tokens = new String[0];
+        private String path;
+        private boolean status = false;
 
-        public String[] getTokens() {
-            return tokens;
+        public String getPath() {
+            return path;
         }
 
-        public void setTokens(String[] tokens) {
-            this.tokens = tokens;
+        public void setPath(String path) {
+            this.path = path;
+        }
+
+        public boolean isStatus() {
+            return status;
+        }
+
+        public void setStatus(boolean status) {
+            this.status = status;
         }
     }
 

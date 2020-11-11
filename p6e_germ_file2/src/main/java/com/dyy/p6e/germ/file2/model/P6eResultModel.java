@@ -2,17 +2,22 @@ package com.dyy.p6e.germ.file2.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 
 /**
  * 请求结果的封装
- * @author LiDaShuang
+ * @author lidashuang
  * @version 1.0
  */
 public class P6eResultModel implements Serializable {
+
+    /**
+     * 注入 json 对象
+     */
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
     /**
      * 返回数据的消息状态码
      */
@@ -20,7 +25,6 @@ public class P6eResultModel implements Serializable {
 
     /**
      * 返回数据的消息内容
-     *
      * message 不推荐为中文，后期如果需要支持多语言操作很麻烦
      */
     private String message;
@@ -100,6 +104,10 @@ public class P6eResultModel implements Serializable {
         this.data = data;
     }
 
+    /**
+     * 对象序列化
+     * @return 序列化后的内容
+     */
     @Override
     public String toString() {
         try {
@@ -109,7 +117,7 @@ public class P6eResultModel implements Serializable {
                     + ",\"message\":\""
                     + message + '\"'
                     + ",\"data\":"
-                    + (data == null ? null : new ObjectMapper().writeValueAsString(data))
+                    + (data == null ? null : MAPPER.writeValueAsString(data))
             + "}";
         } catch (JsonProcessingException e) {
             return "{"
@@ -123,6 +131,10 @@ public class P6eResultModel implements Serializable {
         }
     }
 
+    /**
+     * 对象序列化且输出为字节码数组
+     * @return 字节码数组
+     */
     public byte[] toBytes() {
         return this.toString().getBytes(StandardCharsets.UTF_8);
     }

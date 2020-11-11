@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
@@ -20,6 +19,23 @@ public class P6eBaseController {
      * 注入的日志对象
      */
     protected static final Logger LOGGER = LoggerFactory.getLogger(P6eBaseController.class);
+
+    /**
+     * 获取列表的数据转为字符串
+     * @param data 数据列表
+     * @return 结果数据内容
+     */
+    private static String obtainData(List<String> data) {
+        if (data == null) {
+            return "";
+        } else {
+            final StringBuilder sb = new StringBuilder();
+            for (String d : data) {
+                sb.append(d).append(",");
+            }
+            return sb.substring(0, sb.length() - 1);
+        }
+    }
 
     /**
      * 获取客户端 IP
@@ -55,23 +71,6 @@ public class P6eBaseController {
             ip = "0.0.0.0";
         }
         return ip;
-    }
-
-    /**
-     * 获取列表的数据转为字符串
-     * @param data 数据列表
-     * @return 结果数据内容
-     */
-    protected static String obtainData(List<String> data) {
-        if (data == null) {
-            return "";
-        } else {
-            final StringBuilder sb = new StringBuilder();
-            for (String d : data) {
-                sb.append(d).append(",");
-            }
-            return sb.substring(0, sb.length() - 1);
-        }
     }
 
     /**

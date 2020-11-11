@@ -7,19 +7,37 @@ import java.util.UUID;
 
 /**
  * 文件操作的常用的工具类
- * 1. 文件路径格式化
+ * 1. 对 URL 数据编码数据
+ * 2. 文件路径格式化
+ * 3. 文件夹路径格式化
+ * 4. 文件路径重命名（UUID）
+ * 5. 文件路径重命名（自动定义）
+ * 6. 文件路径中获取文件名称
  * @author lidashuang
  * @version 1.0
  */
 public final class P6eFileUtil {
 
     /**
+     * URL 编码数据
+     * @param url 待编码的 URL
+     * @return 编码后的数据
+     */
+    private static String decodeUrl(String url) {
+        try {
+            return URLDecoder.decode(url, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return url;
+        }
+    }
+
+    /**
      * 文件路径格式化
      * @param filePath 文件路径
-     * @param suffixList 格式化文件后缀数组
+     * @param suffixes 格式化文件后缀数组
      * @return 格式化后的文件路径
      */
-    public static String filePathFormat(String filePath, String[] suffixList) {
+    public static String filePathFormat(String filePath, String[] suffixes) {
         final String[] filePathBlock = decodeUrl(filePath).split("/");
         if (filePathBlock.length > 0) {
             final StringBuilder result = new StringBuilder();
@@ -45,7 +63,7 @@ public final class P6eFileUtil {
                                     && block.charAt(j) == '.') {
                                 final String s = block.substring(j + 1).toLowerCase();
                                 // 比对后缀是否在给出的文件后缀数组中
-                                for (String suffix : suffixList) {
+                                for (String suffix : suffixes) {
                                     if (s.equals(suffix.toLowerCase())) {
                                         status = false;
                                         result.append(block).append("/");
@@ -70,6 +88,11 @@ public final class P6eFileUtil {
         return null;
     }
 
+    /**
+     * 文件夹路径格式化
+     * @param folderPath 文件夹路径
+     * @return 格式化后的文件夹路径
+     */
     public static String folderPathFormat(String folderPath) {
         final String[] folderPathBlock = decodeUrl(folderPath).split("/");
         if (folderPathBlock.length > 0) {
@@ -92,20 +115,21 @@ public final class P6eFileUtil {
         return null;
     }
 
+    /**
+     * 文件路径中对文件重命名（重命名采用 UUID 替换）
+     * @param filePath 文件路径
+     * @return 重命名后的文件路径
+     */
     public static String filePathRename(String filePath) {
         return filePathRename(filePath, UUID.randomUUID().toString().replaceAll("-", ""));
     }
 
-    public static String getFileName(String filePath) {
-        int index = filePath.lastIndexOf("/");
-        String fileName = index > 0 ? filePath.substring(index) : filePath;
-        try {
-            return URLEncoder.encode(fileName, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return fileName;
-        }
-    }
-
+    /**
+     * 文件路径中对文件重命名
+     * @param filePath 文件路径
+     * @param rename 重命名名称
+     * @return 重命名后的文件路径
+     */
     public static String filePathRename(String filePath, String rename) {
         int start = 0, end = 0;
         for (int i = filePath.length() - 1; i >= 0; i--) {
@@ -124,11 +148,18 @@ public final class P6eFileUtil {
         }
     }
 
-    private static String decodeUrl(String url) {
+    /**
+     * 文件路径中获取文件名称
+     * @param filePath 文件路径
+     * @return 文件名称
+     */
+    public static String getFileName(String filePath) {
+        int index = filePath.lastIndexOf("/");
+        String fileName = index > 0 ? filePath.substring(index) : filePath;
         try {
-            return URLDecoder.decode(url, "UTF-8");
+            return URLEncoder.encode(fileName, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            return url;
+            return fileName;
         }
     }
 

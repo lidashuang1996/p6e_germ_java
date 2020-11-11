@@ -13,6 +13,7 @@ import java.io.Serializable;
 @Component
 @ConfigurationProperties(prefix = "p6e")
 public class P6eConfig implements Serializable {
+
     /** 文件操作的配置文件对象 */
     private P6eConfigFile file = new P6eConfigFile();
 

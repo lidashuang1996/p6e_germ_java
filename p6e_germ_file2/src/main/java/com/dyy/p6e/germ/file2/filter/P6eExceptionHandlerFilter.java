@@ -32,8 +32,9 @@ public class P6eExceptionHandlerFilter implements WebFilter {
             final ServerHttpRequest serverHttpRequest = exchange.getRequest();
             final ServerHttpResponse serverHttpResponse = exchange.getResponse();
             throwable.printStackTrace();
-            LOGGER.error(P6eBaseController.logBaseInfo(serverHttpRequest) + " " + throwable.getMessage());
             serverHttpResponse.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+            LOGGER.error(P6eBaseController.logBaseInfo(serverHttpRequest) + " " + throwable.getMessage());
+            // 对拦截的异常进行分别处理
             if (throwable instanceof MethodNotAllowedException) {
                 return serverHttpResponse.writeWith(Mono.just(new DefaultDataBufferFactory()
                         .allocateBuffer().write(P6eResultModel.build(P6eResultConfig.ERROR_405_ERROR_METHOD_NOT_ALLOWED).toBytes())));

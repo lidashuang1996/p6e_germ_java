@@ -4,14 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.codec.multipart.FilePart;
-import reactor.core.CoreSubscriber;
-import reactor.core.publisher.Mono;
-
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * @author lidashuang
@@ -19,12 +14,22 @@ import java.util.function.Function;
  */
 public class P6eFileCoreFlow {
 
+    /**
+     * 注入的日志对象
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(P6eFileCoreFlow.class);
+
     /**
      * 缓冲区的大小
      */
     private static final int BUFFER_SIZE = 2048;
 
+    /**
+     * 读取文件
+     * @param filePath 文件路径
+     * @param dataBuffer 文件缓冲区对象
+     * @return 读取的文件 bytes
+     */
     public byte[] read(final String filePath, final DataBuffer dataBuffer) {
         // 验证文件路径是否合法
         final File file = new File(filePath);
@@ -82,6 +87,11 @@ public class P6eFileCoreFlow {
         }
     }
 
+    /**
+     * 写入文件
+     * @param filePart 文件流对象
+     * @param file 文件对象
+     */
     public void write(final FilePart filePart, final File file) {
         // 验证文件路径是否合法
         if (!file.getParentFile().exists()) {
