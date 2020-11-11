@@ -17,6 +17,8 @@ import java.util.function.Function;
  */
 public final class P6eFileCoreFactory {
 
+    /** 配置文件 */
+    public static P6eConfigFile CONFIG = null;
     /** 文件核心上下文 */
     private static P6eFileCoreContext P6E_FILE_CORE_CONTEXT = new P6eFileCoreContext();
     /** 文件上传认证判断类   */
@@ -27,6 +29,8 @@ public final class P6eFileCoreFactory {
     private static P6eFileCoreJurisdiction P6E_FILE_CORE_JURISDICTION = new P6eFileCoreJurisdiction();
 
     public static void init(P6eConfigFile config) {
+        // 配置文件初始化
+        CONFIG = config;
         // 初始化自定义的方法
         final String cPath = config.getContext().getPath();
         final String uAuthPath = config.getUpload().getAuth().getPath();

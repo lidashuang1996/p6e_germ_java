@@ -145,9 +145,9 @@ public class P6eConfigFile implements Serializable {
             /** 是否开启缓存 */
             private boolean status = true;
             /** 缓存的最大值 */
-            private long maxSize = 2000;
+            private long maxSize = 1024 * 1024;
             /** 缓存的总值 */
-            private long totalSize = 2000;
+            private long totalSize = 1024 * 1024 * 30;
             /** 允许缓存的文件后缀 */
             private String[] suffixes = new String[] { "jpg", "png", "gif", "jpeg", "ico" };
 
