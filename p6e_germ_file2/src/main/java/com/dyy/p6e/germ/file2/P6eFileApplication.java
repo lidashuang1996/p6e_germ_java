@@ -9,10 +9,11 @@ import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 /**
+ * 文件认证服务项目
+ * 项目定位：是给后台开发，对图片文件有权限认证的需求
+ * 快速文件认证的需求--权限管理---等
  * @author lidashuang
  * @version 1.0
- * 1. 文件认证
- * 2. 文件携带参数截取
  */
 @SpringBootApplication
 public class P6eFileApplication {
