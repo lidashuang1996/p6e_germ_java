@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.p6e.germ.oauth2.infrastructure.repository.mapper.P6eUserMapper">
+
+    <select id="count" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eUserDb">
+
+    </select>
+
+    <select id="queryById" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eUserDb">
+
+    </select>
+
+    <select id="queryAll" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eUserDb">
+
+    </select>
+
+    <insert id="create" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eUserDb">
+
+    </insert>
+
+    <update id="update" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eUserDb">
+
+    </update>
+
+    <delete id="delete" parameterType="int">
+    </delete>
+</mapper>

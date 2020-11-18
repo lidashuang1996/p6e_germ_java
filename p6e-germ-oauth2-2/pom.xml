@@ -8,33 +8,17 @@
         <version>2.3.1.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.p6e.germ</groupId>
-    <artifactId>oauth2</artifactId>
-    <version>1.1.0.RELEASE</version>
-    <name>oauth2</name>
+    <groupId>com.example</groupId>
+    <artifactId>demo</artifactId>
+    <version>0.0.1</version>
+    <name>demo</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
-        <!-- 打包跳过测试 -->
-        <skipTests>true</skipTests>
-        <!-- JAVA 版本号 -->
         <java.version>1.8</java.version>
-        <!--<github.global.server>github</github.global.server>-->
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
-
-        <dependency>
-            <groupId>com.p6e.germ</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-            <version>1.1.0.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
 
 
         <!-- JSON 对象 -->
@@ -42,17 +26,6 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.8.6</version>
-        </dependency>
-
-        <!-- REDIS -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-jasper</artifactId>
         </dependency>
 
         <!-- lombok -->
@@ -82,17 +55,28 @@
             <version>2.1.2</version>
         </dependency>
 
+        <!-- REDIS -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.junit.vintage</groupId>
-                    <artifactId>junit-vintage-engine</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
