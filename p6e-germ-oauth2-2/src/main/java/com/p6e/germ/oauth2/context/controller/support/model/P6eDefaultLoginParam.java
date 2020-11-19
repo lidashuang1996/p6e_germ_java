@@ -9,8 +9,8 @@ import java.io.Serializable;
  * @version 1.0
  */
 @Data
-public class P6eAuthModelResult implements Serializable {
-    private String error;
-    private String mark;
+public class P6eDefaultLoginParam implements Serializable {
+    private String account;
+    private String password;
     private String voucher;
 }

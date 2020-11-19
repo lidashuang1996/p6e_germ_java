@@ -3,14 +3,17 @@ package com.p6e.germ.oauth2.domain.entity;
 import com.p6e.germ.oauth2.infrastructure.repository.db.P6eClientDb;
 import com.p6e.germ.oauth2.infrastructure.repository.mapper.P6eClientMapper;
 import com.p6e.germ.oauth2.infrastructure.utils.CopyUtil;
+import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.SpringUtil;
 import lombok.Getter;
+
+import java.io.Serializable;
 
 /**
  * @author lidashuang
  * @version 1.0
  */
-public class P6eClientEntity {
+public class P6eClientEntity implements Serializable {
 
     /** 注入映射 */
     private final P6eClientMapper p6eClientMapper = SpringUtil.getBean(P6eClientMapper.class);
@@ -31,7 +34,7 @@ public class P6eClientEntity {
     @Getter
     private String scope;
     @Getter
-    private String redirectUrl;
+    private String redirectUri;
     @Getter
     private String describe;
     @Getter
@@ -60,6 +63,7 @@ public class P6eClientEntity {
             throw new NullPointerException(this.getClass() + " ==> query null." );
         } else {
             CopyUtil.run(p6eClientDb, this);
+            System.out.println(toString());
         }
     }
 
@@ -119,9 +123,11 @@ public class P6eClientEntity {
     }
 
     public boolean verificationRedirectUri(final String redirectUri) {
-        final String[] redirectUrls = this.redirectUrl.split(",");
+        final String[] redirectUrls = this.getRedirectUri().split(",");
         for (String url : redirectUrls) {
-            return url.equals(redirectUri);
+            if (url.equals(redirectUri)) {
+                return true;
+            }
         }
         return false;
     }
@@ -135,4 +141,29 @@ public class P6eClientEntity {
         }
     }
 
+    @Override
+    public String toString() {
+        return "{"
+                + "\"uniqueId\":"
+                + uniqueId
+                + ",\"id\":"
+                + id
+                + ",\"status\":"
+                + status
+                + ",\"name\":\""
+                + name + '\"'
+                + ",\"key\":\""
+                + key + '\"'
+                + ",\"secret\":\""
+                + secret + '\"'
+                + ",\"scope\":\""
+                + scope + '\"'
+                + ",\"redirectUrl\":\""
+                + redirectUri + '\"'
+                + ",\"describe\":\""
+                + describe + '\"'
+                + ",\"limitingRule\":\""
+                + limitingRule + '\"'
+                + "}";
+    }
 }

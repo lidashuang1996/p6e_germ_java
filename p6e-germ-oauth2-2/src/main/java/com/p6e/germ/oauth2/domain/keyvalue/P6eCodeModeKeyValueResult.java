@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @author lidashuang
  * @version 1.0
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class P6eCodeModeKeyValueResult {
+public class P6eCodeModeKeyValueResult implements Serializable {
     private String mark;
     private String voucher;
 }

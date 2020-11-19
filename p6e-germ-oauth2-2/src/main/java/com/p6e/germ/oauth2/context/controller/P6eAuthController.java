@@ -39,6 +39,8 @@ public class P6eAuthController extends P6eBaseController {
      * 2. 授权码模式
      * 3. 密码模式
      * 4. 简化模式
+     *
+     * http://127.0.0.1:9900/auth?client_id=1234567890&response_type=code&redirect_uri=http://127.0.0.1:10000&scope=123
      * @param param
      * @return
      */

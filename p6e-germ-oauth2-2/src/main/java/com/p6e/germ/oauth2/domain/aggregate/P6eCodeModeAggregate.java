@@ -9,12 +9,14 @@ import com.p6e.germ.oauth2.infrastructure.utils.GeneratorUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.SpringUtil;
 
+import java.io.Serializable;
+
 /**
  * CODE 授权认证模式
  * @author lidashuang
  * @version 1.0
  */
-public class P6eCodeModeAggregate {
+public class P6eCodeModeAggregate implements Serializable {
 
     /**
      * 创建对象

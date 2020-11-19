@@ -25,7 +25,7 @@ spring:
     database: 9
     host: 119.23.25.159
     port: 6379
-    password: 123456
+    password: lidashuang
     timeout: 10000
     jedis:
       pool:

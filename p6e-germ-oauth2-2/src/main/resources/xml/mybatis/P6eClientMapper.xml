@@ -7,14 +7,27 @@
     <select id="count" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eClientDb" resultType="int">
         SELECT COUNT(`id`) FROM `p6e_oauth2_client`
         <trim prefix="WHERE" prefixOverrides="AND |OR">
-
+            <if test="status != null">AND `status` = #{status}</if>
+            <if test="name != null">AND `name` = #{name}</if>
+            <if test="scope != null">AND `scope` = #{scope}</if>
+            <if test="redirectUri != null">AND `redirect_uri` = #{redirectUri}</if>
+            <if test="describe != null">AND `describe` = #{describe}</if>
+            <if test="limitingRule != null">AND `limiting_rule` = #{limitingRule}</if>
         </trim>;
     </select>
 
     <select id="queryById" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eClientDb"
             resultType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eClientDb">
         SELECT
-            `id`, `status`, `name`, `key`, `secret`, `scope`, `redirect_uri`, `describe`, `limiting_rule`
+            `id` as `id`,
+            `status` as `status`,
+            `name` as `name`,
+            `key` as `key`,
+            `secret` as `secret`,
+            `scope` as `scope`,
+            `redirect_uri` as `redirectUri`,
+            `describe` as `describe`,
+            `limiting_rule` as `limitingRule`
         FROM
             `p6e_oauth2_client`
         WHERE `id` = #{id} LIMIT 0, 1;
@@ -23,7 +36,15 @@
     <select id="queryByKey" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eClientDb"
             resultType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eClientDb">
         SELECT
-            `id`, `status`, `name`, `key`, `secret`, `scope`, `redirect_uri`, `describe`, `limiting_rule`
+            `id` as `id`,
+            `status` as `status`,
+            `name` as `name`,
+            `key` as `key`,
+            `secret` as `secret`,
+            `scope` as `scope`,
+            `redirect_uri` as `redirectUri`,
+            `describe` as `describe`,
+            `limiting_rule` as `limitingRule`
         FROM
             `p6e_oauth2_client`
         WHERE `key` = #{key} LIMIT 0, 1;
@@ -39,7 +60,7 @@
             <if test="status != null">AND `status` = #{status}</if>
             <if test="name != null">AND `name` = #{name}</if>
             <if test="scope != null">AND `scope` = #{scope}</if>
-            <if test="redirectUrl != null">AND `redirect_uri` = #{redirectUrl}</if>
+            <if test="redirectUri != null">AND `redirect_uri` = #{redirectUri}</if>
             <if test="describe != null">AND `describe` = #{describe}</if>
             <if test="limitingRule != null">AND `limiting_rule` = #{limitingRule}</if>
         </trim>
@@ -50,7 +71,7 @@
         INSERT INTO  `p6e_oauth2_client`
         (`status`, `name`, `key`, `secret`, `scope`, `redirect_uri`, `describe`, `limiting_rule`)
         VALUE
-        (#{status}, #{name}, #{key}, #{secret}, #{scope}, #{redirectUrl}, #{describe}, #{limitingRule});
+        (#{status}, #{name}, #{key}, #{secret}, #{scope}, #{redirectUri}, #{describe}, #{limitingRule});
     </insert>
 
     <update id="update" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eClientDb">
@@ -59,7 +80,7 @@
             <if test="status != null">`status` = #{status},</if>
             <if test="name != null">`name` = #{name},</if>
             <if test="scope != null">`scope` = #{scope},</if>
-            <if test="redirectUrl != null">`redirect_uri` = #{redirectUrl},</if>
+            <if test="redirectUri != null">`redirect_uri` = #{redirectUri},</if>
             <if test="describe != null">`describe` = #{describe},</if>
             <if test="limitingRule != null">`limiting_rule` = #{limitingRule},</if>
         </trim>

@@ -30,6 +30,7 @@ public class P6eAuthService {
                             param.getClient_id(), param.getScope(), param.getState(), param.getResponse_type(), param.getRedirect_uri()));
             CopyUtil.run(p6eCodeModeKeyValue, p6eAuthModelResult);
         } catch (ParamException | NullPointerException e) {
+            e.printStackTrace();
             p6eAuthModelResult.setError(P6eModelConfig.ERROR_OAUTH2_PARAM_EXCEPTION);
         }
         return p6eAuthModelResult;

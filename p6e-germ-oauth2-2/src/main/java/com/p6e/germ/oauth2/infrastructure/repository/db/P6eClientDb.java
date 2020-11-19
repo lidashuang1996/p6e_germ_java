@@ -20,7 +20,7 @@ public class P6eClientDb extends P6eBaseDb implements Serializable {
     private String key;
     private String secret;
     private String scope;
-    private String redirectUrl;
+    private String redirectUri;
     private String describe;
     private String limitingRule;
 }
