@@ -13,7 +13,8 @@ public interface P6eUserMapper {
 
     public int count(P6eUserDb db);
 
-    public P6eClientDb queryById(Integer id);
+    public P6eUserDb queryById(Integer id);
+    public P6eUserDb queryByAccount(String account);
 
     public List<P6eUserDb> queryAll(P6eUserDb db);
 

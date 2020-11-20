@@ -4,8 +4,9 @@ import com.p6e.germ.oauth2.context.controller.support.model.P6eAuthModelParam;
 import com.p6e.germ.oauth2.context.controller.support.model.P6eAuthModelResult;
 import com.p6e.germ.oauth2.context.controller.support.model.P6eModelConfig;
 import com.p6e.germ.oauth2.domain.aggregate.P6eCodeModeAggregate;
+import com.p6e.germ.oauth2.domain.keyvalue.P6eAuthKeyValue;
 import com.p6e.germ.oauth2.domain.keyvalue.P6eCodeModeKeyValueParam;
-import com.p6e.germ.oauth2.domain.keyvalue.P6eCodeModeKeyValueResult;
+import com.p6e.germ.oauth2.domain.keyvalue.P6eCodeAuthKeyValue;
 import com.p6e.germ.oauth2.infrastructure.exception.ParamException;
 import com.p6e.germ.oauth2.infrastructure.utils.CopyUtil;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,14 @@ public class P6eAuthService {
     public P6eAuthModelResult codeMode(P6eAuthModelParam param) {
         final P6eAuthModelResult p6eAuthModelResult = new P6eAuthModelResult();
         try {
-            final P6eCodeModeKeyValueResult p6eCodeModeKeyValue =
-                    P6eCodeModeAggregate.create().generate(new P6eCodeModeKeyValueParam(
-                            param.getClient_id(), param.getScope(), param.getState(), param.getResponse_type(), param.getRedirect_uri()));
+            final P6eCodeAuthKeyValue p6eCodeModeKeyValue = P6eCodeModeAggregate.create().generate(
+                    new P6eAuthKeyValue(
+                            param.getClient_id(),
+                            param.getScope(),
+                            param.getState(),
+                            param.getResponse_type(),
+                            param.getRedirect_uri()
+                    ));
             CopyUtil.run(p6eCodeModeKeyValue, p6eAuthModelResult);
         } catch (ParamException | NullPointerException e) {
             e.printStackTrace();

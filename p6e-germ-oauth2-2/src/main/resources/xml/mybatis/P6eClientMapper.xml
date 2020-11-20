@@ -84,11 +84,11 @@
             <if test="describe != null">`describe` = #{describe},</if>
             <if test="limitingRule != null">`limiting_rule` = #{limitingRule},</if>
         </trim>
-        WHERE id = {id};
+        WHERE `id` = #{id};
     </update>
 
     <delete id="delete" parameterType="int">
-        DELETE FROM `p6e_oauth2_client` WHERE id = {id};
+        DELETE FROM `p6e_oauth2_client` WHERE `id` = #{id};
     </delete>
 
 </mapper>

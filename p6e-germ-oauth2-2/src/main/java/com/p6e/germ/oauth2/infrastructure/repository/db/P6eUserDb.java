@@ -14,5 +14,10 @@ import java.io.Serializable;
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
 public class P6eUserDb extends P6eBaseDb implements Serializable {
-
+    private Integer id;
+    private String email;
+    private String phone;
+    private String password;
+    private String qq;
+    private String weChat;
 }

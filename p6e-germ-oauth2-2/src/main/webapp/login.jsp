@@ -150,9 +150,9 @@
 
     </style>
     <!-- JQ -->
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js2.1.1.min.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-2.1.1.min.js"></script>
     <!-- RSA -->
-    <script src="${pageContext.request.contextPath}/jspt.min.js"></script>
+    <script src="${pageContext.request.contextPath}/js/jsencrypt.min.js"></script>
 </head>
 <body>
 <div class="main">
@@ -275,30 +275,13 @@
             document.getElementById('button-text1').style.display = 'none';
             document.getElementById('button-text2').style.display = 'block';
             document.getElementById('button-svg').style.display = 'block';
-            // 获取密钥
-            voucherAjax(
-                (res) => {
-                    if (res.code === 200) {
-                        const voucher = res.data.voucher;
-                        const publicKey = res.data.publicKey;
-                        const encrypt = new JSEncrypt();
-                        encrypt.setPublicKey(publicKey);
-                        const encryptedPassword = encrypt.encrypt(password);
-                        loginAjax({
-                            mode: '<%= request.getAttribute("mode") %>',
-                            mark: '<%= request.getAttribute("mark") %>',
-                            voucher: voucher,
-                            account: account,
-                            password: encryptedPassword
-                        });
-                    } else {
-                        document.getElementById('error').innerText = '网络异常，请稍后重试';
-                        document.getElementById('button-text1').style.display = 'block';
-                        document.getElementById('button-text2').style.display = 'none';
-                        document.getElementById('button-svg').style.display = 'none';
-                    }
-                }
-            );
+            loginAjax({
+                mode: '<%= request.getAttribute("mode") %>',
+                mark: '<%= request.getAttribute("mark") %>',
+                voucher: '<%= request.getAttribute("voucher") %>',
+                account: account,
+                password: password
+            });
         }
     }
 
@@ -309,7 +292,7 @@
         isLogin = true;
         $.ajax({
             type: 'POST',
-            url: '/sign/in',
+            url: '/login/',
             contentType: 'application/json',
             data: JSON.stringify(data),
             dataType: 'JSON',
@@ -341,22 +324,7 @@
         });
     }
 
-    /**
-     * 凭证的 ajax 请求
-     */
-    function voucherAjax(callback = () => {}) {
-        $.ajax({
-            type: 'GET',
-            url: '/voucher',
-            dataType: 'JSON',
-            success: (res) => {
-                callback(res);
-            }, error: (e) => {
-                callback(e);
-                console.error(e);
-            }
-        });
-    }
+
 
 
     /**

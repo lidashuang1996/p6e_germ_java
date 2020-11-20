@@ -137,4 +137,9 @@ public final class RsaUtil {
             }
         }
     }
+
+    public static void main(String[] args) throws Exception {
+        String pu = "";
+        System.out.println(encrypt(loadingPublicKey(pu), "123456"));
+    }
 }

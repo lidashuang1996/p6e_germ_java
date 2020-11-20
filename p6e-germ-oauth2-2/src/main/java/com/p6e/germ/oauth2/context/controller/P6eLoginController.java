@@ -33,8 +33,7 @@ public class P6eLoginController extends P6eBaseController {
                     || param.getVoucher() == null) {
                 return P6eResultModel.build(P6eModelConfig.ERROR_PARAM_EXCEPTION);
             } else {
-                p6eLoginService.defaultLogin(param);
-                return P6eResultModel.build(P6eModelConfig.SUCCESS);
+                return P6eResultModel.build(P6eModelConfig.SUCCESS, p6eLoginService.defaultLogin(param));
             }
         } catch (Exception e) {
             e.printStackTrace();

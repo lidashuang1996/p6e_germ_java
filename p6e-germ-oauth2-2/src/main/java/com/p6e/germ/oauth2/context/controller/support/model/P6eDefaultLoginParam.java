@@ -13,4 +13,5 @@ public class P6eDefaultLoginParam implements Serializable {
     private String account;
     private String password;
     private String voucher;
+    private String mark;
 }

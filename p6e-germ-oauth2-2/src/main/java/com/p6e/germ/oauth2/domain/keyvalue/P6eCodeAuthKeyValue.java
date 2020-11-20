@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class P6eCodeModeKeyValueResult implements Serializable {
+public class P6eCodeAuthKeyValue implements Serializable {
     private String mark;
     private String voucher;
 }

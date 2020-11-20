@@ -21,34 +21,68 @@ public class P6eVoucherEntity implements Serializable {
 
     /** 唯一标记 */
     private final String uniqueId;
+
     /** KEY */
     @Getter
     private final String key;
+
     /** 公钥 */
     @Getter
     private final String publicSecretKey;
+
     /** 私钥 */
     @Getter
     private final String privateSecretKey;
+
     /** 缓存服务对象 */
     private final IP6eCacheVoucher p6eCacheVoucher = SpringUtil.getBean(IP6eCacheVoucher.class);
 
-    public P6eVoucherEntity(String key) {
+    /**
+     * 读取方式获取对象
+     * @param key 缓存 key
+     * @return P6eVoucherEntity 对象
+     */
+    public static P6eVoucherEntity fetch(String key) {
+        return new P6eVoucherEntity(key, true);
+    }
+
+    /**
+     * 创建方式获取对象
+     * @param key 缓存 key
+     * @return P6eVoucherEntity 对象
+     */
+    public static P6eVoucherEntity create(String key) {
+        return new P6eVoucherEntity(key, false);
+    }
+
+    /**
+     * 构造创建
+     * @param key 缓存 key
+     * @param isFetch 是否采用读取的方式
+     */
+    private P6eVoucherEntity(String key, boolean isFetch) {
         try {
             this.key = key;
-            final String voucher = p6eCacheVoucher.get(key);
-            if (voucher == null) {
+            if (isFetch) {
+                final String voucher = p6eCacheVoucher.get(key);
+                if (voucher == null) {
+                    throw new NullPointerException(this.getClass() + " construction fetch data ==> NullPointerException.");
+                } else {
+                    final Map<String, String> map = JsonUtil.fromJsonToMap(voucher, String.class, String.class);
+                    publicSecretKey = map.get("publicSecretKey");
+                    privateSecretKey = map.get("privateSecretKey");
+                    if (publicSecretKey == null || privateSecretKey == null) {
+                        throw new NullPointerException(this.getClass() + " construction fetch key ==> NullPointerException.");
+                    }
+                }
+            } else {
                 final KeyPair keyPair = RsaUtil.initKey();
                 publicSecretKey = RsaUtil.getPublicKey(keyPair);
                 privateSecretKey = RsaUtil.getPrivateKey(keyPair);
-                this.cache();
-            } else {
-                final Map<String, String> map = JsonUtil.fromJsonToMap(voucher, String.class, String.class);
-                publicSecretKey = map.get("publicSecretKey");
-                privateSecretKey = map.get("privateSecretKey");
                 if (publicSecretKey == null || privateSecretKey == null) {
-                    throw new NullPointerException(this.getClass() + " construction ==> NullPointerException.");
+                    throw new NullPointerException(this.getClass() + " construction fetch key ==> NullPointerException.");
                 }
+                this.cache();
             }
             // 生成
             uniqueId = GeneratorUtil.uuid();
