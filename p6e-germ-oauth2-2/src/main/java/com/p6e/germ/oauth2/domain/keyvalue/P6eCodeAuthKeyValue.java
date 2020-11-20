@@ -16,4 +16,5 @@ import java.io.Serializable;
 public class P6eCodeAuthKeyValue implements Serializable {
     private String mark;
     private String voucher;
+    private String publicKey;
 }

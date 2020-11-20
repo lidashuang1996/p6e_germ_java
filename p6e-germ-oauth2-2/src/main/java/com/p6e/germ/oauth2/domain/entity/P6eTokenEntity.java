@@ -1,6 +1,7 @@
 package com.p6e.germ.oauth2.domain.entity;
 
 import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheAuth;
+import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheToken;
 import com.p6e.germ.oauth2.infrastructure.utils.GeneratorUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.SpringUtil;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import java.io.Serializable;
  * @author lidashuang
  * @version 1.0
  */
-public class P6eAuthEntity implements Serializable {
+public class P6eTokenEntity implements Serializable {
 
     /** 唯一标记 */
     private final String uniqueId;
@@ -25,10 +26,10 @@ public class P6eAuthEntity implements Serializable {
     private final String value;
 
     /** 注入缓存对象 */
-    private final IP6eCacheAuth p6eCacheAuth = SpringUtil.getBean(IP6eCacheAuth.class);
+    private final IP6eCacheToken p6eCacheToken = SpringUtil.getBean(IP6eCacheToken.class);
 
-    public static P6eAuthEntity fetch(String key) {
-        return new P6eAuthEntity(key);
+    public static P6eTokenEntity fetch(String key) {
+        return new P6eTokenEntity(key);
     }
 
     /**
@@ -37,22 +38,21 @@ public class P6eAuthEntity implements Serializable {
      * @param value value
      * @return P6eAuthEntity 对象
      */
-    public static P6eAuthEntity create(String key, String value) {
-        return new P6eAuthEntity(key, value);
+    public static P6eTokenEntity create(String key, String value) {
+        return new P6eTokenEntity(key, value);
     }
 
     /**
      * 构造创建
      * @param key key
      */
-    private P6eAuthEntity(String key) {
+    private P6eTokenEntity(String key) {
         this.key = key;
-        this.value = p6eCacheAuth.get(key);
+        this.value = p6eCacheToken.get(key);
         if (this.value == null) {
             throw new NullPointerException(this.getClass() + " construction fetch key ==> NullPointerException.");
         }
         this.uniqueId = GeneratorUtil.uuid();
-        this.clean();
     }
 
     /**
@@ -60,7 +60,7 @@ public class P6eAuthEntity implements Serializable {
      * @param key key
      * @param value value
      */
-    private P6eAuthEntity(String key, String value) {
+    private P6eTokenEntity(String key, String value) {
         this.key = key;
         this.value = value;
         this.uniqueId = GeneratorUtil.uuid();
@@ -68,11 +68,7 @@ public class P6eAuthEntity implements Serializable {
     }
 
     public void cache() {
-        p6eCacheAuth.set(key, value);
-    }
-
-    public void clean() {
-        p6eCacheAuth.del(key);
+        p6eCacheToken.set(key, value);
     }
 
 }

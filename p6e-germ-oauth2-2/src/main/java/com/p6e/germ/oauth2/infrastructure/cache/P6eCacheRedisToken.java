@@ -9,23 +9,23 @@ import java.util.concurrent.TimeUnit;
  * @version 1.0
  */
 @Component
-public class P6eCacheRedisAuth extends P6eCacheRedis implements IP6eCacheAuth {
+public class P6eCacheRedisToken extends P6eCacheRedis implements IP6eCacheToken {
 
     private static final String SOURCE_NAME = "";
 
     @Override
     public void set(String key, String value) {
-        this.getRedisTemplate(SOURCE_NAME).opsForValue().set(AUTH_NAME + key, value, AUTH_TIME, TimeUnit.SECONDS);
+        this.getRedisTemplate(SOURCE_NAME).opsForValue().set(TOKEN_NAME + key, value, TOKEN_TIME, TimeUnit.SECONDS);
     }
 
     @Override
     public String get(String key) {
-        return this.getRedisTemplate(SOURCE_NAME).opsForValue().get(AUTH_NAME + key);
+        return this.getRedisTemplate(SOURCE_NAME).opsForValue().get(TOKEN_NAME + key);
     }
 
     @Override
     public void del(String key) {
-        this.getRedisTemplate(SOURCE_NAME).delete(AUTH_NAME + key);
+        this.getRedisTemplate(SOURCE_NAME).delete(TOKEN_NAME + key);
     }
 
 }

@@ -280,7 +280,7 @@
                 mark: '<%= request.getAttribute("mark") %>',
                 voucher: '<%= request.getAttribute("voucher") %>',
                 account: account,
-                password: password
+                password: A('<%= request.getAttribute("publicKey") %>', password)
             });
         }
     }
@@ -299,12 +299,13 @@
             success: (res) => {
                 isLogin = false;
                 if (res.code === 200) {
+                    console.log(res);
                     // 写入缓存
                     // setCache(res.data.data);
                     // 初始化缓存
                     // initCache();
                     // 页面跳转
-                    window.location.href = res.data;
+                    // window.location.href = res.data;
                 } else {
                     document.getElementById('error').innerText = res.message;
                 }
@@ -349,6 +350,15 @@
         } catch (e) {
             window.localStorage.removeItem('P6E_SIGN_AUTH');
         }
+    }
+
+    function A(a, b) {
+        //使用公钥加密
+        var encrypt = new JSEncrypt();
+        //encrypt.setPrivateKey('-----BEGIN RSA PRIVATE KEY-----'+PRIVATE_KEY+'-----END RSA PRIVATE KEY-----');
+        encrypt.setPublicKey('-----BEGIN PUBLIC KEY-----' + a + '-----END PUBLIC KEY-----');
+        var encrypted = encrypt.encrypt(b);
+        return encrypted;
     }
 
 </script>

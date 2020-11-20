@@ -27,11 +27,9 @@ public class P6eVoucherEntity implements Serializable {
     private final String key;
 
     /** 公钥 */
-    @Getter
     private final String publicSecretKey;
 
     /** 私钥 */
-    @Getter
     private final String privateSecretKey;
 
     /** 缓存服务对象 */
@@ -115,4 +113,11 @@ public class P6eVoucherEntity implements Serializable {
         p6eCacheVoucher.del(key);
     }
 
+    public String getPrivateSecretKey() {
+        return privateSecretKey.replaceAll("\n", "");
+    }
+
+    public String getPublicSecretKey() {
+        return publicSecretKey.replaceAll("\n", "");
+    }
 }

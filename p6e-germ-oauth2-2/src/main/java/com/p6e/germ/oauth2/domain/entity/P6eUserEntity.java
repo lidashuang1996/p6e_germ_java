@@ -4,10 +4,13 @@ import com.p6e.germ.oauth2.domain.service.P6eDefaultLoginPasswordService;
 import com.p6e.germ.oauth2.infrastructure.repository.mapper.P6eUserMapper;
 import com.p6e.germ.oauth2.infrastructure.utils.CopyUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.GeneratorUtil;
+import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.SpringUtil;
 import lombok.Getter;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author lidashuang
@@ -30,8 +33,10 @@ public class P6eUserEntity implements Serializable {
 
     /** 唯一标记 */
     private final String uniqueId;
+
     /** 注入 DB 操作对象 */
     private final P6eUserMapper p6eUserMapper = SpringUtil.getBean(P6eUserMapper.class);
+
     /** 注入密码服务对象 */
     private final P6eDefaultLoginPasswordService p6eDefaultLoginPasswordService = new P6eDefaultLoginPasswordService();
 
@@ -51,7 +56,6 @@ public class P6eUserEntity implements Serializable {
     private P6eUserEntity(String account) {
         this.uniqueId = GeneratorUtil.uuid();
         CopyUtil.run(p6eUserMapper.queryByAccount(account), this);
-        System.out.println(this.email + "  " + phone + "  " + id +"  " + password);
     }
 
     /**
@@ -67,7 +71,11 @@ public class P6eUserEntity implements Serializable {
         }
     }
 
-    public String createAuthCache() {
-        return "";
+    public String createTokenCache() {
+        final Map<String, String> map = new HashMap<>(3);
+        map.put("email", email);
+        map.put("phone", phone);
+        map.put("id", String.valueOf(id));
+        return P6eTokenEntity.create(GeneratorUtil.uuid(), JsonUtil.toJson(map)).getKey();
     }
 }

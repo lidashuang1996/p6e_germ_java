@@ -1,10 +1,12 @@
 package com.p6e.germ.oauth2.domain.aggregate;
 
+import com.p6e.germ.oauth2.domain.entity.P6eAuthEntity;
 import com.p6e.germ.oauth2.domain.entity.P6eMarkEntity;
 import com.p6e.germ.oauth2.domain.entity.P6eUserEntity;
 import com.p6e.germ.oauth2.domain.entity.P6eVoucherEntity;
 import com.p6e.germ.oauth2.domain.keyvalue.P6eAuthKeyValue;
 import com.p6e.germ.oauth2.domain.keyvalue.P6eDefaultAuthKeyValue;
+import com.p6e.germ.oauth2.infrastructure.utils.GeneratorUtil;
 import lombok.Getter;
 
 /**
@@ -52,9 +54,13 @@ public class P6eDefaultLoginAggregate {
                 this.p6eMarkEntity.clean();
                 this.p6eVoucherEntity.clean();
                 // 创建用户登录认证的缓存记录
-                final String key = this.p6eUserEntity.createAuthCache();
+                final String token = this.p6eUserEntity.createTokenCache();
                 // 返回重定向 url
-                return new P6eDefaultAuthKeyValue(generateUrl(p6eAuthKeyValue.getRedirectUri(), key), key);
+                return new P6eDefaultAuthKeyValue(
+                        generateUrl(p6eAuthKeyValue.getRedirectUri(),
+                        P6eAuthEntity.create(GeneratorUtil.uuid(), token).getKey()),
+                        token
+                );
             }
         } catch (Exception e) {
             e.printStackTrace();

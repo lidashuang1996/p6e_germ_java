@@ -61,7 +61,8 @@ public class P6eAuthController extends P6eBaseController {
                     case "CODE":
                         final P6eAuthModelResult p6eAuthModelResult = p6eAuthService.codeMode(param);
                         if (p6eAuthModelResult.getError() == null) {
-                            return loginPage(p6eAuthModelResult.getMark(), p6eAuthModelResult.getVoucher());
+                            return loginPage(p6eAuthModelResult.getMark(),
+                                    p6eAuthModelResult.getVoucher(), p6eAuthModelResult.getPublicKey());
                         } else {
                             return errorPage(p6eAuthModelResult.getError());
                         }
@@ -86,10 +87,11 @@ public class P6eAuthController extends P6eBaseController {
      * @param voucher 凭证
      * @return ModelAndView 视图对象
      */
-    private ModelAndView loginPage(final String mark, final String voucher) {
+    private ModelAndView loginPage(final String mark, final String voucher, final String publicKey) {
         final Map<String, String> map = new HashMap<>(1);
         map.put("mark", mark);
         map.put("voucher", voucher);
+        map.put("publicKey", publicKey);
         return new ModelAndView(LOGIN_JSP_PAGE, map);
     }
 

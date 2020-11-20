@@ -122,6 +122,10 @@ public class P6eClientEntity implements Serializable {
         return true;
     }
 
+    public boolean verificationSecret(final String secret) {
+        return this.secret.equals(secret);
+    }
+
     public boolean verificationRedirectUri(final String redirectUri) {
         final String[] redirectUrls = this.getRedirectUri().split(",");
         for (String url : redirectUrls) {

@@ -17,11 +17,10 @@ public interface IP6eCacheAuth {
      * @param key 数据名称
      * @param value 数据内容
      */
-    public void setMark(String key, String value);
+    public void set(String key, String value);
 
-    public String getMark(String key);
+    public String get(String key);
 
-    public void delMark(String key);
-
+    public void del(String key);
 
 }

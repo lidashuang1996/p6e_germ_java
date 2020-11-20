@@ -8,5 +8,26 @@
     <div>
 dadsada
     </div>
+    <script type="text/javascript" src="./js/jsencrypt.min.js"></script>
+    <script type="text/javascript">
+        //公钥
+        var PUBLIC_KEY = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhpFwzhm+YlF6UH9IK++AtOApOE0mp8R5nCsHGTF1xEH72tlr1sRO+ik/jTSZ0DtJ8Qm/6l8bOHVzL1O02Jgjhr+MvMQTO8Hgo0UanMccRXkjPMjDP5dqUas39492PxTigWjxUyEi0a4j9OEUR64fsUkEqYSzypGSjwO34znw7rEMWPvYhyy6bYGSSQrhwKd1mUUM9XSeKPrWZTjn8R/FacEzSf2qu0mRWCyrnrkMshoBbDghlSwi8tbyhh2b2zvk6NWPAVw76zqZo7Zybbx54wfCIEkvrIAg2rG8U71Q1GEwEwUnCMNt+cOzj+LGGgrBREtFqxYa58usEDC46SrrfQIDAQAB';
+        //私钥
+        var PRIVATE_KEY = 'MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCGkXDOGb5iUXpQf0gr74C04Ck4TSanxHmcKwcZMXXEQfva2WvWxE76KT+NNJnQO0nxCb/qXxs4dXMvU7TYmCOGv4y8xBM7weCjRRqcxxxFeSM8yMM/l2pRqzf3j3Y/FOKBaPFTISLRriP04RRHrh+xSQSphLPKkZKPA7fjOfDusQxY+9iHLLptgZJJCuHAp3WZRQz1dJ4o+tZlOOfxH8VpwTNJ/aq7SZFYLKueuQyyGgFsOCGVLCLy1vKGHZvbO+To1Y8BXDvrOpmjtnJtvHnjB8IgSS+sgCDasbxTvVDUYTATBScIw235w7OP4sYaCsFES0WrFhrny6wQMLjpKut9AgMBAAECggEAcdPc47mK/YeGO0kvN1rkOBvVQjagmBDt/Ve4LWtU/qoB7GE1gvmTBLCXfU4dPbKpHSbuG8ZPNDbFNCdONlia1IR6+8Gvs0CQUAtIM42JMIsDb4sy/TuLR4HZWaMUls+HuYeXeoXw+gSfjahGi0uSq1fkhbAmlRcGLcsrZR3B22TScRAqyy27H+Cm/yjg5Zt5cMQcQNl7mfKEktwny79MjX34p6NhvHf3jhTkJFRySgMSmPB3/GKrIouRYzKIrjNmff4soLVn5iu6d4YVJhkB2ftgxvWYtKl9AmoraI01L/OQ0YnvwpO6UA1HIsfZgUvPsJwSXVI6cc460wKvIbgzAQKBgQDXBPpgN3rVK0d7bsPAXHKho9e0RgItDD1N0wdE++kohzhtlvvuYENq5KhP8YyFK/INFQ+ZWAnz8smkE+LV6XOwFJPztQ3fu/iWMUueCHsm+Y0iiMbIoFd77j8gXDEx8nxShM0oiAh5aCmr9JHvDgeagyCSTQU83p38RJO04A19sQKBgQCgNyjHTK58cUtBNZDZ1r97OCPS+3y6gM9+rqyJCt3MnLyAcPOd86Xy/3m1RvxJnSWpQLN0NiOSOY9+4oUMd1nVnomPezcHCCLsLQ2nsWw3LBBhLvd/GxLlL/J/zbAA0tFM4TMX1/5DJgrlV2GhKNcz2V2rQH1ojiwFdiyt3O8BjQKBgAjngd7eLU4KnskzyxN6QJ0FBffHNmvbJ+bDKHfo3rz47JNNP12dyuzwTzAQVrtlGH8GMkEtbiwWD9eloy0sn8fY8k+TXeG4DRFbNUB0JXV1vCyD8Yd5bGYLdb3HU5o36oIYUc6t43vznlYqqKh3skTpzT2BxwfASFacGGnTJXvhAoGBAJJaELwNxg4TB+VnYww66OtMGx1tcUCEzgYw1ZbSAE4alu7VPxT4Lo1M5ga781XjYTW8zrDHi7LVNcl4boU2uS80BQC2U0vvGMeZWDHpFqtHayb7WkYXmykUpXYtlCsMaPjLdnq/aZo5NBbPvXUT85F/a9s1q9lIldnfW2zutr05AoGAbF93jHa+uUTsBRZPyl+Dnc2hGY72pipHa6jEoZLMOVct9BacLzKf6kPtAzbGGPyIIAZr9fFcioLY7/GBKpUMpc0Y6pukFSSeVWZkOfIyyvhoQIO4do/AtVYBnfT1fkUnhit/2AfS1w2AAlu04+qVxUs9i9+E4OV1okuzRegYrWM=';
+        //使用公钥加密
+        var encrypt = new JSEncrypt();
+        //encrypt.setPrivateKey('-----BEGIN RSA PRIVATE KEY-----'+PRIVATE_KEY+'-----END RSA PRIVATE KEY-----');
+        encrypt.setPublicKey('-----BEGIN PUBLIC KEY-----' + PUBLIC_KEY + '-----END PUBLIC KEY-----');
+        var str = "123456中文.+--_$#Abc"
+        var encrypted = encrypt.encrypt(str);
+        console.log('加密前数据:%o', str);
+        console.log('加密后数据:%o', encrypted);
+        //使用私钥解密
+        var decrypt = new JSEncrypt();
+        //decrypt.setPublicKey('-----BEGIN PUBLIC KEY-----' + PUBLIC_KEY + '-----END PUBLIC KEY-----');
+        decrypt.setPrivateKey('-----BEGIN RSA PRIVATE KEY-----'+PRIVATE_KEY+'-----END RSA PRIVATE KEY-----');
+        var uncrypted = decrypt.decrypt(encrypted);
+        console.log('解密后数据:%o', uncrypted);
+    </script>
 </body>
 </html>
