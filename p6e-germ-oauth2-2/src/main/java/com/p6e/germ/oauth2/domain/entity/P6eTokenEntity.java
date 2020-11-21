@@ -1,6 +1,5 @@
 package com.p6e.germ.oauth2.domain.entity;
 
-import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheAuth;
 import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheToken;
 import com.p6e.germ.oauth2.infrastructure.utils.GeneratorUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.SpringUtil;
@@ -69,6 +68,11 @@ public class P6eTokenEntity implements Serializable {
 
     public void cache() {
         p6eCacheToken.set(key, value);
+    }
+
+    public P6eTokenEntity refresh(String data) {
+        p6eCacheToken.del(this.key);
+        return P6eTokenEntity.create(data, this.value);
     }
 
 }

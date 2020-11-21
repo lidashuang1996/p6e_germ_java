@@ -9,7 +9,10 @@ import com.p6e.germ.oauth2.infrastructure.utils.GeneratorUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.SpringUtil;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -18,6 +21,8 @@ import java.util.Map;
  * @version 1.0
  */
 public class P6eCodeModeAggregate implements Serializable {
+
+    private static final String AUTH_COOKIE = "P6E_OAUTH2_AUTH_TOKEN";
 
     /** 唯一标记 */
     private final String uniqueId;
@@ -69,4 +74,34 @@ public class P6eCodeModeAggregate implements Serializable {
             throw new ParamException(this.getClass() + " execute() ==> Failed to verify scope and redirectUri.");
         }
     }
+
+    public Map<String, String> verification(final HttpServletRequest request, final P6eAuthKeyValue param) {
+        try {
+            final Cookie[] cookies = request.getCookies();
+            if (cookies != null && cookies.length > 0) {
+                for (final Cookie cookie : cookies) {
+                    if (AUTH_COOKIE.equals(cookie.getName().toUpperCase())) {
+                        final P6eClientEntity p6eClientEntity = new P6eClientEntity(param.getClientId());
+                        if (p6eClientEntity.verificationScope(param.getScope())
+                                && p6eClientEntity.verificationRedirectUri(param.getRedirectUri())) {
+                            final String token = P6eTokenEntity.fetch(cookie.getValue()).refresh(GeneratorUtil.uuid()).getKey();
+                            final Map<String, String> map = new HashMap<>(2);
+                            map.put("token", token);
+                            map.put("redirectUri", GeneratorUtil.callbackUrl(
+                                    p6eClientEntity.getRedirectUri(),
+                                    P6eAuthEntity.create(GeneratorUtil.uuid(), token).getKey()
+                            ));
+                            return map;
+                        } else {
+                            throw new ParamException(this.getClass() + " generate() ==> Failed to verify scope and redirectUri.");
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
 }

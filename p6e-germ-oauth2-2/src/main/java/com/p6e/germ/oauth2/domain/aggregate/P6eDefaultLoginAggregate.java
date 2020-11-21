@@ -54,10 +54,12 @@ public class P6eDefaultLoginAggregate {
                 this.p6eMarkEntity.clean();
                 this.p6eVoucherEntity.clean();
                 // 创建用户登录认证的缓存记录
+                // 如果是 简化模式直接放回
+                // http://127.0.0.1:8084/cms/login#access_token=9b021755-7df3-48a4-bf58-40815a4dcc9b&token_type=bearer&expires_in=119
                 final String token = this.p6eUserEntity.createTokenCache();
                 // 返回重定向 url
                 return new P6eDefaultAuthKeyValue(
-                        generateUrl(p6eAuthKeyValue.getRedirectUri(),
+                        GeneratorUtil.callbackUrl(p6eAuthKeyValue.getRedirectUri(),
                         P6eAuthEntity.create(GeneratorUtil.uuid(), token).getKey()),
                         token
                 );
@@ -66,24 +68,5 @@ public class P6eDefaultLoginAggregate {
             e.printStackTrace();
         }
         return null;
-    }
-
-    /**
-     * 生成回调的 url 的地址
-     * @param url url 地址
-     * @param code 认证的记号
-     * @return 生成回调的 url 的地址
-     */
-    private static String generateUrl(String url, String code) {
-        final int index = url.indexOf("?");
-        if (index > -1) {
-            if (url.length() > index) {
-                return url.substring(0, index) + "?code=" + code + "&" + url.substring(index + 1);
-            } else {
-                return url.substring(0, index) + "?code=" + code;
-            }
-        } else {
-            return url + "?code=" + code;
-        }
     }
 }

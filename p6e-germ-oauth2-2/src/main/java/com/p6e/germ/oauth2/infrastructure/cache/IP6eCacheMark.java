@@ -1,15 +1,16 @@
 package com.p6e.germ.oauth2.infrastructure.cache;
 
 /**
+ * 记号的缓存的接口
  * @author lidashuang
  * @version 1.0
  */
 public interface IP6eCacheMark {
 
-    /** 凭证缓存的前缀名称 */
-    String MARK_NAME = "P6E:MARK:";
+    /** 缓存名称 */
+    String MARK_NAME = "P6E:OAUTH2:MARK:";
 
-    /** 凭证缓存的过期时间 */
+    /** 缓存的过期时间 */
     long MARK_TIME = 300;
 
     /**

@@ -1,6 +1,7 @@
 package com.p6e.germ.oauth2.infrastructure.cache;
 
 /**
+ * 凭证的缓存接口
  * @author lidashuang
  * @version 1.0
  */

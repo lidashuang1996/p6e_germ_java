@@ -27,8 +27,13 @@ public class P6eTokenController extends P6eBaseController {
     @Resource
     private P6eAuthService p6eAuthService;
 
+    /**
+     *
+     * http://127.0.0.1:9900/token?client_id=1234567890&grant_type=AUTHORIZATION_CODE&redirect_uri=http://127.0.0.1:10000&client_secret=1234567890&code=8ada3b01ddf448799279ec0969ccd0ed
+     * @return
+     */
     @RequestMapping
-    public P6eResultModel def(@RequestBody P6eTokenModelParam param) {
+    public P6eResultModel def(P6eTokenModelParam param) {
         try {
             if (param == null
                     || param.getClient_id() == null
@@ -44,6 +49,8 @@ public class P6eTokenController extends P6eBaseController {
                     default:
                         break;
                 }
+                // http://localhost:8001/oauth/token?username=liuzj&password=123&grant_type=password&client_id=client&client_secret=123456 （POST）
+                // password 模式一次发过来
                 return P6eResultModel.build(P6eModelConfig.ERROR_SERVICE_INSIDE);
             }
         } catch (Exception e) {

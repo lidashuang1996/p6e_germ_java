@@ -301,11 +301,11 @@
                 if (res.code === 200) {
                     console.log(res);
                     // 写入缓存
-                    // setCache(res.data.data);
+                    setCache(res.data.token);
                     // 初始化缓存
                     // initCache();
                     // 页面跳转
-                    // window.location.href = res.data;
+                    alert(res.data.redirectUri);
                 } else {
                     document.getElementById('error').innerText = res.message;
                 }
@@ -332,7 +332,15 @@
      * 缓存的相关的操作
      */
     function setCache(data) {
-        window.localStorage.setItem('P6E_SIGN_AUTH', JSON.stringify(data));
+        setcookie('P6E_OAUTH2_AUTH_TOKEN', data, 1);
+    }
+
+    //以函数方式
+    function setcookie(name,value,days){
+        var d= new Date();
+        d.setTime(d.getTime()+(days*50*60*1000));
+        var expires = d.toGMTString();
+        document.cookie = name+"="+value+";expires="+expires;
     }
 
     function initCache() {

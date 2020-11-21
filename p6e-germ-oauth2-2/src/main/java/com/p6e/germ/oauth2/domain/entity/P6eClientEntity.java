@@ -3,7 +3,6 @@ package com.p6e.germ.oauth2.domain.entity;
 import com.p6e.germ.oauth2.infrastructure.repository.db.P6eClientDb;
 import com.p6e.germ.oauth2.infrastructure.repository.mapper.P6eClientMapper;
 import com.p6e.germ.oauth2.infrastructure.utils.CopyUtil;
-import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.SpringUtil;
 import lombok.Getter;
 
