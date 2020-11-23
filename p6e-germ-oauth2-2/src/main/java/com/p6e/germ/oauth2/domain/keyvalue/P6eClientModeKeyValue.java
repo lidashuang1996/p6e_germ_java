@@ -11,13 +11,12 @@ import java.io.Serializable;
  * @version 1.0
  */
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
-public class P6eCodeAuthKeyValue implements Serializable {
-    private String mark;
-    private String voucher;
-    private String publicKey;
-    private String icon;
-    private String name;
-    private String describe;
+@NoArgsConstructor
+public class P6eClientModeKeyValue implements Serializable {
+    private String grantType;
+    private String redirectUri;
+    private String clientId;
+    private String clientSecret;
+    private String scope;
 }

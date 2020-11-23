@@ -46,7 +46,6 @@ public class P6eAuthEntity implements Serializable {
      * @param key key
      */
     private P6eAuthEntity(String key) {
-        System.out.println(key);
         this.key = key;
         this.value = p6eCacheAuth.get(key);
         if (this.value == null) {

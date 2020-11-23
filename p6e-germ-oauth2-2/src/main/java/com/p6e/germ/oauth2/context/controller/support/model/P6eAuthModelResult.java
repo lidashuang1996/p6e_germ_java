@@ -14,4 +14,7 @@ public class P6eAuthModelResult implements Serializable {
     private String mark;
     private String voucher;
     private String publicKey;
+    private String icon;
+    private String name;
+    private String describe;
 }

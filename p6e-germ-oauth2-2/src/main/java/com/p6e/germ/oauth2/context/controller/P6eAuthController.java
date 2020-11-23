@@ -42,7 +42,7 @@ public class P6eAuthController extends P6eBaseController {
      * 3. 密码模式
      * 4. 简化模式
      *
-     * http://127.0.0.1:9900/auth?client_id=1234567890&response_type=code&redirect_uri=http://127.0.0.1:10000&scope=123
+     * http://127.0.0.1:9900/auth?client_id=1234567890&response_type=code&redirect_uri=http://127.0.0.1:10000&scope=123&state=11111
      *
      *
      * // 简化模式
@@ -50,7 +50,7 @@ public class P6eAuthController extends P6eBaseController {
      *
      *
      * // 密码模式支持，但是只能查看你自己数据，也就是查询自己的 clien 信息
-     *                         // http://localhost:8888/oauth/token?client_id=cms&client_secret=secret&grant_type=client_credentials&scope=all
+     * // http://localhost:8888/oauth/token?client_id=cms&client_secret=secret&grant_type=client_credentials&scope=all
      * @param param
      * @return
      */
@@ -66,9 +66,9 @@ public class P6eAuthController extends P6eBaseController {
                 return errorPage(P6eModelConfig.ERROR_OAUTH2_PARAM_EXCEPTION);
             } else {
                 // 读取浏览器数据，验证当前用户是否登录
-                final String content = p6eAuthService.verification(request, param);
-                if (content != null) {
-                    return successPage(content);
+                final P6eAuthModelResult authModel = p6eAuthService.client(request, param);
+                if (authModel != null) {
+                    return successPage(authModel);
                 } else {
                     final String responseType = param.getResponse_type();
                     switch (responseType.toUpperCase()) {
@@ -76,8 +76,7 @@ public class P6eAuthController extends P6eBaseController {
                         case "CODE":
                             final P6eAuthModelResult codeP6eAuthModelResult = p6eAuthService.codeMode(param);
                             if (codeP6eAuthModelResult.getError() == null) {
-                                return loginPage(codeP6eAuthModelResult.getMark(),
-                                        codeP6eAuthModelResult.getVoucher(), codeP6eAuthModelResult.getPublicKey());
+                                return loginPage(codeP6eAuthModelResult);
                             } else {
                                 return errorPage(codeP6eAuthModelResult.getError());
                             }
@@ -85,8 +84,7 @@ public class P6eAuthController extends P6eBaseController {
                         case "TOKEN":
                             final P6eAuthModelResult tokenP6eAuthModelResult = p6eAuthService.tokenMode(param);
                             if (tokenP6eAuthModelResult.getError() == null) {
-                                return loginPage(tokenP6eAuthModelResult.getMark(),
-                                        tokenP6eAuthModelResult.getVoucher(), tokenP6eAuthModelResult.getPublicKey());
+                                return loginPage(tokenP6eAuthModelResult);
                             } else {
                                 return errorPage(tokenP6eAuthModelResult.getError());
                             }
@@ -105,16 +103,11 @@ public class P6eAuthController extends P6eBaseController {
 
     /**
      * 跳转去登录页面
-     * @param mark 记号
-     * @param voucher 凭证
+     * @param model 返回数据模型
      * @return ModelAndView 视图对象
      */
-    private ModelAndView loginPage(final String mark, final String voucher, final String publicKey) {
-        final Map<String, String> map = new HashMap<>(1);
-        map.put("mark", mark);
-        map.put("voucher", voucher);
-        map.put("publicKey", publicKey);
-        return new ModelAndView(LOGIN_JSP_PAGE, map);
+    private ModelAndView loginPage(P6eAuthModelResult model) {
+        return new ModelAndView(LOGIN_JSP_PAGE, "data", model);
     }
 
     /**
@@ -130,12 +123,10 @@ public class P6eAuthController extends P6eBaseController {
 
     /**
      * 错误页面
-     * @param content 成功页面描述的内容
+     * @param model 成功页面描述的内容
      * @return ModelAndView 视图对象
      */
-    private ModelAndView successPage(final String content) {
-        final Map<String, String> map = new HashMap<>(1);
-        map.put("content", content);
-        return new ModelAndView(SUCCESS_JSP_PAGE, map);
+    private ModelAndView successPage(P6eAuthModelResult model) {
+        return new ModelAndView(SUCCESS_JSP_PAGE, "data", model);
     }
 }

@@ -15,17 +15,70 @@ public class P6eCacheRedisToken extends P6eCacheRedis implements IP6eCacheToken 
 
     @Override
     public void set(String key, String value) {
-        this.getRedisTemplate(SOURCE_NAME).opsForValue().set(TOKEN_NAME + key, value, TOKEN_TIME, TimeUnit.SECONDS);
+        this.getRedisTemplate(SOURCE_NAME).opsForValue().set(TOKEN_KEY_NAME + key, value, TOKEN_TIME, TimeUnit.SECONDS);
     }
 
     @Override
     public String get(String key) {
-        return this.getRedisTemplate(SOURCE_NAME).opsForValue().get(TOKEN_NAME + key);
+        return this.getRedisTemplate(SOURCE_NAME).opsForValue().get(TOKEN_KEY_NAME + key);
     }
 
     @Override
     public void del(String key) {
-        this.getRedisTemplate(SOURCE_NAME).delete(TOKEN_NAME + key);
+        this.getRedisTemplate(SOURCE_NAME).delete(TOKEN_KEY_NAME + key);
+    }
+
+    @Override
+    public void setUser(String key, String value) {
+        this.getRedisTemplate(SOURCE_NAME).opsForValue().set(TOKEN_USER_INFO_NAME + key, value, TOKEN_TIME, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public String getUser(String key) {
+        return this.getRedisTemplate(SOURCE_NAME).opsForValue().get(TOKEN_USER_INFO_NAME + key);
+    }
+
+    @Override
+    public void delUser(String key) {
+        this.getRedisTemplate(SOURCE_NAME).delete(TOKEN_USER_INFO_NAME + key);
+    }
+
+    @Override
+    public void setRefreshToken(String key, String value) {
+        this.getRedisTemplate(SOURCE_NAME).opsForValue().set(TOKEN_REFRESH_TOKEN_NAME + key, value, TOKEN_TIME, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public String getRefreshToken(String key) {
+        return this.getRedisTemplate(SOURCE_NAME).opsForValue().get(TOKEN_REFRESH_TOKEN_NAME + key);
+    }
+
+    @Override
+    public void delRefreshToken(String key) {
+        this.getRedisTemplate(SOURCE_NAME).delete(TOKEN_REFRESH_TOKEN_NAME + key);
+    }
+
+    @Override
+    public void setAccessToken(String key, String value) {
+        this.getRedisTemplate(SOURCE_NAME).opsForValue().set(TOKEN_ACCESS_TOKEN_NAME + key, value, TOKEN_TIME, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void setAccessTokenExpirationTime(String key, long time) {
+        final String value = getAccessToken(key);
+        if (value != null) {
+            this.getRedisTemplate(SOURCE_NAME).opsForValue().set(TOKEN_ACCESS_TOKEN_NAME + key, value, time, TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    public String getAccessToken(String key) {
+        return this.getRedisTemplate(SOURCE_NAME).opsForValue().get(TOKEN_ACCESS_TOKEN_NAME + key);
+    }
+
+    @Override
+    public void delAccessToken(String key) {
+        this.getRedisTemplate(SOURCE_NAME).delete(TOKEN_ACCESS_TOKEN_NAME + key);
     }
 
 }

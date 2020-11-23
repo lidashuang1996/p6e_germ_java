@@ -5,7 +5,6 @@ import com.p6e.germ.oauth2.context.controller.support.P6eBaseController;
 import com.p6e.germ.oauth2.context.controller.support.model.P6eDefaultLoginParam;
 import com.p6e.germ.oauth2.context.controller.support.model.P6eModelConfig;
 import com.p6e.germ.oauth2.context.controller.support.model.P6eResultModel;
-import com.p6e.germ.oauth2.domain.aggregate.P6eDefaultLoginAggregate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +29,8 @@ public class P6eLoginController extends P6eBaseController {
             if (param == null
                     || param.getAccount() == null
                     || param.getPassword() == null
-                    || param.getVoucher() == null) {
+                    || param.getVoucher() == null
+                    || param.getMark() == null) {
                 return P6eResultModel.build(P6eModelConfig.ERROR_PARAM_EXCEPTION);
             } else {
                 return P6eResultModel.build(P6eModelConfig.SUCCESS, p6eLoginService.defaultLogin(param));

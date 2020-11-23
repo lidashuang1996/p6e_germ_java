@@ -13,11 +13,9 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class P6eCodeAuthKeyValue implements Serializable {
-    private String mark;
-    private String voucher;
-    private String publicKey;
-    private String icon;
-    private String name;
-    private String describe;
+public class P6eTokenKeyValue implements Serializable {
+    private String accessToken;
+    private String refreshToken;
+    private String tokenType;
+    private Long expiresIn;
 }

@@ -7,7 +7,10 @@ package com.p6e.germ.oauth2.infrastructure.cache;
  */
 public interface IP6eCacheToken {
     /** 缓存名称 */
-    String TOKEN_NAME = "P6E:TOKEN:";
+    String TOKEN_KEY_NAME = "P6E:TOKEN:KEY";
+    String TOKEN_ACCESS_TOKEN_NAME = "P6E:TOKEN:ACCESS_TOKEN";
+    String TOKEN_REFRESH_TOKEN_NAME = "P6E:TOKEN:REFRESH_TOKEN";
+    String TOKEN_USER_INFO_NAME = "P6E:TOKEN:USER_INFO";
 
     /** 缓存的过期时间 */
     long TOKEN_TIME = 3600L;
@@ -31,5 +34,72 @@ public interface IP6eCacheToken {
      * @param key 数据名称
      */
     public void del(String key);
+
+
+    /**
+     * 写入数据
+     * @param key 数据名称
+     * @param value 数据内容
+     */
+    public void setUser(String key, String value);
+
+    /**
+     * 读取数据
+     * @param key 数据名称
+     * @return 数据内容
+     */
+    public String getUser(String key);
+
+    /**
+     * 删除数据
+     * @param key 数据名称
+     */
+    public void delUser(String key);
+
+
+    /**
+     * 写入数据
+     * @param key 数据名称
+     * @param value 数据内容
+     */
+    public void setRefreshToken(String key, String value);
+
+    /**
+     * 读取数据
+     * @param key 数据名称
+     * @return 数据内容
+     */
+    public String getRefreshToken(String key);
+
+    /**
+     * 删除数据
+     * @param key 数据名称
+     */
+    public void delRefreshToken(String key);
+
+    /**
+     * 写入数据
+     * @param key 数据名称
+     * @param value 数据内容
+     */
+    public void setAccessToken(String key, String value);
+
+    public void setAccessTokenExpirationTime(String key, long time);
+
+    /**
+     * 读取数据
+     * @param key 数据名称
+     * @return 数据内容
+     */
+    public String getAccessToken(String key);
+
+    /**
+     * 删除数据
+     * @param key 数据名称
+     */
+    public void delAccessToken(String key);
+
+
+
 
 }

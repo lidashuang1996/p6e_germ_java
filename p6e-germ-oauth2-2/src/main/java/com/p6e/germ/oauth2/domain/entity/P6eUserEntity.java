@@ -4,7 +4,6 @@ import com.p6e.germ.oauth2.domain.service.P6eDefaultLoginPasswordService;
 import com.p6e.germ.oauth2.infrastructure.repository.mapper.P6eUserMapper;
 import com.p6e.germ.oauth2.infrastructure.utils.CopyUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.GeneratorUtil;
-import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.SpringUtil;
 import lombok.Getter;
 
@@ -71,11 +70,11 @@ public class P6eUserEntity implements Serializable {
         }
     }
 
-    public String createTokenCache() {
+    public P6eTokenEntity createTokenCache() {
         final Map<String, String> map = new HashMap<>(3);
         map.put("email", email);
         map.put("phone", phone);
         map.put("id", String.valueOf(id));
-        return P6eTokenEntity.create(GeneratorUtil.uuid(), JsonUtil.toJson(map)).getKey();
+        return P6eTokenEntity.create(GeneratorUtil.uuid(), String.valueOf(id), map);
     }
 }

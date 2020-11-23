@@ -15,4 +15,8 @@ public class P6eTokenModelParam implements Serializable {
     private String redirect_uri;
     private String client_id;
     private String client_secret;
+    private String scope;
+
+    private String account;
+    private String password;
 }

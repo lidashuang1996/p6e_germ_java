@@ -8,6 +8,7 @@
 </head>
 <body>
 <h1>neirong ru xia !!!</h1>
+<p><%= request.getAttribute("data")%></p>
 <script>
     //以函数方式
     function setcookie(name,value,days){

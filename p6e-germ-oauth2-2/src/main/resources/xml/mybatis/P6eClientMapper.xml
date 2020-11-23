@@ -8,6 +8,7 @@
         SELECT COUNT(`id`) FROM `p6e_oauth2_client`
         <trim prefix="WHERE" prefixOverrides="AND |OR">
             <if test="status != null">AND `status` = #{status}</if>
+            <if test="icon != null">AND `icon` = #{icon}</if>
             <if test="name != null">AND `name` = #{name}</if>
             <if test="scope != null">AND `scope` = #{scope}</if>
             <if test="redirectUri != null">AND `redirect_uri` = #{redirectUri}</if>
@@ -27,7 +28,8 @@
             `scope` as `scope`,
             `redirect_uri` as `redirectUri`,
             `describe` as `describe`,
-            `limiting_rule` as `limitingRule`
+            `limiting_rule` as `limitingRule`,
+            `icon` as `icon`
         FROM
             `p6e_oauth2_client`
         WHERE `id` = #{id} LIMIT 0, 1;
@@ -44,7 +46,8 @@
             `scope` as `scope`,
             `redirect_uri` as `redirectUri`,
             `describe` as `describe`,
-            `limiting_rule` as `limitingRule`
+            `limiting_rule` as `limitingRule`,
+            `icon` as `icon`
         FROM
             `p6e_oauth2_client`
         WHERE `key` = #{key} LIMIT 0, 1;
@@ -53,11 +56,12 @@
     <select id="queryAll" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eClientDb"
             resultType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eClientDb">
         SELECT
-            `id`, `status`, `name`, `key`, `secret`, `scope`, `redirect_uri`, `describe`, `limiting_rule`
+            `id`, `status`, `name`, `key`, `secret`, `scope`, `redirect_uri`, `describe`, `limiting_rule`, `icon`
         FROM
             `p6e_oauth2_client`
         <trim prefix="WHERE" prefixOverrides="AND |OR">
             <if test="status != null">AND `status` = #{status}</if>
+            <if test="icon != null">AND `icon` = #{icon}</if>
             <if test="name != null">AND `name` = #{name}</if>
             <if test="scope != null">AND `scope` = #{scope}</if>
             <if test="redirectUri != null">AND `redirect_uri` = #{redirectUri}</if>
@@ -69,14 +73,15 @@
 
     <insert id="create" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eClientDb">
         INSERT INTO  `p6e_oauth2_client`
-        (`status`, `name`, `key`, `secret`, `scope`, `redirect_uri`, `describe`, `limiting_rule`)
+        (`icon`, `status`, `name`, `key`, `secret`, `scope`, `redirect_uri`, `describe`, `limiting_rule`)
         VALUE
-        (#{status}, #{name}, #{key}, #{secret}, #{scope}, #{redirectUri}, #{describe}, #{limitingRule});
+        (#{icon}, #{status}, #{name}, #{key}, #{secret}, #{scope}, #{redirectUri}, #{describe}, #{limitingRule});
     </insert>
 
     <update id="update" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eClientDb">
         UPDATE `p6e_oauth2_client`
         <trim prefix="SET" suffixOverrides=",">
+            <if test="icon != null">`icon` = #{icon},</if>
             <if test="status != null">`status` = #{status},</if>
             <if test="name != null">`name` = #{name},</if>
             <if test="scope != null">`scope` = #{scope},</if>

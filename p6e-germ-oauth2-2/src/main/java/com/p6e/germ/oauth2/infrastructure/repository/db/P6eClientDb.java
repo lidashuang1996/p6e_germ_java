@@ -16,6 +16,7 @@ import java.io.Serializable;
 public class P6eClientDb extends P6eBaseDb implements Serializable {
     private Integer id;
     private Integer status;
+    private String icon;
     private String name;
     private String key;
     private String secret;
