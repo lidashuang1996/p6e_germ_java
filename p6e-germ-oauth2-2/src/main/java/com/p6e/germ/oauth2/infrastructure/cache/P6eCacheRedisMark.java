@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
  * @author lidashuang
  * @version 1.0
  */
-@Component
 public class P6eCacheRedisMark extends P6eCacheRedis implements IP6eCacheMark {
 
     private static final String SOURCE_NAME = "";

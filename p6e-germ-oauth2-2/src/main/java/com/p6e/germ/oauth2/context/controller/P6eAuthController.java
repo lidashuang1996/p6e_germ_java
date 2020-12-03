@@ -1,18 +1,17 @@
 package com.p6e.germ.oauth2.context.controller;
 
-import com.p6e.germ.oauth2.application.P6eAuthService;
+import com.p6e.germ.oauth2.application.P6eApplication;
 import com.p6e.germ.oauth2.context.controller.support.P6eBaseController;
 import com.p6e.germ.oauth2.context.controller.support.model.P6eAuthModelParam;
 import com.p6e.germ.oauth2.context.controller.support.model.P6eAuthModelResult;
-import com.p6e.germ.oauth2.context.controller.support.model.P6eModelConfig;
+import com.p6e.germ.oauth2.context.controller.support.model.P6eDefaultLoginResult;
+import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
+import com.p6e.germ.oauth2.model.P6eModel;
+import com.p6e.germ.oauth2.model.dto.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Oauth2 接口
@@ -23,18 +22,23 @@ import java.util.Map;
 @RequestMapping("/auth")
 public class P6eAuthController extends P6eBaseController {
 
-    /** JSP 页面的名称 ==> 登录 */
-    private static final String LOGIN_JSP_PAGE = "oauth2_login";
-    /** JSP 页面的名称 ==> 错误 */
-    private static final String ERROR_JSP_PAGE = "oauth2_error";
-    /** JSP 页面的名称 ==> 成功 */
-    private static final String SUCCESS_JSP_PAGE = "oauth2_success";
+    private static final String CODE_TYPE = "CODE";
+    private static final String TOKEN_TYPE = "TOKEN";
 
     /**
-     * 注入认证的服务
+     * 请求的携带认证信息的参数
      */
-    @Resource
-    private P6eAuthService p6eAuthService;
+    private static final String AUTH_PARAM_NAME = "access_token";
+
+    /**
+     * 请求头内容的前缀
+     */
+    private static final String AUTH_HEADER_BEARER = "Bearer ";
+
+    /**
+     * 请求头名称
+     */
+    private static final String AUTH_HEADER_NAME = "authentication";
 
     /**
      * 1. 客户端模式
@@ -55,78 +59,54 @@ public class P6eAuthController extends P6eBaseController {
      * @return
      */
     @RequestMapping
-    public ModelAndView def(final HttpServletRequest request, final P6eAuthModelParam param) {
-        try {
-            if (param == null
-                    || param.getScope() == null
-                    || param.getClient_id() == null
-                    || param.getRedirect_uri() == null
-                    || param.getResponse_type() == null) {
-                // 参数异常
-                return errorPage(P6eModelConfig.ERROR_OAUTH2_PARAM_EXCEPTION);
-            } else {
-                // 读取浏览器数据，验证当前用户是否登录
-                final P6eAuthModelResult authModel = p6eAuthService.client(request, param);
-                if (authModel != null) {
-                    return successPage(authModel);
-                } else {
-                    final String responseType = param.getResponse_type();
-                    switch (responseType.toUpperCase()) {
-                        // CODE 的认证模式
-                        case "CODE":
-                            final P6eAuthModelResult codeP6eAuthModelResult = p6eAuthService.codeMode(param);
-                            if (codeP6eAuthModelResult.getError() == null) {
-                                return loginPage(codeP6eAuthModelResult);
-                            } else {
-                                return errorPage(codeP6eAuthModelResult.getError());
-                            }
-                        // 简化模式
-                        case "TOKEN":
-                            final P6eAuthModelResult tokenP6eAuthModelResult = p6eAuthService.tokenMode(param);
-                            if (tokenP6eAuthModelResult.getError() == null) {
-                                return loginPage(tokenP6eAuthModelResult);
-                            } else {
-                                return errorPage(tokenP6eAuthModelResult.getError());
-                            }
-                        default:
-                            // 参数异常
-                            return errorPage(P6eModelConfig.ERROR_OAUTH2_PARAM_EXCEPTION);
-                    }
+    public P6eModel def(HttpServletRequest request, P6eAuthModelParam param) {
+        if (param == null
+                || param.getScope() == null
+                || param.getClientId() == null
+                || param.getRedirectUri() == null
+                || param.getResponseType() == null) {
+            // 参数异常
+            return P6eModel.build(P6eModel.Error.PARAMETER_EXCEPTION);
+        } else {
+            String token = request.getParameter(AUTH_PARAM_NAME);
+            if (token == null) {
+                final String content = request.getHeader(AUTH_HEADER_NAME);
+                if (content != null && content.startsWith(AUTH_HEADER_BEARER)) {
+                    token = content.substring(7);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error(e.getMessage());
-            return errorPage(P6eModelConfig.ERROR_OAUTH2_SERVICE_INSIDE);
+            if (token != null) {
+                // 读取浏览器数据，验证当前用户是否登录
+                final P6eLoginDto p6eLoginDto =
+                        P6eApplication.login.verification(P6eCopyUtil.run(param, P6eVerificationLoginDto.class));
+                if (p6eLoginDto.getError() == null) {
+                    return P6eModel.build().setData(P6eCopyUtil.run(p6eLoginDto, P6eDefaultLoginResult.class));
+                } else {
+                    return P6eModel.build(p6eLoginDto.getError());
+                }
+            } else {
+                final P6eAuthDto p6eAuthDto;
+                final String responseType = param.getResponseType();
+                switch (responseType.toUpperCase()) {
+                    case CODE_TYPE:
+                        // CODE 的认证模式
+                        p6eAuthDto = P6eApplication.auth.code(P6eCopyUtil.run(param, P6eCodeAuthDto.class));
+                        break;
+                    case TOKEN_TYPE:
+                        // 简化模式
+                        p6eAuthDto = P6eApplication.auth.simple(P6eCopyUtil.run(param, P6eSimpleAuthDto.class));
+                        break;
+                    default:
+                        return P6eModel.build(P6eModel.Error.PARAMETER_EXCEPTION);
+                }
+                if (p6eAuthDto.getError() == null) {
+                    return P6eModel.build().setData(P6eCopyUtil.run(p6eAuthDto, P6eAuthModelResult.class));
+                } else {
+                    return P6eModel.build(p6eAuthDto.getError());
+                }
+            }
         }
     }
 
-    /**
-     * 跳转去登录页面
-     * @param model 返回数据模型
-     * @return ModelAndView 视图对象
-     */
-    private ModelAndView loginPage(P6eAuthModelResult model) {
-        return new ModelAndView(LOGIN_JSP_PAGE, "data", model);
-    }
 
-    /**
-     * 错误页面
-     * @param content 错误页面描述的内容
-     * @return ModelAndView 视图对象
-     */
-    private ModelAndView errorPage(final String content) {
-        final Map<String, String> map = new HashMap<>(1);
-        map.put("content", content);
-        return new ModelAndView(ERROR_JSP_PAGE, map);
-    }
-
-    /**
-     * 错误页面
-     * @param model 成功页面描述的内容
-     * @return ModelAndView 视图对象
-     */
-    private ModelAndView successPage(P6eAuthModelResult model) {
-        return new ModelAndView(SUCCESS_JSP_PAGE, "data", model);
-    }
 }

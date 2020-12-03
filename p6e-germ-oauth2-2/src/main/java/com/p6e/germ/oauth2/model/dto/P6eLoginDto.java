@@ -1,5 +1,6 @@
-package com.p6e.germ.oauth2.context.controller.support.model;
+package com.p6e.germ.oauth2.model.dto;
 
+import com.p6e.germ.oauth2.model.base.P6eResultDto;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -9,7 +10,7 @@ import java.io.Serializable;
  * @version 1.0
  */
 @Data
-public class P6eDefaultLoginResult implements Serializable {
+public class P6eLoginDto extends P6eResultDto implements Serializable {
     private String code;
     private String clientId;
     private String scope;

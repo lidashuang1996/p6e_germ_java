@@ -1,13 +1,10 @@
 package com.p6e.germ.oauth2.domain.entity;
 
-import com.p6e.germ.oauth2.infrastructure.repository.db.P6eClientDb;
-import com.p6e.germ.oauth2.infrastructure.repository.mapper.P6eClientMapper;
-import com.p6e.germ.oauth2.infrastructure.utils.CopyUtil;
+import com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2ClientDb;
+import com.p6e.germ.oauth2.infrastructure.repository.mapper.P6eOauth2ClientMapper;
 import com.p6e.germ.oauth2.infrastructure.utils.GeneratorUtil;
-import com.p6e.germ.oauth2.infrastructure.utils.SpringUtil;
-import lombok.Getter;
+import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,144 +13,119 @@ import java.util.Map;
  * @author lidashuang
  * @version 1.0
  */
-public class P6eClientEntity implements Serializable {
+public class P6eClientEntity {
 
-    /** 值对象 */
-    @Getter
-    private Integer id;
+    /** DB 对象 */
+    private P6eOauth2ClientDb p6eOauth2ClientDb;
 
-    @Getter
-    private Integer status;
-
-    @Getter
-    private String icon;
-
-    @Getter
-    private String name;
-
-    @Getter
-    private String key;
-
-    @Getter
-    private String secret;
-
-    @Getter
-    private String scope;
-
-    @Getter
-    private String redirectUri;
-
-    @Getter
-    private String describe;
-
-    @Getter
-    private String limitingRule;
-
-    /** 唯一标记 ID */
-    private final String uniqueId;
-
-    /** 注入映射 */
-    private final P6eClientMapper p6eClientMapper = SpringUtil.getBean(P6eClientMapper.class);
+    /** 注入服务 */
+    private final P6eOauth2ClientMapper p6eOauth2ClientMapper = P6eSpringUtil.getBean(P6eOauth2ClientMapper.class);
 
     /**
-     * id 读取
-     * @param id 参数
+     * 构造创建
+     * @param id id
      */
-    private P6eClientEntity(final Integer id) {
-        if (id == null) {
-            throw new NullPointerException(this.getClass() + " construction() ==> id is null.");
-        }
-        uniqueId = GeneratorUtil.uuid();
-        final P6eClientDb p6eClientDb = p6eClientMapper.queryById(id);
-        if (p6eClientDb == null) {
-            throw new NullPointerException(this.getClass() + " ==> construction() ==> query db id is null." );
-        } else {
-            CopyUtil.run(p6eClientDb, this);
+    public P6eClientEntity(Integer id) {
+        this.p6eOauth2ClientDb = p6eOauth2ClientMapper.queryById(id);
+        if (this.p6eOauth2ClientDb == null) {
+            throw new NullPointerException();
         }
     }
 
     /**
-     * key 读取
-     * @param key 参数
+     * 构造创建
+     * @param key key
      */
-    private P6eClientEntity(final String key) {
-        if (key == null) {
-            throw new NullPointerException(this.getClass() + " construction() ==> key is null.");
-        }
-        uniqueId = GeneratorUtil.uuid();
-        final P6eClientDb p6eClientDb = p6eClientMapper.queryByKey(key);
-        if (p6eClientDb == null) {
-            throw new NullPointerException(this.getClass() + " ==> construction() ==> query db key is null." );
-        } else {
-            CopyUtil.run(p6eClientDb, this);
+    public P6eClientEntity(String key) {
+        this.p6eOauth2ClientDb = p6eOauth2ClientMapper.queryByKey(key);
+        if (this.p6eOauth2ClientDb == null) {
+            throw new NullPointerException();
         }
     }
 
     /**
-     * db 方式
-     * @param db 参数
+     * 构造创建
+     * @param p6eOauth2ClientDb DB 对象
      */
-    private P6eClientEntity(final P6eClientDb db) {
-        if (db == null) {
+    public P6eClientEntity(P6eOauth2ClientDb p6eOauth2ClientDb) {
+        this.p6eOauth2ClientDb = p6eOauth2ClientDb;
+        if (this.p6eOauth2ClientDb == null) {
             throw new NullPointerException();
         }
-        uniqueId = GeneratorUtil.uuid();
-        CopyUtil.run(db, this);
     }
 
-    private P6eClientEntity(final Integer status, final String name, final String describe,
-                           final String scope, final String redirectUrl, final String limitingRule) {
-        if (status == null
-                || name == null
-                || describe == null
-                || scope == null
-                || redirectUrl == null
-                || limitingRule == null) {
-            throw new NullPointerException();
-        }
-        if (p6eClientMapper.create(new P6eClientDb().setKey(key)) > 0) {
-            uniqueId = GeneratorUtil.uuid();
-            this.refresh();
+    /**
+     * 返回内部数据
+     * @return 内部数据
+     */
+    public P6eOauth2ClientDb get() {
+        return p6eOauth2ClientDb;
+    }
+
+    /**
+     * 将数据写入到数据库
+     * @return 创建的数据对象
+     */
+    public P6eOauth2ClientDb create() {
+        if (p6eOauth2ClientMapper.create(p6eOauth2ClientDb) > 0) {
+            p6eOauth2ClientDb = p6eOauth2ClientMapper.queryById(p6eOauth2ClientDb.getId());
+            return p6eOauth2ClientDb;
         } else {
-            throw new RuntimeException();
+            return null;
         }
     }
 
-    public P6eClientEntity update() {
-        if (id == null) {
-            throw new NullPointerException();
-        }
-        if (p6eClientMapper.update(CopyUtil.run(this, P6eClientDb.class)) > 0) {
-            this.refresh();
-            return this;
+    /**
+     * 删除数据
+     * @return 删除的数据对象
+     */
+    public P6eOauth2ClientDb delete() {
+        if (p6eOauth2ClientMapper.delete(p6eOauth2ClientDb.getId()) > 0) {
+            return p6eOauth2ClientDb;
         } else {
-            throw new RuntimeException();
+            return null;
         }
     }
 
-    public P6eClientEntity delete() {
-        if (id == null) {
-            throw new NullPointerException();
-        }
-        this.refresh();
-        if (p6eClientMapper.delete(id) > 0) {
-            return this;
+    /**
+     * 修改数据
+     * @return 修改的数据对象
+     */
+    public P6eOauth2ClientDb update() {
+        if (p6eOauth2ClientMapper.update(p6eOauth2ClientDb) > 0) {
+            p6eOauth2ClientDb = p6eOauth2ClientMapper.queryById(p6eOauth2ClientDb.getId());
+            return p6eOauth2ClientDb;
         } else {
-            throw new RuntimeException();
+            return null;
         }
     }
 
+    /**
+     * 验证 scope 的参数
+     * @param scope 参数
+     * @return 验证结果
+     */
     public boolean verificationScope(final String scope) {
         // 暂无实现
         return true;
     }
 
+    /**
+     * 验证 secret 参数
+     * @param secret 参数
+     * @return 验证结果
+     */
     public boolean verificationSecret(final String secret) {
-        return this.secret.equals(secret);
+        return this.p6eOauth2ClientDb.getSecret().equals(secret);
     }
 
+    /**
+     * 验证重定向参数
+     * @param redirectUri 参数
+     * @return 验证结果
+     */
     public boolean verificationRedirectUri(final String redirectUri) {
-        final String[] redirectUrls = this.getRedirectUri().split(",");
+        final String[] redirectUrls = this.p6eOauth2ClientDb.getRedirectUri().split(",");
         for (String url : redirectUrls) {
             if (url.equals(redirectUri)) {
                 return true;
@@ -162,51 +134,15 @@ public class P6eClientEntity implements Serializable {
         return false;
     }
 
-    public void refresh() {
-        final P6eClientDb p6eClientDb = p6eClientMapper.queryById(id);
-        if (p6eClientDb == null) {
-            throw new NullPointerException(this.getClass() + " ==> query null." );
-        } else {
-            CopyUtil.run(p6eClientDb, this);
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "{"
-                + "\"uniqueId\":"
-                + uniqueId
-                + ",\"id\":"
-                + id
-                + ",\"status\":"
-                + status
-                + ",\"name\":\""
-                + name + '\"'
-                + ",\"key\":\""
-                + key + '\"'
-                + ",\"secret\":\""
-                + secret + '\"'
-                + ",\"scope\":\""
-                + scope + '\"'
-                + ",\"redirectUrl\":\""
-                + redirectUri + '\"'
-                + ",\"describe\":\""
-                + describe + '\"'
-                + ",\"limitingRule\":\""
-                + limitingRule + '\"'
-                + "}";
-    }
-
-    public static P6eClientEntity fetch(String key) {
-        return new P6eClientEntity(key);
-    }
-
+    /**
+     * 创建登录缓存认证对象
+     * @return P6eTokenEntity 认证对象
+     */
     public P6eTokenEntity createTokenCache() {
         final Map<String, String> map = new HashMap<>(3);
-        map.put("describe", describe);
-        map.put("name", name);
-        map.put("id", String.valueOf(id));
-        return P6eTokenEntity.create(GeneratorUtil.uuid(), String.valueOf(id), map);
+        map.put("describe", p6eOauth2ClientDb.getDescribe());
+        map.put("name", p6eOauth2ClientDb.getName());
+        map.put("id", String.valueOf(p6eOauth2ClientDb.getId()));
+        return new P6eTokenEntity(String.valueOf(p6eOauth2ClientDb.getId()), map);
     }
-
 }

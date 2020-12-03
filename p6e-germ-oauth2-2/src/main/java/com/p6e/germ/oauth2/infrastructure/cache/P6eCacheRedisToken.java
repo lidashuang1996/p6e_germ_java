@@ -1,14 +1,11 @@
 package com.p6e.germ.oauth2.infrastructure.cache;
 
-import org.springframework.stereotype.Component;
-
 import java.util.concurrent.TimeUnit;
 
 /**
  * @author lidashuang
  * @version 1.0
  */
-@Component
 public class P6eCacheRedisToken extends P6eCacheRedis implements IP6eCacheToken {
 
     private static final String SOURCE_NAME = "";
@@ -79,6 +76,14 @@ public class P6eCacheRedisToken extends P6eCacheRedis implements IP6eCacheToken 
     @Override
     public void delAccessToken(String key) {
         this.getRedisTemplate(SOURCE_NAME).delete(TOKEN_ACCESS_TOKEN_NAME + key);
+    }
+
+    @Override
+    public void setRefreshTokenExpirationTime(String key, long time) {
+        final String value = getRefreshToken(key);
+        if (value != null) {
+            this.getRedisTemplate(SOURCE_NAME).opsForValue().set(TOKEN_REFRESH_TOKEN_NAME + key, value, time, TimeUnit.SECONDS);
+        }
     }
 
 }

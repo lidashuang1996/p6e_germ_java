@@ -1,18 +1,16 @@
 package com.p6e.germ.oauth2.context.controller;
 
-import com.p6e.germ.oauth2.application.P6eAuthService;
+import com.p6e.germ.oauth2.application.P6eApplication;
 import com.p6e.germ.oauth2.context.controller.support.P6eBaseController;
-import com.p6e.germ.oauth2.context.controller.support.model.P6eDefaultLoginParam;
-import com.p6e.germ.oauth2.context.controller.support.model.P6eModelConfig;
-import com.p6e.germ.oauth2.context.controller.support.model.P6eResultModel;
 import com.p6e.germ.oauth2.context.controller.support.model.P6eTokenModelParam;
-import com.p6e.germ.oauth2.domain.keyvalue.P6eClientModeKeyValue;
-import com.p6e.germ.oauth2.domain.keyvalue.P6ePasswordModeKeyValue;
+import com.p6e.germ.oauth2.context.controller.support.model.P6eTokenModelResult;
+import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
+import com.p6e.germ.oauth2.model.P6eModel;
+import com.p6e.germ.oauth2.model.dto.*;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -26,10 +24,22 @@ public class P6eTokenController extends P6eBaseController {
     private static final String PASSWORD_TYPE = "PASSWORD";
     private static final String AUTH_CODE_TYPE = "AUTHORIZATION_CODE";
     private static final String CLIENT_TYPE = "CLIENT_CREDENTIALS";
-    private static final String REFRESH_TOKEN_TYPE  = "REFRESH_TOKEN";
 
-    @Resource
-    private P6eAuthService p6eAuthService;
+    /**
+     * 请求的携带认证信息的参数
+     */
+    private static final String AUTH_PARAM_NAME = "access_token";
+    private static final String REFRESH_TOKEN_NAME = "refresh_token";
+
+    /**
+     * 请求头内容的前缀
+     */
+    private static final String AUTH_HEADER_BEARER = "Bearer ";
+
+    /**
+     * 请求头名称
+     */
+    private static final String AUTH_HEADER_NAME = "authentication";
 
     /**
      * http://127.0.0.1:9900/token?client_id=1234567890&grant_type=CLIENT_CREDENTIALS&redirect_uri=http://127.0.0.1:10000&client_secret=1234567890
@@ -40,56 +50,62 @@ public class P6eTokenController extends P6eBaseController {
      * @return
      */
     @RequestMapping
-    public P6eResultModel def(final HttpServletRequest request, final P6eTokenModelParam param) {
-        try {
-            if (param == null
-                    || param.getClient_id() == null
-                    || param.getClient_secret() == null
-                    || param.getRedirect_uri() == null
-                    || param.getGrant_type() == null) {
-                return P6eResultModel.build(P6eModelConfig.ERROR_PARAM_EXCEPTION);
-            } else {
-                switch (param.getGrant_type().toUpperCase()) {
-                    case AUTH_CODE_TYPE:
-                        // code 执行模式
-                        return P6eResultModel.build(P6eModelConfig.SUCCESS, p6eAuthService.codeModeExecute(param));
-                    case PASSWORD_TYPE:
-                        // password 执行模式
-//                        if (HttpMethod.POST.name().equals(request.getMethod().toUpperCase())) {
-                            return P6eResultModel.build(P6eModelConfig.SUCCESS, p6eAuthService.passwordModeExecute(
-                                    new P6ePasswordModeKeyValue(
-                                            param.getAccount(),
-                                            param.getPassword(),
-                                            param.getGrant_type(),
-                                            param.getRedirect_uri(),
-                                            param.getClient_id(),
-                                            param.getClient_secret(),
-                                            param.getScope()
-                                    )));
-//                        } else {
-//                            return P6eResultModel.build(P6eModelConfig.ERROR_SERVICE_INSIDE);
-//                        }
-                    case CLIENT_TYPE:
-                        return P6eResultModel.build(P6eModelConfig.SUCCESS, p6eAuthService.clientModeExecute(
-                                new P6eClientModeKeyValue(
-                                        param.getGrant_type(),
-                                        param.getRedirect_uri(),
-                                        param.getClient_id(),
-                                        param.getClient_secret(),
-                                        param.getScope()
-                                )));
-                    case REFRESH_TOKEN_TYPE:
-
+    public P6eModel def(HttpServletRequest request, P6eTokenModelParam param) {
+        if (param == null
+                || param.getClientId() == null
+                || param.getClientSecret() == null
+                || param.getRedirectUri() == null
+                || param.getGrantType() == null) {
+            return P6eModel.build(P6eModel.Error.PARAMETER_EXCEPTION);
+        } else {
+            P6eAuthTokenDto p6eAuthTokenDto;
+            switch (param.getGrantType().toUpperCase()) {
+                case AUTH_CODE_TYPE:
+                    // code 执行模式
+                    p6eAuthTokenDto = P6eApplication.auth.codeCallback(P6eCopyUtil.run(param, P6eCodeCallbackAuthDto.class));
+                    break;
+                case PASSWORD_TYPE:
+                    // password 执行模式
+                    if (HttpMethod.POST.name().equals(request.getMethod().toUpperCase())) {
+                        p6eAuthTokenDto = P6eApplication.auth.password(P6eCopyUtil.run(param, P6ePasswordAuthDto.class));
                         break;
-                    default:
-                        break;
-                }
-                return P6eResultModel.build(P6eModelConfig.ERROR_SERVICE_INSIDE);
+                    } else {
+                        return P6eModel.build(P6eModel.Error.HTTP_METHOD_EXCEPTION);
+                    }
+                case CLIENT_TYPE:
+                    p6eAuthTokenDto = P6eApplication.auth.client(P6eCopyUtil.run(param, P6eClientAuthDto.class));
+                    break;
+                default:
+                    return P6eModel.build(P6eModel.Error.PARAMETER_EXCEPTION);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error(e.getMessage());
-            return P6eResultModel.build(P6eModelConfig.ERROR_SERVICE_INSIDE);
+            if (p6eAuthTokenDto.getError() == null) {
+                return P6eModel.build().setData(P6eCopyUtil.run(p6eAuthTokenDto, P6eTokenModelResult.class));
+            } else {
+                return P6eModel.build(p6eAuthTokenDto.getError());
+            }
         }
     }
+
+    @RequestMapping("refresh")
+    public P6eModel refresh(HttpServletRequest request) {
+        String token = request.getParameter(AUTH_PARAM_NAME);
+        String refreshToken = request.getParameter(REFRESH_TOKEN_NAME);
+        if (token == null) {
+            final String content = request.getHeader(AUTH_HEADER_NAME);
+            if (content != null && content.startsWith(AUTH_HEADER_BEARER)) {
+                token = content.substring(7);
+            }
+        }
+        // 更具 token 获取用户数据
+        if (token != null && refreshToken != null) {
+            final P6eAuthTokenDto p6eAuthTokenDto = P6eApplication.auth.refresh(token, refreshToken);
+            if (p6eAuthTokenDto.getError() == null) {
+                return P6eModel.build().setData(P6eCopyUtil.run(p6eAuthTokenDto, P6eTokenModelResult.class));
+            } else {
+                return P6eModel.build(p6eAuthTokenDto.getError());
+            }
+        }
+        return P6eModel.build(P6eModel.Error.PARAMETER_EXCEPTION);
+    }
+
 }

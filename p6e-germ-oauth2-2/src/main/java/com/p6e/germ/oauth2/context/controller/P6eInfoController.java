@@ -1,13 +1,12 @@
 package com.p6e.germ.oauth2.context.controller;
 
-import com.p6e.germ.oauth2.application.P6eInfoService;
+import com.p6e.germ.oauth2.application.P6eApplication;
 import com.p6e.germ.oauth2.context.controller.support.P6eBaseController;
-import com.p6e.germ.oauth2.context.controller.support.model.P6eModelConfig;
-import com.p6e.germ.oauth2.context.controller.support.model.P6eResultModel;
+import com.p6e.germ.oauth2.model.P6eModel;
+import com.p6e.germ.oauth2.model.dto.P6eInfoDto;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -18,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/info")
 public class P6eInfoController extends P6eBaseController {
+
     /**
      * 请求的携带认证信息的参数
      */
@@ -33,33 +33,25 @@ public class P6eInfoController extends P6eBaseController {
      */
     private static final String AUTH_HEADER_NAME = "authentication";
 
-    @Resource
-    private P6eInfoService p6eInfoService;
-
     @RequestMapping
-    public P6eResultModel def(final HttpServletRequest request) {
-        try {
-            String token = request.getParameter(AUTH_PARAM_NAME);
-            if (token == null) {
-                final String content = request.getHeader(AUTH_HEADER_NAME);
-                if (content != null && content.startsWith(AUTH_HEADER_BEARER)) {
-                    token = content.substring(7);
-                }
+    public P6eModel def(final HttpServletRequest request) {
+        String token = request.getParameter(AUTH_PARAM_NAME);
+        if (token == null) {
+            final String content = request.getHeader(AUTH_HEADER_NAME);
+            if (content != null && content.startsWith(AUTH_HEADER_BEARER)) {
+                token = content.substring(7);
             }
-            if (token != null) {
-                final Object data = p6eInfoService.execute(token);
-                if (data == null) {
-                    return P6eResultModel.build(P6eModelConfig.ERROR_RESOURCES_NO_EXIST, "TOKEN 过期");
-                } else {
-                    return P6eResultModel.build(P6eModelConfig.SUCCESS, data);
-                }
-            }
-            return P6eResultModel.build(P6eModelConfig.ERROR_PARAM_EXCEPTION);
-        } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error(e.getMessage());
-            return P6eResultModel.build(P6eModelConfig.ERROR_SERVICE_INSIDE);
         }
+        // 更具 token 获取用户数据
+        if (token != null) {
+            final P6eInfoDto p6eInfoDto = P6eApplication.auth.info(token);
+            if (p6eInfoDto.getError() == null) {
+                return P6eModel.build().setData(p6eInfoDto.getData());
+            } else {
+                return P6eModel.build(p6eInfoDto.getError());
+            }
+        }
+        return P6eModel.build(P6eModel.Error.PARAMETER_EXCEPTION);
     }
 
 }

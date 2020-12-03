@@ -100,6 +100,5 @@ public interface IP6eCacheToken {
     public void delAccessToken(String key);
 
 
-
-
+    void setRefreshTokenExpirationTime(String accessToken, long time);
 }

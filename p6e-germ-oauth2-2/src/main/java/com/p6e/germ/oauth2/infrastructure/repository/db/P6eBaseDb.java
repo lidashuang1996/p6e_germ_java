@@ -14,4 +14,5 @@ import java.io.Serializable;
 public class P6eBaseDb implements Serializable {
     private Integer page;
     private Integer size;
+    private String search;
 }

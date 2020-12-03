@@ -1,4 +1,4 @@
-<%@ page import="com.p6e.germ.oauth2.infrastructure.utils.CopyUtil" %>
+<%@ page import="com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page isELIgnored="false" %>
 <!DOCTYPE html>
@@ -277,11 +277,11 @@
             document.getElementById('button-text2').style.display = 'block';
             document.getElementById('button-svg').style.display = 'block';
             loginAjax({
-                mode: '<%=  CopyUtil.toMap(request.getAttribute("data")).get("mode") %>',
-                mark: '<%=  CopyUtil.toMap(request.getAttribute("data")).get("mark") %>',
-                voucher: '<%=  CopyUtil.toMap(request.getAttribute("data")).get("voucher") %>',
+                mode: '<%=  P6eCopyUtil.toMap(request.getAttribute("data")).get("mode") %>',
+                mark: '<%=  P6eCopyUtil.toMap(request.getAttribute("data")).get("mark") %>',
+                voucher: '<%=  P6eCopyUtil.toMap(request.getAttribute("data")).get("voucher") %>',
                 account: account,
-                password: A('<%=  CopyUtil.toMap(request.getAttribute("data")).get("publicKey") %>', password)
+                password: A('<%=  P6eCopyUtil.toMap(request.getAttribute("data")).get("publicKey") %>', password)
             });
         }
     }

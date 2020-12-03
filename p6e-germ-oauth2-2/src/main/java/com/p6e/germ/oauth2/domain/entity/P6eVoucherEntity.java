@@ -1,14 +1,10 @@
 package com.p6e.germ.oauth2.domain.entity;
 
 import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheVoucher;
-import com.p6e.germ.oauth2.infrastructure.exception.AnalysisException;
 import com.p6e.germ.oauth2.infrastructure.utils.GeneratorUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.RsaUtil;
-import com.p6e.germ.oauth2.infrastructure.utils.SpringUtil;
-import lombok.Getter;
-
-import java.io.Serializable;
+import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
 import java.security.KeyPair;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,76 +13,62 @@ import java.util.Map;
  * @author lidashuang
  * @version 1.0
  */
-public class P6eVoucherEntity implements Serializable {
-
-    /** 唯一标记 */
-    private final String uniqueId;
+public class P6eVoucherEntity {
 
     /** KEY */
-    @Getter
-    private final String key;
+    private final String voucher;
 
     /** 公钥 */
-    private final String publicSecretKey;
+    private String publicSecretKey;
 
     /** 私钥 */
-    private final String privateSecretKey;
+    private String privateSecretKey;
 
     /** 缓存服务对象 */
-    private final IP6eCacheVoucher p6eCacheVoucher = SpringUtil.getBean(IP6eCacheVoucher.class);
+    private final IP6eCacheVoucher p6eCacheVoucher = P6eSpringUtil.getBean(IP6eCacheVoucher.class);
 
     /**
-     * 读取方式获取对象
-     * @param key 缓存 key
-     * @return P6eVoucherEntity 对象
+     * 构造创建
      */
-    public static P6eVoucherEntity fetch(String key) {
-        return new P6eVoucherEntity(key, true);
-    }
-
-    /**
-     * 创建方式获取对象
-     * @param key 缓存 key
-     * @return P6eVoucherEntity 对象
-     */
-    public static P6eVoucherEntity create(String key) {
-        return new P6eVoucherEntity(key, false);
+    public P6eVoucherEntity() {
+        this.voucher = GeneratorUtil.uuid();
     }
 
     /**
      * 构造创建
      * @param key 缓存 key
-     * @param isFetch 是否采用读取的方式
      */
-    private P6eVoucherEntity(String key, boolean isFetch) {
+    public P6eVoucherEntity(String key) {
+        this.voucher = key;
+    }
+
+    public P6eVoucherEntity create() {
         try {
-            this.key = key;
-            if (isFetch) {
-                final String voucher = p6eCacheVoucher.get(key);
-                if (voucher == null) {
-                    throw new NullPointerException(this.getClass() + " construction fetch data ==> NullPointerException.");
-                } else {
-                    final Map<String, String> map = JsonUtil.fromJsonToMap(voucher, String.class, String.class);
-                    publicSecretKey = map.get("publicSecretKey");
-                    privateSecretKey = map.get("privateSecretKey");
-                    if (publicSecretKey == null || privateSecretKey == null) {
-                        throw new NullPointerException(this.getClass() + " construction fetch key ==> NullPointerException.");
-                    }
-                }
-            } else {
-                final KeyPair keyPair = RsaUtil.initKey();
-                publicSecretKey = RsaUtil.getPublicKey(keyPair);
-                privateSecretKey = RsaUtil.getPrivateKey(keyPair);
-                if (publicSecretKey == null || privateSecretKey == null) {
-                    throw new NullPointerException(this.getClass() + " construction fetch key ==> NullPointerException.");
-                }
-                this.cache();
+            final KeyPair keyPair = RsaUtil.initKey();
+            publicSecretKey = RsaUtil.getPublicKey(keyPair);
+            privateSecretKey = RsaUtil.getPrivateKey(keyPair);
+            if (publicSecretKey == null || privateSecretKey == null) {
+                throw new NullPointerException(this.getClass() + " construction fetch key ==> NullPointerException.");
             }
-            // 生成
-            uniqueId = GeneratorUtil.uuid();
         } catch (Exception e) {
-            throw new AnalysisException(this.getClass() + " construction ==> AnalysisException.");
+            throw new NullPointerException(e.getMessage());
         }
+        return this;
+    }
+
+    public P6eVoucherEntity get() {
+        final String content = p6eCacheVoucher.get(voucher);
+        if (content == null) {
+            throw new NullPointerException(this.getClass() + " construction fetch data ==> NullPointerException.");
+        } else {
+            final Map<String, String> map = JsonUtil.fromJsonToMap(content, String.class, String.class);
+            publicSecretKey = map.get("publicSecretKey");
+            privateSecretKey = map.get("privateSecretKey");
+            if (publicSecretKey == null || privateSecretKey == null) {
+                throw new NullPointerException(this.getClass() + " construction fetch key ==> NullPointerException.");
+            }
+        }
+        return this;
     }
 
     /**
@@ -103,14 +85,14 @@ public class P6eVoucherEntity implements Serializable {
         final Map<String, String> map = new HashMap<>(2);
         map.put("publicSecretKey", publicSecretKey);
         map.put("privateSecretKey", privateSecretKey);
-        p6eCacheVoucher.set(key, JsonUtil.toJson(map));
+        p6eCacheVoucher.set(voucher, JsonUtil.toJson(map));
     }
 
     /**
      * 清除缓存
      */
     public void clean() {
-        p6eCacheVoucher.del(key);
+        p6eCacheVoucher.del(voucher);
     }
 
     public String getPrivateSecretKey() {
@@ -119,5 +101,9 @@ public class P6eVoucherEntity implements Serializable {
 
     public String getPublicSecretKey() {
         return publicSecretKey.replaceAll("\n", "");
+    }
+
+    public String getVoucher() {
+        return voucher;
     }
 }

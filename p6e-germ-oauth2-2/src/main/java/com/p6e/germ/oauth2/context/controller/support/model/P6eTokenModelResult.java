@@ -10,7 +10,7 @@ import java.io.Serializable;
  * @version 1.0
  */
 @Data
-public class P6eTokenModelParam implements Serializable {
+public class P6eTokenModelResult implements Serializable {
 
     @JsonProperty("grant_type")
     private String grantType;

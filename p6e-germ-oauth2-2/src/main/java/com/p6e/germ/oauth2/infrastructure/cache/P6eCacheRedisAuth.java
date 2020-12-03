@@ -1,15 +1,12 @@
 package com.p6e.germ.oauth2.infrastructure.cache;
 
-import org.springframework.stereotype.Component;
-
 import java.util.concurrent.TimeUnit;
 
 /**
  * @author lidashuang
  * @version 1.0
  */
-@Component
-public class P6eCacheRedisAuth extends P6eCacheRedis implements IP6eCacheAuth {
+public class P6eCacheRedisAuth extends P6eCacheRedis implements IP6eCache, IP6eCacheAuth {
 
     private static final String SOURCE_NAME = "";
 

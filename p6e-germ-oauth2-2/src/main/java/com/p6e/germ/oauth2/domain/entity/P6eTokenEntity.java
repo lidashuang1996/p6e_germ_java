@@ -1,11 +1,9 @@
 package com.p6e.germ.oauth2.domain.entity;
 
 import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheToken;
-import com.p6e.germ.oauth2.infrastructure.exception.ParamException;
 import com.p6e.germ.oauth2.infrastructure.utils.GeneratorUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
-import com.p6e.germ.oauth2.infrastructure.utils.SpringUtil;
-import lombok.Getter;
+import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -16,91 +14,53 @@ import java.util.Map;
  */
 public class P6eTokenEntity implements Serializable {
 
-    /** 唯一标记 */
-    private final String uniqueId;
+    public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
+    public static final String REFRESH_TOKEN = "REFRESH_TOKEN";
 
     /** 缓存的内容 */
-    @Getter
     private String key;
 
     /** 缓存的内容 */
-    @Getter
-    private Model model;
+    private final Model model;
 
     /** 缓存的内容 */
-    @Getter
-    private final String uid;
+    private final String id;
 
     /** 缓存的内容 */
-    @Getter
     private final Map<String, String> value;
 
     /** 注入缓存对象 */
-    private final IP6eCacheToken p6eCacheToken = SpringUtil.getBean(IP6eCacheToken.class);
+    private final IP6eCacheToken p6eCacheToken = P6eSpringUtil.getBean(IP6eCacheToken.class);
 
-    /**
-     * 获取的方式获取
-     * @param key key
-     * @return P6eAuthEntity 对象
-     */
-    public static P6eTokenEntity fetch(String key) {
-        return new P6eTokenEntity(key);
-    }
-
-
-    /**
-     * 获取的方式获取
-     * @param accessToken 生成的 token 数据
-     * @return P6eAuthEntity 对象
-     */
-    public static P6eTokenEntity fetchAccessToken(String accessToken) {
-        return new P6eTokenEntity(accessToken, "ACCESS_TOKEN");
-    }
-
-    /**
-     * 获取的方式获取
-     * @param refreshToken 生成的 token 数据
-     * @return P6eAuthEntity 对象
-     */
-    public static P6eTokenEntity fetchRefreshToken(String refreshToken) {
-        return new P6eTokenEntity(refreshToken, "REFRESH_TOKEN");
-    }
-
-
-    /**
-     * 创建的方式获取
-     * @param key key
-     * @param value value
-     * @return P6eAuthEntity 对象
-     */
-    public static P6eTokenEntity create(String key, String uid, Map<String, String> value) {
-        return new P6eTokenEntity(key, uid, value);
-    }
 
     /**
      * 构造创建
      * @param key key
      */
-    private P6eTokenEntity(String key) {
+    public P6eTokenEntity(String key) {
         this.key = key;
-        final String content = p6eCacheToken.get(key);
-        if (content == null) {
+        final String modelContent = p6eCacheToken.get(key);
+        if (modelContent == null) {
             throw new NullPointerException(this.getClass() + " construction fetch key ==> NullPointerException.");
         }
-        this.model = JsonUtil.fromJson(content, Model.class);
+        this.model = JsonUtil.fromJson(modelContent, Model.class);
         if (this.model == null) {
             throw new NullPointerException(this.getClass() + " construction fetch key ==> NullPointerException.");
         }
-        this.uid = p6eCacheToken.getAccessToken(this.model.getAccessToken());
-        if (this.uid == null) {
+        final String tokenContent = p6eCacheToken.getAccessToken(this.model.getAccessToken());
+        if (tokenContent == null) {
             throw new NullPointerException(this.getClass() + " construction fetch key ==> NullPointerException.");
         }
-        final String user = p6eCacheToken.getUser(this.uid);
+        final Token token = JsonUtil.fromJson(tokenContent, Token.class);
+        if (token == null) {
+            throw new NullPointerException(this.getClass() + " construction fetch key ==> NullPointerException.");
+        }
+        this.id = token.getId();
+        final String user = p6eCacheToken.getUser(this.id);
         if (user == null) {
             throw new NullPointerException(this.getClass() + " construction fetch key ==> NullPointerException.");
         }
         this.value = JsonUtil.fromJsonToMap(user, String.class, String.class);
-        this.uniqueId = GeneratorUtil.uuid();
     }
 
     /**
@@ -108,39 +68,49 @@ public class P6eTokenEntity implements Serializable {
      * @param token token
      * @param type 类型
      */
-    private P6eTokenEntity(String token, String type) {
+    public P6eTokenEntity(String token, String type) {
+        final String tokenContent;
         switch (type) {
             case "ACCESS_TOKEN":
-                this.uid = p6eCacheToken.getAccessToken(token);
+                tokenContent = p6eCacheToken.getAccessToken(token);
                 break;
             case "REFRESH_TOKEN":
-                this.uid = p6eCacheToken.getRefreshToken(token);
+                tokenContent = p6eCacheToken.getRefreshToken(token);
                 break;
             default:
-                throw new ParamException();
+                throw new NullPointerException();
         }
-        if (this.uid == null) {
+        if (tokenContent == null) {
             throw new NullPointerException();
         }
-        final String content = p6eCacheToken.getUser(this.uid);
-        if (content == null) {
+        final Token t = JsonUtil.fromJson(tokenContent, Token.class);
+        if (t == null) {
             throw new NullPointerException();
         }
-        this.value = JsonUtil.fromJsonToMap(content, String.class, String.class);
+        this.id = t.getId();
+        this.model = new Model(
+                t.getAccessToken(),
+                t.getRefreshToken(),
+                "bearer",
+                IP6eCacheToken.TOKEN_TIME
+        );
+        final String userContent = p6eCacheToken.getUser(t.getId());
+        if (userContent == null) {
+            throw new NullPointerException();
+        }
+        this.value = JsonUtil.fromJsonToMap(userContent, String.class, String.class);
         if (this.value == null) {
             throw new NullPointerException();
         }
-        this.uniqueId = GeneratorUtil.uuid();
     }
 
     /**
      * 构造创建
-     * @param key key
      * @param value value
      */
-    private P6eTokenEntity(String key, String uid, Map<String, String> value) {
-        this.key = key;
-        this.uid = uid;
+    public P6eTokenEntity(String id, Map<String, String> value) {
+        this.key = GeneratorUtil.uuid();
+        this.id = id;
         this.value = value;
         this.model = new Model(
                 GeneratorUtil.uuid(),
@@ -148,21 +118,25 @@ public class P6eTokenEntity implements Serializable {
                 "bearer",
                 IP6eCacheToken.TOKEN_TIME
         );
-        this.uniqueId = GeneratorUtil.uuid();
-        this.cache();
     }
 
     /**
      * 缓存
      */
-    public void cache() {
+    public P6eTokenEntity cache() {
         // 缓存认证信息
         p6eCacheToken.set(key, JsonUtil.toJson(model));
         // 缓存用户信息
-        p6eCacheToken.setUser(uid, JsonUtil.toJson(value));
+        p6eCacheToken.setUser(id, JsonUtil.toJson(value));
         // 缓存 token 对应用户信息
-        p6eCacheToken.setAccessToken(model.getAccessToken(), uid);
-        p6eCacheToken.setRefreshToken(model.getRefreshToken(), uid);
+        final Token token = new Token(id, model.getAccessToken(), model.getRefreshToken());
+        p6eCacheToken.setAccessToken(model.getAccessToken(), JsonUtil.toJson(token));
+        p6eCacheToken.setRefreshToken(model.getRefreshToken(), JsonUtil.toJson(token));
+        return this;
+    }
+
+    public void delAccessToken() {
+        p6eCacheToken.delAccessToken(this.model.getAccessToken());
     }
 
     /**
@@ -180,6 +154,48 @@ public class P6eTokenEntity implements Serializable {
         p6eCacheToken.setAccessTokenExpirationTime(this.model.getAccessToken(), time);
     }
 
+    public void setRefreshTokenExpirationTime(long time) {
+        p6eCacheToken.setRefreshTokenExpirationTime(this.model.getRefreshToken(), time);
+    }
+
+    public boolean verificationRefreshToken(String refresh) {
+        return model.getRefreshToken().equals(refresh);
+    }
+
+    public P6eTokenEntity delModel() {
+        if (key != null) {
+            p6eCacheToken.del(key);
+        }
+        return this;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public Model getModel() {
+        return model;
+    }
+
+    public Map<String, String> getValue() {
+        return value;
+    }
+
+    public P6eTokenEntity refresh() {
+        p6eCacheToken.del(key);
+        p6eCacheToken.delAccessToken(model.getAccessToken());
+        p6eCacheToken.delRefreshToken(model.getRefreshToken());
+        return new P6eTokenEntity(id, value).cache();
+    }
+
+    public P6eTokenEntity resetModel() {
+        this.key = GeneratorUtil.uuid();
+        final Token token = new Token(id, model.getAccessToken(), model.getRefreshToken());
+        p6eCacheToken.setAccessToken(model.getAccessToken(), JsonUtil.toJson(token));
+        p6eCacheToken.setRefreshToken(model.getRefreshToken(), JsonUtil.toJson(token));
+        return this;
+    }
+
     /**
      * 模型
      */
@@ -189,8 +205,7 @@ public class P6eTokenEntity implements Serializable {
         private String tokenType;
         private Long expiresIn;
 
-        public Model() {
-        }
+        public Model() { }
 
         public Model(String accessToken, String refreshToken, String tokenType, Long expiresIn) {
             this.accessToken = accessToken;
@@ -216,4 +231,39 @@ public class P6eTokenEntity implements Serializable {
         }
     }
 
+    public static class Token {
+        private String id;
+        private String accessToken;
+        private String refreshToken;
+
+        public Token(String id, String accessToken, String refreshToken) {
+            this.id = id;
+            this.accessToken = accessToken;
+            this.refreshToken = refreshToken;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getAccessToken() {
+            return accessToken;
+        }
+
+        public void setAccessToken(String accessToken) {
+            this.accessToken = accessToken;
+        }
+
+        public String getRefreshToken() {
+            return refreshToken;
+        }
+
+        public void setRefreshToken(String refreshToken) {
+            this.refreshToken = refreshToken;
+        }
+    }
 }
