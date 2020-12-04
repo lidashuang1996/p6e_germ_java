@@ -1,10 +1,10 @@
 package com.p6e.germ.oauth2.domain.entity;
 
 import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheVoucher;
+import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
 import com.p6e.germ.oauth2.infrastructure.utils.GeneratorUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.RsaUtil;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
 import java.security.KeyPair;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +25,7 @@ public class P6eVoucherEntity {
     private String privateSecretKey;
 
     /** 缓存服务对象 */
-    private final IP6eCacheVoucher p6eCacheVoucher = P6eSpringUtil.getBean(IP6eCacheVoucher.class);
+    private final IP6eCacheVoucher p6eCacheVoucher = P6eCache.voucher;
 
     /**
      * 构造创建
@@ -81,11 +81,12 @@ public class P6eVoucherEntity {
     /**
      * 缓存
      */
-    public void cache() {
+    public P6eVoucherEntity cache() {
         final Map<String, String> map = new HashMap<>(2);
         map.put("publicSecretKey", publicSecretKey);
         map.put("privateSecretKey", privateSecretKey);
         p6eCacheVoucher.set(voucher, JsonUtil.toJson(map));
+        return this;
     }
 
     /**

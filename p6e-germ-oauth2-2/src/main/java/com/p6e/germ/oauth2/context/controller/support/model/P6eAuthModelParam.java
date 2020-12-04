@@ -2,6 +2,7 @@ package com.p6e.germ.oauth2.context.controller.support.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.Serializable;
 

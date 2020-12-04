@@ -34,11 +34,7 @@ public final class P6eSpringUtil {
         if (APPLICATION == null) {
             throw new NullPointerException(P6eSpringUtil.class + " getBean() ==> APPLICATION param null.");
         } else {
-            try {
-                return APPLICATION.getBean(tClass);
-            } catch (Exception e) {
-                return null;
-            }
+            return APPLICATION.getBean(tClass);
         }
     }
 

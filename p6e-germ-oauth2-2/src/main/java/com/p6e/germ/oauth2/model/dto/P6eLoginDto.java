@@ -21,4 +21,8 @@ public class P6eLoginDto extends P6eResultDto implements Serializable {
     private String refreshToken;
     private String tokenType;
     private Long expiresIn;
+
+    private String icon;
+    private String name;
+    private String describe;
 }

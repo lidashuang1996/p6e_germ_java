@@ -1,8 +1,10 @@
 package com.p6e.germ.oauth2.domain.entity;
 
+import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheClient;
+import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
 import com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2ClientDb;
 import com.p6e.germ.oauth2.infrastructure.repository.mapper.P6eOauth2ClientMapper;
-import com.p6e.germ.oauth2.infrastructure.utils.GeneratorUtil;
+import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
 
 import java.util.HashMap;
@@ -18,6 +20,9 @@ public class P6eClientEntity {
     /** DB 对象 */
     private P6eOauth2ClientDb p6eOauth2ClientDb;
 
+    /** 注入缓存服务 */
+    private final IP6eCacheClient p6eCacheClient = P6eCache.client;
+
     /** 注入服务 */
     private final P6eOauth2ClientMapper p6eOauth2ClientMapper = P6eSpringUtil.getBean(P6eOauth2ClientMapper.class);
 
@@ -26,7 +31,21 @@ public class P6eClientEntity {
      * @param id id
      */
     public P6eClientEntity(Integer id) {
-        this.p6eOauth2ClientDb = p6eOauth2ClientMapper.queryById(id);
+        try {
+            final String content = p6eCacheClient.getDbId(String.valueOf(id));
+            if (content == null || "".equals(content)) {
+                this.p6eOauth2ClientDb = p6eOauth2ClientMapper.queryById(id);
+                // 写入缓存数据
+                final String cache = JsonUtil.toJson(this.p6eOauth2ClientDb);
+                p6eCacheClient.setDbId(String.valueOf(this.p6eOauth2ClientDb.getId()), cache);
+                p6eCacheClient.setDbKey(this.p6eOauth2ClientDb.getKey(), cache);
+            } else {
+                this.p6eOauth2ClientDb = JsonUtil.fromJson(content, P6eOauth2ClientDb.class);
+            }
+        } catch (Exception e) {
+            this.p6eOauth2ClientDb = null;
+            p6eCacheClient.delDbId(String.valueOf(id));
+        }
         if (this.p6eOauth2ClientDb == null) {
             throw new NullPointerException();
         }
@@ -37,7 +56,22 @@ public class P6eClientEntity {
      * @param key key
      */
     public P6eClientEntity(String key) {
-        this.p6eOauth2ClientDb = p6eOauth2ClientMapper.queryByKey(key);
+        // 去缓存中获取如果没有再去DB读取然后缓存
+        try {
+            final String content = p6eCacheClient.getDbKey(key);
+            if (content == null || "".equals(content)) {
+                this.p6eOauth2ClientDb = p6eOauth2ClientMapper.queryByKey(key);
+                // 写入缓存数据
+                final String cache = JsonUtil.toJson(this.p6eOauth2ClientDb);
+                p6eCacheClient.setDbId(String.valueOf(this.p6eOauth2ClientDb.getId()), cache);
+                p6eCacheClient.setDbKey(this.p6eOauth2ClientDb.getKey(), cache);
+            } else {
+                this.p6eOauth2ClientDb = JsonUtil.fromJson(content, P6eOauth2ClientDb.class);
+            }
+        } catch (Exception e) {
+            this.p6eOauth2ClientDb = null;
+            p6eCacheClient.delDbKey(key);
+        }
         if (this.p6eOauth2ClientDb == null) {
             throw new NullPointerException();
         }

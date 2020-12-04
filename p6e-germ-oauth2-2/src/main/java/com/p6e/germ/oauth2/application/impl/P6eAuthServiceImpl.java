@@ -27,9 +27,9 @@ public class P6eAuthServiceImpl implements P6eAuthService {
             if (p6eClientEntity.verificationScope(param.getScope())
                     && p6eClientEntity.verificationRedirectUri(param.getRedirectUri())) {
                 // 生产凭证
-                final P6eVoucherEntity p6eVoucherEntity = new P6eVoucherEntity().create();
+                final P6eVoucherEntity p6eVoucherEntity = new P6eVoucherEntity().create().cache();
                 // 生成记号
-                final P6eMarkEntity p6eMarkEntity = new P6eMarkEntity(P6eCopyUtil.run(param, P6eAuthKeyValue.class));
+                final P6eMarkEntity p6eMarkEntity = new P6eMarkEntity(P6eCopyUtil.run(param, P6eAuthKeyValue.class)).cache();
                 // 写入信息
                 p6eAuthDto.setMark(p6eMarkEntity.getMark());
                 p6eAuthDto.setVoucher(p6eVoucherEntity.getVoucher());

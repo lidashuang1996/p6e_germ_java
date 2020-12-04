@@ -1,6 +1,7 @@
 package com.p6e.germ.oauth2.domain.entity;
 
 import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheToken;
+import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
 import com.p6e.germ.oauth2.infrastructure.utils.GeneratorUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
@@ -30,7 +31,7 @@ public class P6eTokenEntity implements Serializable {
     private final Map<String, String> value;
 
     /** 注入缓存对象 */
-    private final IP6eCacheToken p6eCacheToken = P6eSpringUtil.getBean(IP6eCacheToken.class);
+    private final IP6eCacheToken p6eCacheToken = P6eCache.token;
 
 
     /**
@@ -199,7 +200,7 @@ public class P6eTokenEntity implements Serializable {
     /**
      * 模型
      */
-    public static class Model {
+    public static class Model implements Serializable {
         private String accessToken;
         private String refreshToken;
         private String tokenType;

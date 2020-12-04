@@ -2,9 +2,9 @@ package com.p6e.germ.oauth2.domain.entity;
 
 import com.p6e.germ.oauth2.domain.keyvalue.P6eAuthKeyValue;
 import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheMark;
+import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
 import com.p6e.germ.oauth2.infrastructure.utils.GeneratorUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
 import java.io.Serializable;
 
 /**
@@ -20,7 +20,7 @@ public class P6eMarkEntity implements Serializable {
     private final P6eAuthKeyValue p6eAuthKeyValue;
 
     /** 注入缓存服务 */
-    private final IP6eCacheMark p6eCacheMark = P6eSpringUtil.getBean(IP6eCacheMark.class);
+    private final IP6eCacheMark p6eCacheMark = P6eCache.mark;
 
     /**
      * 读取 mark 数据
@@ -58,8 +58,9 @@ public class P6eMarkEntity implements Serializable {
     /**
      * 缓存
      */
-    public void cache() {
+    public P6eMarkEntity cache() {
         p6eCacheMark.set(mark, JsonUtil.toJson(p6eAuthKeyValue));
+        return this;
     }
 
     /**

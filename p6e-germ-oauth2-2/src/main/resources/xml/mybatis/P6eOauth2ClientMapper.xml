@@ -56,7 +56,16 @@
     <select id="queryAll" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2ClientDb"
             resultType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2ClientDb">
         SELECT
-            `id`, `status`, `name`, `key`, `secret`, `scope`, `redirect_uri`, `describe`, `limiting_rule`, `icon`
+            `id` as `id`,
+            `status` as `status`,
+            `name` as `name`,
+            `key` as `key`,
+            `secret` as `secret`,
+            `scope` as `scope`,
+            `redirect_uri` as `redirectUri`,
+            `describe` as `describe`,
+            `limiting_rule` as `limitingRule`,
+            `icon` as `icon`
         FROM
             `p6e_oauth2_client`
         <trim prefix="WHERE" prefixOverrides="AND |OR">

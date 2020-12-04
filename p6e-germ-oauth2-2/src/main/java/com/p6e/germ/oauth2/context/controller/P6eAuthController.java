@@ -8,22 +8,27 @@ import com.p6e.germ.oauth2.context.controller.support.model.P6eDefaultLoginResul
 import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.model.P6eModel;
 import com.p6e.germ.oauth2.model.dto.*;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * Oauth2 接口
  * @author lidashuang
  * @version 1.0
  */
-@Controller
+@RestController
 @RequestMapping("/auth")
 public class P6eAuthController extends P6eBaseController {
 
     private static final String CODE_TYPE = "CODE";
     private static final String TOKEN_TYPE = "TOKEN";
+
+    private static final String CLIENT_ID_PARAM = "client_id";
+    private static final String REDIRECT_URI_PARAM = "redirect_uri";
+    private static final String RESPONSE_TYPE_PARAM = "response_type";
 
     /**
      * 请求的携带认证信息的参数
@@ -60,8 +65,10 @@ public class P6eAuthController extends P6eBaseController {
      */
     @RequestMapping
     public P6eModel def(HttpServletRequest request, P6eAuthModelParam param) {
-        if (param == null
-                || param.getScope() == null
+        param.setClientId(request.getParameter(CLIENT_ID_PARAM));
+        param.setRedirectUri(request.getParameter(REDIRECT_URI_PARAM));
+        param.setResponseType(request.getParameter(RESPONSE_TYPE_PARAM));
+        if (param.getScope() == null
                 || param.getClientId() == null
                 || param.getRedirectUri() == null
                 || param.getResponseType() == null) {
@@ -78,9 +85,15 @@ public class P6eAuthController extends P6eBaseController {
             if (token != null) {
                 // 读取浏览器数据，验证当前用户是否登录
                 final P6eLoginDto p6eLoginDto =
-                        P6eApplication.login.verification(P6eCopyUtil.run(param, P6eVerificationLoginDto.class));
+                        P6eApplication.login.verification(P6eCopyUtil.run(
+                                param, P6eVerificationLoginDto.class).setAccessToken(token));
                 if (p6eLoginDto.getError() == null) {
-                    return P6eModel.build().setData(P6eCopyUtil.run(p6eLoginDto, P6eDefaultLoginResult.class));
+                    final Map<String, Object> map =
+                            P6eCopyUtil.toMap(P6eCopyUtil.run(p6eLoginDto, P6eDefaultLoginResult.class));
+                    map.put("icon", p6eLoginDto.getIcon());
+                    map.put("name", p6eLoginDto.getName());
+                    map.put("describe", p6eLoginDto.getDescribe());
+                    return P6eModel.build().setData(map);
                 } else {
                     return P6eModel.build(p6eLoginDto.getError());
                 }
@@ -107,6 +120,4 @@ public class P6eAuthController extends P6eBaseController {
             }
         }
     }
-
-
 }

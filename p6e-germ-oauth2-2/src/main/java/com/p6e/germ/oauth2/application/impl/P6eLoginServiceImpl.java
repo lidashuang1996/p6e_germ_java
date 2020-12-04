@@ -3,6 +3,7 @@ package com.p6e.germ.oauth2.application.impl;
 import com.p6e.germ.oauth2.application.P6eLoginService;
 import com.p6e.germ.oauth2.domain.entity.*;
 import com.p6e.germ.oauth2.domain.keyvalue.P6eAuthKeyValue;
+import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.model.P6eModel;
 import com.p6e.germ.oauth2.model.dto.P6eDefaultLoginDto;
@@ -32,6 +33,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                         new P6eTokenEntity(param.getAccessToken(), P6eTokenEntity.ACCESS_TOKEN).resetModel();
                 // 写入返回数据
                 p6eLoginDto.setCode(p6eTokenEntity.getKey());
+                P6eCopyUtil.run(p6eClientEntity.get(), p6eLoginDto);
                 P6eCopyUtil.run(p6eTokenEntity.getModel(), p6eLoginDto);
                 P6eCopyUtil.run(P6eCopyUtil.run(param, P6eAuthKeyValue.class), p6eLoginDto);
                 // 简化模式修改过期时间
@@ -48,6 +50,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                 p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
             }
         } catch (RuntimeException e) {
+            e.printStackTrace();
             LOGGER.error(e.getMessage());
             p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
         } catch (Exception ee) {
@@ -68,6 +71,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                     || login.getVoucher() == null) {
                 p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
             } else {
+                System.out.println(JsonUtil.toJson(login));
                 // 获取标记信息
                 final P6eMarkEntity p6eMarkEntity = new P6eMarkEntity(login.getMark());
                 // 获取用户信息
@@ -77,7 +81,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                 // 解密验证账号密码
                 if (p6eUserEntity.defaultVerification(p6eVoucherEntity.execute(login.getPassword()))) {
                     try {
-                        final P6eTokenEntity p6eTokenEntity = p6eUserEntity.createTokenCache();
+                        final P6eTokenEntity p6eTokenEntity = p6eUserEntity.createTokenCache().cache();
                         final P6eAuthKeyValue p6eAuthKeyValue = p6eMarkEntity.getP6eAuthKeyValue();
                         p6eTokenEntity.cache();
                         p6eLoginDto.setCode(p6eTokenEntity.getKey());
@@ -105,6 +109,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                 }
             }
         } catch (RuntimeException e) {
+            e.printStackTrace();
             LOGGER.error(e.getMessage());
             p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
         } catch (Exception ee) {

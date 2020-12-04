@@ -8,7 +8,7 @@ package com.p6e.germ.oauth2.infrastructure.cache;
 public interface IP6eCacheVoucher {
 
     /** 凭证缓存的前缀名称 */
-    String VOUCHER_NAME = "P6E:VOUCHER:";
+    String VOUCHER_NAME = "P6E:OAUTH2:VOUCHER:";
 
     /** 凭证缓存的过期时间 */
     long VOUCHER_TIME = 300;

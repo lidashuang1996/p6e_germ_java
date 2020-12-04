@@ -1,6 +1,7 @@
 package com.p6e.germ.oauth2.domain.entity;
 
 import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheAuth;
+import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
 import lombok.Getter;
 
@@ -19,7 +20,7 @@ public class P6eAuthEntity implements Serializable {
     private final String value;
 
     /** 注入缓存对象 */
-    private final IP6eCacheAuth p6eCacheAuth = P6eSpringUtil.getBean(IP6eCacheAuth.class);
+    private final IP6eCacheAuth p6eCacheAuth = P6eCache.auth;
 
     /**
      * 构造创建
