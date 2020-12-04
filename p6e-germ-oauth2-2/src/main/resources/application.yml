@@ -8,12 +8,11 @@ logging:
   level:
     com.p6e.germ.oauth2.infrastructure.repository.mapper: debug
 
-
 spring:
   mvc:
-    view:
-      prefix: /
-      suffix: .jsp
+    static-path-pattern: /**
+  resources:
+    static-locations: classpath:/resources/,classpath:/static/
   application:
     name: P6E_GERM_OAUTH2
   datasource:
@@ -33,5 +32,7 @@ spring:
         max-wait: -1
         max-idle: 8
         min-idle: 0
+
+
 server:
   port: 9900

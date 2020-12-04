@@ -1,6 +1,7 @@
 package com.p6e.germ.oauth2.application;
 
 import com.p6e.germ.oauth2.application.impl.P6eAuthServiceImpl;
+import com.p6e.germ.oauth2.application.impl.P6eClientDataServiceImpl;
 import com.p6e.germ.oauth2.application.impl.P6eLoginServiceImpl;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
 
@@ -12,10 +13,12 @@ public final class P6eApplication {
 
     public static P6eAuthService auth;
     public static P6eLoginService login;
+    public static P6eClientDataService clientData;
 
     public static void init() {
         auth = P6eSpringUtil.getBean(P6eAuthService.class, new P6eAuthServiceImpl());
         login = P6eSpringUtil.getBean(P6eLoginService.class, new P6eLoginServiceImpl());
+        clientData = P6eSpringUtil.getBean(P6eClientDataService.class, new P6eClientDataServiceImpl());
     }
 
 }

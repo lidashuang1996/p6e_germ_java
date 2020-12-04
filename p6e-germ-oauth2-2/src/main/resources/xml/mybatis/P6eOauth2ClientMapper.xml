@@ -80,7 +80,8 @@
         LIMIT #{page}, #{size};
     </select>
 
-    <insert id="create" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2ClientDb">
+    <insert id="create" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2ClientDb"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         INSERT INTO  `p6e_oauth2_client`
         (`icon`, `status`, `name`, `key`, `secret`, `scope`, `redirect_uri`, `describe`, `limiting_rule`)
         VALUE

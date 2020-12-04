@@ -4,10 +4,12 @@ import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheClient;
 import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
 import com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2ClientDb;
 import com.p6e.germ.oauth2.infrastructure.repository.mapper.P6eOauth2ClientMapper;
+import com.p6e.germ.oauth2.infrastructure.utils.GeneratorUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -101,6 +103,8 @@ public class P6eClientEntity {
      * @return 创建的数据对象
      */
     public P6eOauth2ClientDb create() {
+        p6eOauth2ClientDb.setKey(GeneratorUtil.uuid());
+        p6eOauth2ClientDb.setSecret(GeneratorUtil.uuid());
         if (p6eOauth2ClientMapper.create(p6eOauth2ClientDb) > 0) {
             p6eOauth2ClientDb = p6eOauth2ClientMapper.queryById(p6eOauth2ClientDb.getId());
             return p6eOauth2ClientDb;
@@ -178,5 +182,13 @@ public class P6eClientEntity {
         map.put("name", p6eOauth2ClientDb.getName());
         map.put("id", String.valueOf(p6eOauth2ClientDb.getId()));
         return new P6eTokenEntity(String.valueOf(p6eOauth2ClientDb.getId()), map);
+    }
+
+    public Long count() {
+        return p6eOauth2ClientMapper.count(p6eOauth2ClientDb);
+    }
+
+    public List<P6eOauth2ClientDb> select() {
+        return p6eOauth2ClientMapper.queryAll(p6eOauth2ClientDb);
     }
 }

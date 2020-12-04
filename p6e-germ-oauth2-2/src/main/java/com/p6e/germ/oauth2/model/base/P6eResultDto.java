@@ -11,15 +11,8 @@ import java.util.List;
  * @version 1.0
  */
 @Data
-public class P6eResultDto implements Serializable {
+public class P6eResultDto<T> extends P6ePaging implements Serializable {
     private P6eModel.Error error;
-    private List<? extends P6eResultDto> list;
-    private Integer page;
-    private Integer size;
+    private List<T> list;
     private Long total;
-
-    public void setPaging(P6ePaging paging) {
-        page = paging.getPage();
-        size = paging.getSize();
-    }
 }

@@ -172,9 +172,9 @@
         }
     </style>
     <!-- JQ -->
-    <script type="text/javascript" src="./js/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="./js/jsquery-2.1.1.js"></script>
     <!-- RSA -->
-    <script src="./js/jsencrypt.min.js"></script>
+    <script src="./js/jssencrypt.js"></script>
 </head>
 <body>
 <div class="main">
@@ -399,10 +399,12 @@ http://127.0.0.1:9900/?client_id=1234567890&redirect_uri=http://127.0.0.1:10000&
         if (initData.responseType !== null
             && initData.responseType !== undefined
             && 'code' === initData.responseType.toLocaleLowerCase()) {
-            window.location.href = initData.redirectUri + '?code=' + initData.code;
+            window.location.href = initData.redirectUri + '?code=' + initData.code
+                + ((initData.state === undefined || initData.state === null) ? '' : '&state=' + initData.state);
         } else {
             window.location.href = initData.redirectUri + '?access_token='
-                + initData.accessToken + '&expires_in=' + initData.expiresIn;
+                + initData.accessToken + '&expires_in=' + initData.expiresIn
+                + ((initData.state === undefined || initData.state === null) ? '' : '&state=' + initData.state);
         }
     }
 
@@ -431,10 +433,12 @@ http://127.0.0.1:9900/?client_id=1234567890&redirect_uri=http://127.0.0.1:10000&
                     if (res.data.responseType !== null
                         && res.data.responseType !== undefined
                         && 'code' === res.data.responseType.toLocaleLowerCase()) {
-                        window.location.href = res.data.redirectUri + '?code=' + res.data.code;
+                        window.location.href = res.data.redirectUri + '?code=' + res.data.code
+                            + ((res.data.state === undefined || res.data.state === null) ? '' : '&state=' + res.data.state);
                     } else {
                         window.location.href = res.data.redirectUri + '?access_token='
-                            + res.data.accessToken + '&expires_in=' + res.data.expiresIn;
+                            + res.data.accessToken + '&expires_in=' + res.data.expiresIn
+                            + ((res.data.state === undefined || res.data.state === null) ? '' : '&state=' + res.data.state);
                     }
                 } else {
                     document.getElementById('error').innerText = res.message;

@@ -19,8 +19,6 @@
     </properties>
 
     <dependencies>
-
-
         <!-- JSON 对象 -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -71,12 +69,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-jasper</artifactId>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -87,5 +79,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
