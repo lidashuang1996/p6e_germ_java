@@ -4,7 +4,7 @@
 
 <mapper namespace="com.p6e.germ.oauth2.infrastructure.repository.mapper.P6eOauth2ClientMapper">
 
-    <select id="count" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2ClientDb" resultType="int">
+    <select id="count" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2ClientDb" resultType="int">
         SELECT COUNT(`id`) FROM `p6e_oauth2_client`
         <trim prefix="WHERE" prefixOverrides="AND |OR">
             <if test="status != null">AND `status` = #{status}</if>
@@ -17,8 +17,8 @@
         </trim>;
     </select>
 
-    <select id="queryById" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2ClientDb"
-            resultType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2ClientDb">
+    <select id="queryById" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2ClientDb"
+            resultType="com.p6e.germ.oauth2.model.db.P6eOauth2ClientDb">
         SELECT
             `id` as `id`,
             `status` as `status`,
@@ -35,8 +35,8 @@
         WHERE `id` = #{id} LIMIT 0, 1;
     </select>
 
-    <select id="queryByKey" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2ClientDb"
-            resultType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2ClientDb">
+    <select id="queryByKey" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2ClientDb"
+            resultType="com.p6e.germ.oauth2.model.db.P6eOauth2ClientDb">
         SELECT
             `id` as `id`,
             `status` as `status`,
@@ -53,8 +53,8 @@
         WHERE `key` = #{key} LIMIT 0, 1;
     </select>
 
-    <select id="queryAll" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2ClientDb"
-            resultType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2ClientDb">
+    <select id="queryAll" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2ClientDb"
+            resultType="com.p6e.germ.oauth2.model.db.P6eOauth2ClientDb">
         SELECT
             `id` as `id`,
             `status` as `status`,
@@ -77,10 +77,10 @@
             <if test="describe != null">AND `describe` = #{describe}</if>
             <if test="limitingRule != null">AND `limiting_rule` = #{limitingRule}</if>
         </trim>
-        LIMIT #{page}, #{size};
+        LIMIT #{start}, #{end};
     </select>
 
-    <insert id="create" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2ClientDb"
+    <insert id="create" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2ClientDb"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         INSERT INTO  `p6e_oauth2_client`
         (`icon`, `status`, `name`, `key`, `secret`, `scope`, `redirect_uri`, `describe`, `limiting_rule`)
@@ -88,7 +88,7 @@
         (#{icon}, #{status}, #{name}, #{key}, #{secret}, #{scope}, #{redirectUri}, #{describe}, #{limitingRule});
     </insert>
 
-    <update id="update" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2ClientDb">
+    <update id="update" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2ClientDb">
         UPDATE `p6e_oauth2_client`
         <trim prefix="SET" suffixOverrides=",">
             <if test="icon != null">`icon` = #{icon},</if>

@@ -23,6 +23,4 @@ public class P6eOauth2Application {
     public static void main(String[] args) {
         P6eSpringUtil.init(SpringApplication.run(P6eOauth2Application.class, args));
     }
-
-
 }

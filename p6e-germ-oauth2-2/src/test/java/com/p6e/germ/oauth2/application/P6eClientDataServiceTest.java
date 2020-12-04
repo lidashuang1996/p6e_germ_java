@@ -1,14 +1,12 @@
 package com.p6e.germ.oauth2.application;
 
-import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
+import com.p6e.germ.oauth2.infrastructure.utils.P6eJsonUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
 import com.p6e.germ.oauth2.model.dto.P6eClientDataDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-
-import javax.annotation.Resource;
 
 /**
  * @author lidashuang
@@ -33,14 +31,14 @@ public class P6eClientDataServiceTest {
         p6eClientDataDto.setRedirectUri("http://127.0.0.1:9900");
         p6eClientDataDto.setDescribe("我是测试");
         p6eClientDataDto.setLimitingRule("1,0,0,0");
-        System.out.println(JsonUtil.toJson(P6eApplication.clientData.create(p6eClientDataDto)));
+        System.out.println(P6eJsonUtil.toJson(P6eApplication.clientData.create(p6eClientDataDto)));
     }
 
     @Test
     void deleteTest() {
         final P6eClientDataDto p6eClientDataDto = new P6eClientDataDto();
         p6eClientDataDto.setId(5);
-        System.out.println(JsonUtil.toJson(P6eApplication.clientData.delete(p6eClientDataDto)));
+        System.out.println(P6eJsonUtil.toJson(P6eApplication.clientData.delete(p6eClientDataDto)));
     }
 
     @Test
@@ -48,7 +46,7 @@ public class P6eClientDataServiceTest {
         final P6eClientDataDto p6eClientDataDto = new P6eClientDataDto();
         p6eClientDataDto.setId(5);
         P6eApplication.clientData.get(p6eClientDataDto);
-        System.out.println(JsonUtil.toJson(P6eApplication.clientData.get(p6eClientDataDto)));
+        System.out.println(P6eJsonUtil.toJson(P6eApplication.clientData.get(p6eClientDataDto)));
     }
 
     @Test
@@ -56,7 +54,7 @@ public class P6eClientDataServiceTest {
         final P6eClientDataDto p6eClientDataDto = new P6eClientDataDto();
         p6eClientDataDto.setId(5);
         p6eClientDataDto.setName("xxxxxxxxxxxxxx");
-        System.out.println(JsonUtil.toJson(P6eApplication.clientData.update(p6eClientDataDto)));
+        System.out.println(P6eJsonUtil.toJson(P6eApplication.clientData.update(p6eClientDataDto)));
     }
 
 }

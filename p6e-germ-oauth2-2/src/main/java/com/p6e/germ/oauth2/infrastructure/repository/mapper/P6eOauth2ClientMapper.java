@@ -1,10 +1,11 @@
 package com.p6e.germ.oauth2.infrastructure.repository.mapper;
 
-import com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2ClientDb;
+import com.p6e.germ.oauth2.model.db.P6eOauth2ClientDb;
 
 import java.util.List;
 
 /**
+ * 客户端数据对象
  * @author lidashuang
  * @version 1.0
  */

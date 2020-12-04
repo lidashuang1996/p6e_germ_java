@@ -2,10 +2,10 @@ package com.p6e.germ.oauth2.domain.entity;
 
 import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheClient;
 import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
-import com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2ClientDb;
+import com.p6e.germ.oauth2.model.db.P6eOauth2ClientDb;
 import com.p6e.germ.oauth2.infrastructure.repository.mapper.P6eOauth2ClientMapper;
-import com.p6e.germ.oauth2.infrastructure.utils.GeneratorUtil;
-import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
+import com.p6e.germ.oauth2.infrastructure.utils.P6eGeneratorUtil;
+import com.p6e.germ.oauth2.infrastructure.utils.P6eJsonUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
 
 import java.util.HashMap;
@@ -38,11 +38,11 @@ public class P6eClientEntity {
             if (content == null || "".equals(content)) {
                 this.p6eOauth2ClientDb = p6eOauth2ClientMapper.queryById(id);
                 // 写入缓存数据
-                final String cache = JsonUtil.toJson(this.p6eOauth2ClientDb);
+                final String cache = P6eJsonUtil.toJson(this.p6eOauth2ClientDb);
                 p6eCacheClient.setDbId(String.valueOf(this.p6eOauth2ClientDb.getId()), cache);
                 p6eCacheClient.setDbKey(this.p6eOauth2ClientDb.getKey(), cache);
             } else {
-                this.p6eOauth2ClientDb = JsonUtil.fromJson(content, P6eOauth2ClientDb.class);
+                this.p6eOauth2ClientDb = P6eJsonUtil.fromJson(content, P6eOauth2ClientDb.class);
             }
         } catch (Exception e) {
             this.p6eOauth2ClientDb = null;
@@ -64,11 +64,11 @@ public class P6eClientEntity {
             if (content == null || "".equals(content)) {
                 this.p6eOauth2ClientDb = p6eOauth2ClientMapper.queryByKey(key);
                 // 写入缓存数据
-                final String cache = JsonUtil.toJson(this.p6eOauth2ClientDb);
+                final String cache = P6eJsonUtil.toJson(this.p6eOauth2ClientDb);
                 p6eCacheClient.setDbId(String.valueOf(this.p6eOauth2ClientDb.getId()), cache);
                 p6eCacheClient.setDbKey(this.p6eOauth2ClientDb.getKey(), cache);
             } else {
-                this.p6eOauth2ClientDb = JsonUtil.fromJson(content, P6eOauth2ClientDb.class);
+                this.p6eOauth2ClientDb = P6eJsonUtil.fromJson(content, P6eOauth2ClientDb.class);
             }
         } catch (Exception e) {
             this.p6eOauth2ClientDb = null;
@@ -103,8 +103,8 @@ public class P6eClientEntity {
      * @return 创建的数据对象
      */
     public P6eOauth2ClientDb create() {
-        p6eOauth2ClientDb.setKey(GeneratorUtil.uuid());
-        p6eOauth2ClientDb.setSecret(GeneratorUtil.uuid());
+        p6eOauth2ClientDb.setKey(P6eGeneratorUtil.uuid());
+        p6eOauth2ClientDb.setSecret(P6eGeneratorUtil.uuid());
         if (p6eOauth2ClientMapper.create(p6eOauth2ClientDb) > 0) {
             p6eOauth2ClientDb = p6eOauth2ClientMapper.queryById(p6eOauth2ClientDb.getId());
             return p6eOauth2ClientDb;

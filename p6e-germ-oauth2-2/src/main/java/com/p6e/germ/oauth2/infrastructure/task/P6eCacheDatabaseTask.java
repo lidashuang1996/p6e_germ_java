@@ -1,9 +1,9 @@
 package com.p6e.germ.oauth2.infrastructure.task;
 
 import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
-import com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2ClientDb;
+import com.p6e.germ.oauth2.model.db.P6eOauth2ClientDb;
 import com.p6e.germ.oauth2.infrastructure.repository.mapper.P6eOauth2ClientMapper;
-import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
+import com.p6e.germ.oauth2.infrastructure.utils.P6eJsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -48,18 +48,21 @@ public class P6eCacheDatabaseTask {
         LOGGER.info("start operation db to cache.");
         int page = 0;
         List<P6eOauth2ClientDb> p6eClientDbList;
+        // 创建查询的对象
         final P6eOauth2ClientDb p6eClientDb = new P6eOauth2ClientDb();
         do {
             try {
+                // 设置页码和长度
+                p6eClientDb.setPage(page);
                 p6eClientDb.setSize(DB_SIZE);
-                p6eClientDb.setPage(page * DB_SIZE);
+                // 查询全部的数据
                 p6eClientDbList = p6eClientMapper.queryAll(p6eClientDb);
                 LOGGER.info("operation db to cache ==> [ "
-                        + p6eClientDb.getPage() + " ~ "
-                        + (p6eClientDb.getPage() + p6eClientDb.getSize()) + " ]");
+                        + p6eClientDb.getStart() + " ~ " + (p6eClientDb.getEnd()) + " ]");
+                // 查询到的数据写入到缓存中
                 for (P6eOauth2ClientDb db : p6eClientDbList) {
                     try {
-                        final String content = JsonUtil.toJson(db);
+                        final String content = P6eJsonUtil.toJson(db);
                         P6eCache.client.setDbId(String.valueOf(db.getId()), content);
                         P6eCache.client.setDbKey(db.getKey(), content);
                         LOGGER.info("operation db to cache ==> [ id: " + db.getId() + " - key: " + db.getKey() + " ] success.");

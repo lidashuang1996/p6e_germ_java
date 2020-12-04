@@ -2,9 +2,8 @@ package com.p6e.germ.oauth2.domain.entity;
 
 import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheToken;
 import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
-import com.p6e.germ.oauth2.infrastructure.utils.GeneratorUtil;
-import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
+import com.p6e.germ.oauth2.infrastructure.utils.P6eGeneratorUtil;
+import com.p6e.germ.oauth2.infrastructure.utils.P6eJsonUtil;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -44,7 +43,7 @@ public class P6eTokenEntity implements Serializable {
         if (modelContent == null) {
             throw new NullPointerException(this.getClass() + " construction fetch key ==> NullPointerException.");
         }
-        this.model = JsonUtil.fromJson(modelContent, Model.class);
+        this.model = P6eJsonUtil.fromJson(modelContent, Model.class);
         if (this.model == null) {
             throw new NullPointerException(this.getClass() + " construction fetch key ==> NullPointerException.");
         }
@@ -52,7 +51,7 @@ public class P6eTokenEntity implements Serializable {
         if (tokenContent == null) {
             throw new NullPointerException(this.getClass() + " construction fetch key ==> NullPointerException.");
         }
-        final Token token = JsonUtil.fromJson(tokenContent, Token.class);
+        final Token token = P6eJsonUtil.fromJson(tokenContent, Token.class);
         if (token == null) {
             throw new NullPointerException(this.getClass() + " construction fetch key ==> NullPointerException.");
         }
@@ -61,7 +60,7 @@ public class P6eTokenEntity implements Serializable {
         if (user == null) {
             throw new NullPointerException(this.getClass() + " construction fetch key ==> NullPointerException.");
         }
-        this.value = JsonUtil.fromJsonToMap(user, String.class, String.class);
+        this.value = P6eJsonUtil.fromJsonToMap(user, String.class, String.class);
     }
 
     /**
@@ -84,7 +83,7 @@ public class P6eTokenEntity implements Serializable {
         if (tokenContent == null) {
             throw new NullPointerException();
         }
-        final Token t = JsonUtil.fromJson(tokenContent, Token.class);
+        final Token t = P6eJsonUtil.fromJson(tokenContent, Token.class);
         if (t == null) {
             throw new NullPointerException();
         }
@@ -99,7 +98,7 @@ public class P6eTokenEntity implements Serializable {
         if (userContent == null) {
             throw new NullPointerException();
         }
-        this.value = JsonUtil.fromJsonToMap(userContent, String.class, String.class);
+        this.value = P6eJsonUtil.fromJsonToMap(userContent, String.class, String.class);
         if (this.value == null) {
             throw new NullPointerException();
         }
@@ -110,12 +109,12 @@ public class P6eTokenEntity implements Serializable {
      * @param value value
      */
     public P6eTokenEntity(String id, Map<String, String> value) {
-        this.key = GeneratorUtil.uuid();
+        this.key = P6eGeneratorUtil.uuid();
         this.id = id;
         this.value = value;
         this.model = new Model(
-                GeneratorUtil.uuid(),
-                GeneratorUtil.uuid(),
+                P6eGeneratorUtil.uuid(),
+                P6eGeneratorUtil.uuid(),
                 "bearer",
                 IP6eCacheToken.TOKEN_TIME
         );
@@ -126,13 +125,13 @@ public class P6eTokenEntity implements Serializable {
      */
     public P6eTokenEntity cache() {
         // 缓存认证信息
-        p6eCacheToken.set(key, JsonUtil.toJson(model));
+        p6eCacheToken.set(key, P6eJsonUtil.toJson(model));
         // 缓存用户信息
-        p6eCacheToken.setUser(id, JsonUtil.toJson(value));
+        p6eCacheToken.setUser(id, P6eJsonUtil.toJson(value));
         // 缓存 token 对应用户信息
         final Token token = new Token(id, model.getAccessToken(), model.getRefreshToken());
-        p6eCacheToken.setAccessToken(model.getAccessToken(), JsonUtil.toJson(token));
-        p6eCacheToken.setRefreshToken(model.getRefreshToken(), JsonUtil.toJson(token));
+        p6eCacheToken.setAccessToken(model.getAccessToken(), P6eJsonUtil.toJson(token));
+        p6eCacheToken.setRefreshToken(model.getRefreshToken(), P6eJsonUtil.toJson(token));
         return this;
     }
 
@@ -190,10 +189,10 @@ public class P6eTokenEntity implements Serializable {
     }
 
     public P6eTokenEntity resetModel() {
-        this.key = GeneratorUtil.uuid();
+        this.key = P6eGeneratorUtil.uuid();
         final Token token = new Token(id, model.getAccessToken(), model.getRefreshToken());
-        p6eCacheToken.setAccessToken(model.getAccessToken(), JsonUtil.toJson(token));
-        p6eCacheToken.setRefreshToken(model.getRefreshToken(), JsonUtil.toJson(token));
+        p6eCacheToken.setAccessToken(model.getAccessToken(), P6eJsonUtil.toJson(token));
+        p6eCacheToken.setRefreshToken(model.getRefreshToken(), P6eJsonUtil.toJson(token));
         return this;
     }
 

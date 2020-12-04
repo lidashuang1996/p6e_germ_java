@@ -15,7 +15,7 @@ import java.security.spec.X509EncodedKeySpec;
  * @author lidashuang
  * @version 1.0
  */
-public final class RsaUtil {
+public final class P6eRsaUtil {
 
     /** RSA 密钥长度 */
     private static final int RSA_KEY_SIZE = 2048;

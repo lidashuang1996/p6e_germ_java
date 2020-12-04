@@ -3,7 +3,7 @@ package com.p6e.germ.oauth2.application.impl;
 import com.p6e.germ.oauth2.application.P6eLoginService;
 import com.p6e.germ.oauth2.domain.entity.*;
 import com.p6e.germ.oauth2.domain.keyvalue.P6eAuthKeyValue;
-import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
+import com.p6e.germ.oauth2.infrastructure.utils.P6eJsonUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.model.P6eModel;
 import com.p6e.germ.oauth2.model.dto.P6eDefaultLoginDto;
@@ -71,7 +71,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                     || login.getVoucher() == null) {
                 p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
             } else {
-                System.out.println(JsonUtil.toJson(login));
+                System.out.println(P6eJsonUtil.toJson(login));
                 // 获取标记信息
                 final P6eMarkEntity p6eMarkEntity = new P6eMarkEntity(login.getMark());
                 // 获取用户信息

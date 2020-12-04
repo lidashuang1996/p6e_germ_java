@@ -4,14 +4,14 @@
 
 <mapper namespace="com.p6e.germ.oauth2.infrastructure.repository.mapper.P6eOauth2UserMapper">
 
-    <select id="count" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2UserDb" resultType="int">
+    <select id="count" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2UserDb" resultType="int">
         SELECT
             COUNT(`id`)
         FROM
             `p6e_oauth2_user`;
     </select>
 
-    <select id="queryById" parameterType="int" resultType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2UserDb">
+    <select id="queryById" parameterType="int" resultType="com.p6e.germ.oauth2.model.db.P6eOauth2UserDb">
         SELECT
             `id`, `email`, `phone`, `password`, `qq`, `wechat`
         FROM
@@ -20,7 +20,7 @@
             `id` = #{id};
     </select>
 
-    <select id="queryByAccount" parameterType="String" resultType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2UserDb">
+    <select id="queryByAccount" parameterType="String" resultType="com.p6e.germ.oauth2.model.db.P6eOauth2UserDb">
         SELECT
             `id`, `email`, `phone`, `password`, `qq`, `wechat`
         FROM
@@ -30,7 +30,7 @@
             OR `phone` = #{account};
     </select>
 
-    <select id="queryAll" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2UserDb">
+    <select id="queryAll" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2UserDb">
         SELECT
             `id`, `email`, `phone`, `password`, `qq`, `wechat`
         FROM
@@ -38,14 +38,14 @@
         LIMIT #{page}, #{size};
     </select>
 
-    <insert id="create" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2UserDb">
+    <insert id="create" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2UserDb">
          INSERT INTO  `p6e_oauth2_user`
         (`email`, `phone`, `password`, `qq`, `wechat`)
         VALUE
         (#{email}, #{phone}, #{password}, #{qq}, #{weChat});
     </insert>
 
-    <update id="update" parameterType="com.p6e.germ.oauth2.infrastructure.repository.db.P6eOauth2UserDb">
+    <update id="update" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2UserDb">
         UPDATE `p6e_oauth2_user`
         <trim prefix="SET" suffixOverrides=",">
             <if test="email != null">`email` = #{email},</if>

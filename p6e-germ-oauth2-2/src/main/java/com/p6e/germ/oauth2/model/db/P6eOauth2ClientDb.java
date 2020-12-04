@@ -1,4 +1,4 @@
-package com.p6e.germ.oauth2.infrastructure.repository.db;
+package com.p6e.germ.oauth2.model.db;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

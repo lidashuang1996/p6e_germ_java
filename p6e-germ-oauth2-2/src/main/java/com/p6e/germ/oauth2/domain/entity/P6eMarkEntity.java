@@ -3,8 +3,8 @@ package com.p6e.germ.oauth2.domain.entity;
 import com.p6e.germ.oauth2.domain.keyvalue.P6eAuthKeyValue;
 import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheMark;
 import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
-import com.p6e.germ.oauth2.infrastructure.utils.GeneratorUtil;
-import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
+import com.p6e.germ.oauth2.infrastructure.utils.P6eGeneratorUtil;
+import com.p6e.germ.oauth2.infrastructure.utils.P6eJsonUtil;
 import java.io.Serializable;
 
 /**
@@ -33,7 +33,7 @@ public class P6eMarkEntity implements Serializable {
             if (content == null) {
                 throw new NullPointerException(this.getClass() + " construction fetch data ==> NullPointerException.");
             } else {
-                this.p6eAuthKeyValue = JsonUtil.fromJson(content, P6eAuthKeyValue.class);
+                this.p6eAuthKeyValue = P6eJsonUtil.fromJson(content, P6eAuthKeyValue.class);
                 if (this.p6eAuthKeyValue == null) {
                     throw new NullPointerException(this.getClass() + " construction fetch data ==> NullPointerException.");
                 }
@@ -48,7 +48,7 @@ public class P6eMarkEntity implements Serializable {
      * @param p6eAuthKeyValue 写入的数据对象
      */
     public P6eMarkEntity(P6eAuthKeyValue p6eAuthKeyValue) {
-        this.mark = GeneratorUtil.uuid();
+        this.mark = P6eGeneratorUtil.uuid();
         this.p6eAuthKeyValue = p6eAuthKeyValue;
         if (this.p6eAuthKeyValue == null) {
             throw new NullPointerException(this.getClass() + " construction fetch data ==> NullPointerException.");
@@ -59,7 +59,7 @@ public class P6eMarkEntity implements Serializable {
      * 缓存
      */
     public P6eMarkEntity cache() {
-        p6eCacheMark.set(mark, JsonUtil.toJson(p6eAuthKeyValue));
+        p6eCacheMark.set(mark, P6eJsonUtil.toJson(p6eAuthKeyValue));
         return this;
     }
 

@@ -1,6 +1,5 @@
 package com.p6e.germ.oauth2.context.controller.support.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,14 +10,9 @@ import java.io.Serializable;
  */
 @Data
 public class P6eTokenModelParam implements Serializable {
-
-    @JsonProperty("grant_type")
     private String grantType;
-    @JsonProperty("redirect_uri")
     private String redirectUri;
-    @JsonProperty("client_id")
     private String clientId;
-    @JsonProperty("client_secret")
     private String clientSecret;
 
     private String code;

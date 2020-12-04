@@ -9,10 +9,6 @@ logging:
     com.p6e.germ.oauth2.infrastructure.repository.mapper: debug
 
 spring:
-  mvc:
-    static-path-pattern: /**
-  resources:
-    static-locations: classpath:/resources/,classpath:/static/
   application:
     name: P6E_GERM_OAUTH2
   datasource:

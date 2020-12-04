@@ -2,9 +2,9 @@ package com.p6e.germ.oauth2.domain.entity;
 
 import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheVoucher;
 import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
-import com.p6e.germ.oauth2.infrastructure.utils.GeneratorUtil;
-import com.p6e.germ.oauth2.infrastructure.utils.JsonUtil;
-import com.p6e.germ.oauth2.infrastructure.utils.RsaUtil;
+import com.p6e.germ.oauth2.infrastructure.utils.P6eGeneratorUtil;
+import com.p6e.germ.oauth2.infrastructure.utils.P6eJsonUtil;
+import com.p6e.germ.oauth2.infrastructure.utils.P6eRsaUtil;
 import java.security.KeyPair;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class P6eVoucherEntity {
      * 构造创建
      */
     public P6eVoucherEntity() {
-        this.voucher = GeneratorUtil.uuid();
+        this.voucher = P6eGeneratorUtil.uuid();
     }
 
     /**
@@ -44,9 +44,9 @@ public class P6eVoucherEntity {
 
     public P6eVoucherEntity create() {
         try {
-            final KeyPair keyPair = RsaUtil.initKey();
-            publicSecretKey = RsaUtil.getPublicKey(keyPair);
-            privateSecretKey = RsaUtil.getPrivateKey(keyPair);
+            final KeyPair keyPair = P6eRsaUtil.initKey();
+            publicSecretKey = P6eRsaUtil.getPublicKey(keyPair);
+            privateSecretKey = P6eRsaUtil.getPrivateKey(keyPair);
             if (publicSecretKey == null || privateSecretKey == null) {
                 throw new NullPointerException(this.getClass() + " construction fetch key ==> NullPointerException.");
             }
@@ -61,7 +61,7 @@ public class P6eVoucherEntity {
         if (content == null) {
             throw new NullPointerException(this.getClass() + " construction fetch data ==> NullPointerException.");
         } else {
-            final Map<String, String> map = JsonUtil.fromJsonToMap(content, String.class, String.class);
+            final Map<String, String> map = P6eJsonUtil.fromJsonToMap(content, String.class, String.class);
             publicSecretKey = map.get("publicSecretKey");
             privateSecretKey = map.get("privateSecretKey");
             if (publicSecretKey == null || privateSecretKey == null) {
@@ -75,7 +75,7 @@ public class P6eVoucherEntity {
      * 执行 (解密输出文本内容)
      */
     public String execute(String content) throws Exception {
-        return RsaUtil.decrypt(RsaUtil.loadingPrivateKey(privateSecretKey), content);
+        return P6eRsaUtil.decrypt(P6eRsaUtil.loadingPrivateKey(privateSecretKey), content);
     }
 
     /**
@@ -85,7 +85,7 @@ public class P6eVoucherEntity {
         final Map<String, String> map = new HashMap<>(2);
         map.put("publicSecretKey", publicSecretKey);
         map.put("privateSecretKey", privateSecretKey);
-        p6eCacheVoucher.set(voucher, JsonUtil.toJson(map));
+        p6eCacheVoucher.set(voucher, P6eJsonUtil.toJson(map));
         return this;
     }
 
