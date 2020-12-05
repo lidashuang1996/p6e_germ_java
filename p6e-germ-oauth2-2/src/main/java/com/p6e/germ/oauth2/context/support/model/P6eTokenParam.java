@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @version 1.0
  */
 @Data
-public class P6eTokenModelParam implements Serializable {
+public class P6eTokenParam implements Serializable {
     private String grantType;
     private String redirectUri;
     private String clientId;

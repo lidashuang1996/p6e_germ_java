@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @version 1.0
  */
 @Data
-public class P6eAuthModelParam implements Serializable {
+public class P6eAuthParam implements Serializable {
     private String responseType;
     private String clientId;
     private String redirectUri;

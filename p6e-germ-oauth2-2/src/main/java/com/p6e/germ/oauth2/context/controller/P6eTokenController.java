@@ -2,8 +2,8 @@ package com.p6e.germ.oauth2.context.controller;
 
 import com.p6e.germ.oauth2.application.P6eApplication;
 import com.p6e.germ.oauth2.context.support.P6eBaseController;
-import com.p6e.germ.oauth2.context.support.model.P6eTokenModelParam;
-import com.p6e.germ.oauth2.context.support.model.P6eTokenModelResult;
+import com.p6e.germ.oauth2.context.support.model.P6eTokenParam;
+import com.p6e.germ.oauth2.context.support.model.P6eTokenResult;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.model.P6eModel;
 import com.p6e.germ.oauth2.model.dto.*;
@@ -46,7 +46,7 @@ public class P6eTokenController extends P6eBaseController {
     private static final String AUTH_HEADER_NAME = "authentication";
 
     @RequestMapping
-    public P6eModel def(HttpServletRequest request, P6eTokenModelParam param) {
+    public P6eModel def(HttpServletRequest request, P6eTokenParam param) {
         if (param == null
                 || param.getClientId() == null
                 || param.getClientSecret() == null
@@ -75,7 +75,7 @@ public class P6eTokenController extends P6eBaseController {
                     return P6eModel.build(P6eModel.Error.PARAMETER_EXCEPTION);
             }
             if (p6eAuthTokenDto.getError() == null) {
-                return P6eModel.build().setData(P6eCopyUtil.run(p6eAuthTokenDto, P6eTokenModelResult.class));
+                return P6eModel.build().setData(P6eCopyUtil.run(p6eAuthTokenDto, P6eTokenResult.class));
             } else {
                 return P6eModel.build(p6eAuthTokenDto.getError());
             }
@@ -96,7 +96,7 @@ public class P6eTokenController extends P6eBaseController {
         if (token != null && refreshToken != null) {
             final P6eAuthTokenDto p6eAuthTokenDto = P6eApplication.auth.refresh(token, refreshToken);
             if (p6eAuthTokenDto.getError() == null) {
-                return P6eModel.build().setData(P6eCopyUtil.run(p6eAuthTokenDto, P6eTokenModelResult.class));
+                return P6eModel.build().setData(P6eCopyUtil.run(p6eAuthTokenDto, P6eTokenResult.class));
             } else {
                 return P6eModel.build(p6eAuthTokenDto.getError());
             }

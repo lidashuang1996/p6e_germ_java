@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @version 1.0
  */
 @Data
-public class P6eTokenModelResult implements Serializable {
+public class P6eTokenResult implements Serializable {
     private String grantType;
     private String redirectUri;
     private String clientId;

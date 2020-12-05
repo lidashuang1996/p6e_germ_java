@@ -2,8 +2,8 @@ package com.p6e.germ.oauth2.context.controller;
 
 import com.p6e.germ.oauth2.application.P6eApplication;
 import com.p6e.germ.oauth2.context.support.P6eBaseController;
-import com.p6e.germ.oauth2.context.support.model.P6eAuthModelParam;
-import com.p6e.germ.oauth2.context.support.model.P6eAuthModelResult;
+import com.p6e.germ.oauth2.context.support.model.P6eAuthParam;
+import com.p6e.germ.oauth2.context.support.model.P6eAuthResult;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.model.P6eModel;
 import com.p6e.germ.oauth2.model.dto.*;
@@ -63,7 +63,7 @@ public class P6eAuthController extends P6eBaseController {
 
 
     @RequestMapping
-    public P6eModel def(HttpServletRequest request, P6eAuthModelParam param) {
+    public P6eModel def(HttpServletRequest request, P6eAuthParam param) {
         // 写入数据
         param.setClientId(request.getParameter(CLIENT_ID_PARAM));
         param.setRedirectUri(request.getParameter(REDIRECT_URI_PARAM));
@@ -90,7 +90,7 @@ public class P6eAuthController extends P6eBaseController {
                     return P6eModel.build(P6eModel.Error.PARAMETER_EXCEPTION);
             }
             if (p6eAuthDto.getError() == null) {
-                return P6eModel.build().setData(P6eCopyUtil.run(p6eAuthDto, P6eAuthModelResult.class));
+                return P6eModel.build().setData(P6eCopyUtil.run(p6eAuthDto, P6eAuthResult.class));
             } else {
                 return P6eModel.build(p6eAuthDto.getError());
             }
@@ -98,7 +98,7 @@ public class P6eAuthController extends P6eBaseController {
     }
 
     @RequestMapping("/verification")
-    public P6eModel verification(HttpServletRequest request, P6eAuthModelParam param) {
+    public P6eModel verification(HttpServletRequest request, P6eAuthParam param) {
         // 写入数据
         param.setClientId(request.getParameter(CLIENT_ID_PARAM));
         param.setRedirectUri(request.getParameter(REDIRECT_URI_PARAM));
@@ -114,7 +114,7 @@ public class P6eAuthController extends P6eBaseController {
             final P6eAuthDto p6eAuthDto =
                     P6eApplication.auth.verification(P6eCopyUtil.run(param, P6eVerificationAuthDto.class));
             if (p6eAuthDto.getError() == null) {
-                return P6eModel.build().setData(P6eCopyUtil.run(p6eAuthDto, P6eAuthModelResult.class));
+                return P6eModel.build().setData(P6eCopyUtil.run(p6eAuthDto, P6eAuthResult.class));
             } else {
                 return P6eModel.build(p6eAuthDto.getError());
             }

@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @version 1.0
  */
 @Data
-public class P6eAuthModelResult implements Serializable {
+public class P6eAuthResult implements Serializable {
     private Integer id;
     private String icon;
     private String name;
