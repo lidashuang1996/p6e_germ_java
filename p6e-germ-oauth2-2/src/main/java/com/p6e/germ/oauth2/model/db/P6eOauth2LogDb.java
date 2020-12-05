@@ -16,8 +16,8 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 public class P6eOauth2LogDb extends P6eBaseDb implements Serializable {
     private Integer id;
-    private String uid;
-    private String cid;
+    private Integer uid;
+    private Integer cid;
     private String type;
     private String date;
 }

@@ -7,5 +7,4 @@ import java.io.Serializable;
  * @version 1.0
  */
 public class P6eOauth2Config implements Serializable {
-
 }

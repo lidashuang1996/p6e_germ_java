@@ -25,8 +25,8 @@ public class P6eLogDataServiceTest {
     @Test
     void createTest() {
         final P6eOauth2LogDb p6eOauth2LogDb = new P6eOauth2LogDb();
-        p6eOauth2LogDb.setCid("123");
-        p6eOauth2LogDb.setUid("456");
+        p6eOauth2LogDb.setCid(1);
+        p6eOauth2LogDb.setUid(2);
         p6eOauth2LogDb.setType("789");
         System.out.println(P6eJsonUtil.toJson(new P6eLogEntity(p6eOauth2LogDb).create()));
     }

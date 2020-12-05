@@ -5,6 +5,7 @@ import com.p6e.germ.oauth2.domain.entity.*;
 import com.p6e.germ.oauth2.domain.keyvalue.P6eMarkKeyValue;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.model.P6eModel;
+import com.p6e.germ.oauth2.model.db.P6eOauth2LogDb;
 import com.p6e.germ.oauth2.model.dto.P6eDefaultLoginDto;
 import com.p6e.germ.oauth2.model.dto.P6eLoginDto;
 import com.p6e.germ.oauth2.model.dto.P6eVerificationLoginDto;
@@ -64,6 +65,9 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                 P6eCopyUtil.run(p6eMarkKeyValue, p6eLoginDto);
                 // 写入用户认证信息
                 P6eCopyUtil.run(p6eTokenEntity.getModel(), p6eLoginDto);
+                // CID / UID
+                int cid = p6eMarkKeyValue.getId();
+                int uid = Integer.parseInt(p6eTokenEntity.getValue().get("id"));
                 // 简化模式修改过期时间
                 final long simpleDateTime = 120;
                 final String simpleType = "TOKEN";
@@ -74,6 +78,19 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                     p6eTokenEntity.setAccessTokenExpirationTime(simpleDateTime);
                     p6eLoginDto.setRefreshToken(null);
                     p6eLoginDto.setExpiresIn(simpleDateTime);
+                    // 写入日志数据
+                    new P6eLogEntity(new P6eOauth2LogDb()
+                            .setCid(cid)
+                            .setUid(uid)
+                            .setType("UID_TO_CID_VERIFICATION_TO_TOKEN_TYPE")
+                    ).create();
+                } else {
+                    // 写入日志数据
+                    new P6eLogEntity(new P6eOauth2LogDb()
+                            .setCid(cid)
+                            .setUid(uid)
+                            .setType("UID_TO_CID_VERIFICATION_TO_CODE_TYPE")
+                    ).create();
                 }
                 // 删除缓存的数据
                 p6eMarkEntity.clean();
@@ -128,6 +145,9 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                         P6eCopyUtil.run(p6eMarkKeyValue, p6eLoginDto);
                         // 写入用户认证信息
                         P6eCopyUtil.run(p6eTokenEntity.getModel(), p6eLoginDto);
+                        // CID / UID
+                        int cid = p6eMarkKeyValue.getId();
+                        int uid = Integer.parseInt(p6eTokenEntity.getValue().get("id"));
                         // 简化模式修改过期时间
                         final long simpleDateTime = 120;
                         final String simpleType = "TOKEN";
@@ -138,6 +158,19 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                             p6eTokenEntity.setAccessTokenExpirationTime(simpleDateTime);
                             p6eLoginDto.setRefreshToken(null);
                             p6eLoginDto.setExpiresIn(simpleDateTime);
+                            // 写入日志数据
+                            new P6eLogEntity(new P6eOauth2LogDb()
+                                    .setCid(cid)
+                                    .setUid(uid)
+                                    .setType("UID_TO_CID_LOGIN_TO_TOKEN_TYPE")
+                            ).create();
+                        } else {
+                            // 写入日志数据
+                            new P6eLogEntity(new P6eOauth2LogDb()
+                                    .setCid(cid)
+                                    .setUid(uid)
+                                    .setType("UID_TO_CID_LOGIN_TO_CODE_TYPE")
+                            ).create();
                         }
                     } catch (Exception e) {
                         throw new Exception(e);

@@ -5,6 +5,7 @@ import com.p6e.germ.oauth2.domain.entity.*;
 import com.p6e.germ.oauth2.domain.keyvalue.P6eMarkKeyValue;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.model.P6eModel;
+import com.p6e.germ.oauth2.model.db.P6eOauth2LogDb;
 import com.p6e.germ.oauth2.model.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +30,8 @@ public class P6eAuthServiceImpl implements P6eAuthService {
             if (p6eClientEntity.verificationScope(param.getScope())
                     && p6eClientEntity.verificationRedirectUri(param.getRedirectUri())) {
                 // 生成记号
-                final P6eMarkEntity p6eMarkEntity =
-                        new P6eMarkEntity(P6eCopyUtil.run(param, P6eMarkKeyValue.class)).cache();
+                final P6eMarkEntity p6eMarkEntity = new P6eMarkEntity(
+                        P6eCopyUtil.run(param, P6eMarkKeyValue.class).setId(p6eClientEntity.get().getId())).cache();
                 // 写入信息
                 p6eAuthDto.setMark(p6eMarkEntity.getMark());
                 // 复制信息并写入
@@ -71,6 +72,15 @@ public class P6eAuthServiceImpl implements P6eAuthService {
                 // 获取对象并删除 CODE 缓存数据
                 final P6eTokenEntity p6eTokenEntity = new P6eTokenEntity(param.getCode()).delModel();
                 P6eCopyUtil.run(p6eTokenEntity.getModel(), p6eAuthTokenDto);
+                // CID / UID
+                int cid = p6eClientEntity.get().getId();
+                int uid = Integer.parseInt(p6eTokenEntity.getValue().get("id"));
+                // 写入日志数据
+                new P6eLogEntity(new P6eOauth2LogDb()
+                        .setCid(cid)
+                        .setUid(uid)
+                        .setType("CID_TO_UID_CODE_TYPE")
+                ).create();
             } else {
                 p6eAuthTokenDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
             }
@@ -98,6 +108,15 @@ public class P6eAuthServiceImpl implements P6eAuthService {
                 final P6eTokenEntity p6eTokenEntity = p6eClientEntity.createTokenCache().cache();
                 // 写入数据
                 P6eCopyUtil.run(p6eTokenEntity.getModel(), p6eAuthTokenDto);
+                // CID / UID
+                int cid = p6eClientEntity.get().getId();
+                int uid = Integer.parseInt(p6eTokenEntity.getValue().get("id"));
+                // 写入日志数据
+                new P6eLogEntity(new P6eOauth2LogDb()
+                        .setCid(cid)
+                        .setUid(uid)
+                        .setType("UID_TO_CID_CLIENT_TYPE")
+                ).create();
             } else {
                 p6eAuthTokenDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
             }
@@ -127,6 +146,15 @@ public class P6eAuthServiceImpl implements P6eAuthService {
                     final P6eTokenEntity p6eTokenEntity = p6eUserEntity.createTokenCache().cache();
                     // 写入数据
                     P6eCopyUtil.run(p6eTokenEntity.getModel(), p6eAuthTokenDto);
+                    // CID / UID
+                    int cid = p6eClientEntity.get().getId();
+                    int uid = Integer.parseInt(p6eTokenEntity.getValue().get("id"));
+                    // 写入日志数据
+                    new P6eLogEntity(new P6eOauth2LogDb()
+                            .setCid(cid)
+                            .setUid(uid)
+                            .setType("UID_TO_CID_PASSWORD_TYPE")
+                    ).create();
                 } else {
                     p6eAuthTokenDto.setError(P6eModel.Error.ACCOUNT_OR_PASSWORD);
                 }

@@ -1,4 +1,4 @@
-package com.p6e.germ.oauth2.context.controller.support;
+package com.p6e.germ.oauth2.context.support;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

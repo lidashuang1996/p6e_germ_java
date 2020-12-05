@@ -1,4 +1,4 @@
-package com.p6e.germ.oauth2.context.controller.support.model;
+package com.p6e.germ.oauth2.context.support.model;
 
 import lombok.Data;
 import java.io.Serializable;
