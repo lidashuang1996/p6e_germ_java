@@ -29,6 +29,13 @@ public class P6eTokenController extends P6eBaseController {
     /** 认证的类型 - 客户端 */
     private static final String CLIENT_TYPE = "CLIENT_CREDENTIALS";
 
+    private static final String CLIENT_ID_PARAM = "client_id";
+    private static final String CLIENT_SECRET_PARAM = "client_secret";
+    private static final String GRANT_TYPE_PARAM = "grant_type";
+    private static final String REDIRECT_URI_PARAM = "redirect_uri";
+
+
+
     /**
      * 请求的携带认证信息的参数
      */
@@ -47,8 +54,14 @@ public class P6eTokenController extends P6eBaseController {
 
     @RequestMapping
     public P6eModel def(HttpServletRequest request, P6eTokenParam param) {
-        if (param == null
-                || param.getClientId() == null
+        if (param == null) {
+            param = new P6eTokenParam();
+        }
+        param.setClientId(request.getParameter(CLIENT_ID_PARAM));
+        param.setClientSecret(request.getParameter(CLIENT_SECRET_PARAM));
+        param.setRedirectUri(request.getParameter(REDIRECT_URI_PARAM));
+        param.setGrantType(request.getParameter(GRANT_TYPE_PARAM));
+        if (param.getClientId() == null
                 || param.getClientSecret() == null
                 || param.getRedirectUri() == null
                 || param.getGrantType() == null) {

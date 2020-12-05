@@ -9,12 +9,8 @@ import java.io.Serializable;
  */
 @Data
 public class P6eTokenResult implements Serializable {
-    private String grantType;
-    private String redirectUri;
-    private String clientId;
-    private String clientSecret;
-    private String code;
-    private String scope;
-    private String account;
-    private String password;
+    private String accessToken;
+    private String refreshToken;
+    private String tokenType;
+    private Long expiresIn;
 }
