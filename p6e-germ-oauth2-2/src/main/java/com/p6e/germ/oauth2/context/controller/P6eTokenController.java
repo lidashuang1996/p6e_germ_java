@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 
 /**
+ * 令牌认证接口
  * @author lidashuang
  * @version 1.0
  */
@@ -21,8 +22,11 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/token")
 public class P6eTokenController extends P6eBaseController {
 
+    /** 认证的类型 - 密码 */
     private static final String PASSWORD_TYPE = "PASSWORD";
+    /** 认证的类型 - CODE */
     private static final String AUTH_CODE_TYPE = "AUTHORIZATION_CODE";
+    /** 认证的类型 - 客户端 */
     private static final String CLIENT_TYPE = "CLIENT_CREDENTIALS";
 
     /**
@@ -41,14 +45,6 @@ public class P6eTokenController extends P6eBaseController {
      */
     private static final String AUTH_HEADER_NAME = "authentication";
 
-    /**
-     * http://127.0.0.1:9900/token?client_id=1234567890&grant_type=CLIENT_CREDENTIALS&redirect_uri=http://127.0.0.1:10000&client_secret=1234567890
-     *
-     *http://127.0.0.1:9900/token?client_id=1234567890&grant_type=password&redirect_uri=http://127.0.0.1:10000&client_secret=1234567890&account=15549562863&password=123456
-     *
-     * http://127.0.0.1:9900/token?client_id=1234567890&grant_type=AUTHORIZATION_CODE&redirect_uri=http://127.0.0.1:10000&client_secret=1234567890&code=8ada3b01ddf448799279ec0969ccd0ed
-     * @return
-     */
     @RequestMapping
     public P6eModel def(HttpServletRequest request, P6eTokenModelParam param) {
         if (param == null

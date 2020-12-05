@@ -12,10 +12,6 @@ import java.io.Serializable;
 @Data
 @Accessors(chain = true)
 public class P6eVerificationLoginDto implements Serializable {
-    private String responseType;
-    private String clientId;
-    private String redirectUri;
-    private String scope;
-    private String state;
+    private String mark;
     private String accessToken;
 }

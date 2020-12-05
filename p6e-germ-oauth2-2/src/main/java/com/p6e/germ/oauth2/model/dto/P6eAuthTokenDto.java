@@ -2,6 +2,7 @@ package com.p6e.germ.oauth2.model.dto;
 
 import com.p6e.germ.oauth2.model.base.P6eResultDto;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 
@@ -10,7 +11,8 @@ import java.io.Serializable;
  * @version 1.0
  */
 @Data
-public class P6eAuthTokenDto extends P6eResultDto implements Serializable {
+@EqualsAndHashCode(callSuper = true)
+public class P6eAuthTokenDto extends P6eResultDto<P6eAuthTokenDto> implements Serializable {
     private String accessToken;
     private String refreshToken;
     private String tokenType;

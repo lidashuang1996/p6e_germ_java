@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * oauth2.0 4 种授权
+ * oauth2 4 种授权
  * @author lidashuang
  * @version 1.0
  */
@@ -20,10 +20,41 @@ public class P6eAuthServiceImpl implements P6eAuthService {
     private final static Logger LOGGER = LoggerFactory.getLogger(P6eAuthService.class);
 
     @Override
+    public P6eAuthDto verification(P6eVerificationAuthDto param) {
+        final P6eAuthDto p6eAuthDto = new P6eAuthDto();
+        try {
+            // 读取客户端信息
+            final P6eClientEntity p6eClientEntity = new P6eClientEntity(param.getClientId());
+            // 验证客户端信息
+            if (p6eClientEntity.verificationScope(param.getScope())
+                    && p6eClientEntity.verificationRedirectUri(param.getRedirectUri())) {
+                // 生成记号
+                final P6eMarkEntity p6eMarkEntity =
+                        new P6eMarkEntity(P6eCopyUtil.run(param, P6eAuthKeyValue.class)).cache();
+                // 写入信息
+                p6eAuthDto.setMark(p6eMarkEntity.getMark());
+                // 复制信息并写入
+                P6eCopyUtil.run(p6eClientEntity.get(), p6eAuthDto);
+            } else {
+                p6eAuthDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            }
+        } catch (RuntimeException e) {
+            LOGGER.error(e.getMessage());
+            p6eAuthDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+        } catch (Exception ee) {
+            LOGGER.error(ee.getMessage());
+            p6eAuthDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+        }
+        return p6eAuthDto;
+    }
+
+    @Override
     public P6eAuthDto code(P6eCodeAuthDto param) {
         final P6eAuthDto p6eAuthDto = new P6eAuthDto();
         try {
+            // 读取客户端信息
             final P6eClientEntity p6eClientEntity = new P6eClientEntity(param.getClientId());
+            // 验证客户端信息
             if (p6eClientEntity.verificationScope(param.getScope())
                     && p6eClientEntity.verificationRedirectUri(param.getRedirectUri())) {
                 // 生产凭证
@@ -57,7 +88,9 @@ public class P6eAuthServiceImpl implements P6eAuthService {
     public P6eAuthTokenDto codeCallback(P6eCodeCallbackAuthDto param) {
         final P6eAuthTokenDto p6eAuthTokenDto = new P6eAuthTokenDto();
         try {
+            // 读取客户端信息
             final P6eClientEntity p6eClientEntity = new P6eClientEntity(param.getClientId());
+            // 验证客户端信息
             if (p6eClientEntity.verificationScope(param.getScope())
                     && p6eClientEntity.verificationRedirectUri(param.getRedirectUri())
                     && p6eClientEntity.verificationSecret(param.getClientSecret())) {
@@ -80,7 +113,9 @@ public class P6eAuthServiceImpl implements P6eAuthService {
     public P6eAuthTokenDto client(P6eClientAuthDto param) {
         final P6eAuthTokenDto p6eAuthTokenDto = new P6eAuthTokenDto();
         try {
+            // 读取客户端信息
             final P6eClientEntity p6eClientEntity = new P6eClientEntity(param.getClientId());
+            // 验证客户端信息
             if (p6eClientEntity.verificationScope(param.getScope())
                     && p6eClientEntity.verificationRedirectUri(param.getRedirectUri())
                     && p6eClientEntity.verificationSecret(param.getClientSecret())) {
@@ -105,7 +140,9 @@ public class P6eAuthServiceImpl implements P6eAuthService {
     public P6eAuthTokenDto password(P6ePasswordAuthDto param) {
         final P6eAuthTokenDto p6eAuthTokenDto = new P6eAuthTokenDto();
         try {
+            // 读取客户端信息
             final P6eClientEntity p6eClientEntity = new P6eClientEntity(param.getClientId());
+            // 验证客户端信息
             if (p6eClientEntity.verificationScope(param.getScope())
                     && p6eClientEntity.verificationRedirectUri(param.getRedirectUri())
                     && p6eClientEntity.verificationSecret(param.getClientSecret())) {
