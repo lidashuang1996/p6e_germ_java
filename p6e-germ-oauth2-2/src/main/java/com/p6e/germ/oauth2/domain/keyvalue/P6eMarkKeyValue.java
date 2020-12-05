@@ -3,7 +3,6 @@ package com.p6e.germ.oauth2.domain.keyvalue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.io.Serializable;
 
 /**
@@ -13,7 +12,7 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class P6eAuthKeyValue implements Serializable {
+public class P6eMarkKeyValue implements Serializable {
     private String clientId;
     private String scope;
     private String state;

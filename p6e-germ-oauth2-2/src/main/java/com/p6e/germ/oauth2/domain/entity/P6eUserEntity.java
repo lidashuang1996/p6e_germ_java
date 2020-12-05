@@ -29,7 +29,7 @@ public class P6eUserEntity implements Serializable {
     public P6eUserEntity(Integer id) {
         this.p6eOauth2UserDb = p6eUserMapper.queryById(id);
         if (this.p6eOauth2UserDb == null) {
-            throw new RuntimeException();
+            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
         }
     }
 
@@ -40,7 +40,7 @@ public class P6eUserEntity implements Serializable {
     public P6eUserEntity(String account) {
         this.p6eOauth2UserDb = p6eUserMapper.queryByAccount(account);
         if (this.p6eOauth2UserDb == null) {
-            throw new RuntimeException();
+            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
         }
     }
 
@@ -51,7 +51,7 @@ public class P6eUserEntity implements Serializable {
     public P6eUserEntity(P6eOauth2UserDb p6eOauth2UserDb) {
         this.p6eOauth2UserDb = p6eOauth2UserDb;
         if (this.p6eOauth2UserDb == null) {
-            throw new RuntimeException();
+            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
         }
     }
 
@@ -63,10 +63,18 @@ public class P6eUserEntity implements Serializable {
         return p6eOauth2UserDb;
     }
 
+    /**
+     * 删除数据
+     * @return DB 对象
+     */
     public P6eOauth2UserDb delete() {
         return p6eUserMapper.delete(p6eOauth2UserDb.getId()) > 0 ? p6eOauth2UserDb : null;
     }
 
+    /**
+     * 创建数据
+     * @return DB 对象
+     */
     public P6eOauth2UserDb create() {
         if (p6eUserMapper.create(p6eOauth2UserDb) > 0) {
             this.p6eOauth2UserDb = p6eUserMapper.queryById(p6eOauth2UserDb.getId());
@@ -76,6 +84,10 @@ public class P6eUserEntity implements Serializable {
         }
     }
 
+    /**
+     * 更新数据
+     * @return DB 对象
+     */
     public P6eOauth2UserDb update() {
         if (p6eUserMapper.update(p6eOauth2UserDb) > 0) {
             this.p6eOauth2UserDb = p6eUserMapper.queryById(p6eOauth2UserDb.getId());
@@ -98,6 +110,10 @@ public class P6eUserEntity implements Serializable {
         }
     }
 
+    /**
+     * 创建缓存
+     * @return 认证缓存对象
+     */
     public P6eTokenEntity createTokenCache() {
         final Map<String, String> map = new HashMap<>(3);
         map.put("email", p6eOauth2UserDb.getEmail());

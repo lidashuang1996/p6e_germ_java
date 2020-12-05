@@ -2,7 +2,7 @@ package com.p6e.germ.oauth2.application.impl;
 
 import com.p6e.germ.oauth2.application.P6eAuthService;
 import com.p6e.germ.oauth2.domain.entity.*;
-import com.p6e.germ.oauth2.domain.keyvalue.P6eAuthKeyValue;
+import com.p6e.germ.oauth2.domain.keyvalue.P6eMarkKeyValue;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.model.P6eModel;
 import com.p6e.germ.oauth2.model.dto.*;
@@ -30,7 +30,7 @@ public class P6eAuthServiceImpl implements P6eAuthService {
                     && p6eClientEntity.verificationRedirectUri(param.getRedirectUri())) {
                 // 生成记号
                 final P6eMarkEntity p6eMarkEntity =
-                        new P6eMarkEntity(P6eCopyUtil.run(param, P6eAuthKeyValue.class)).cache();
+                        new P6eMarkEntity(P6eCopyUtil.run(param, P6eMarkKeyValue.class)).cache();
                 // 写入信息
                 p6eAuthDto.setMark(p6eMarkEntity.getMark());
                 // 复制信息并写入

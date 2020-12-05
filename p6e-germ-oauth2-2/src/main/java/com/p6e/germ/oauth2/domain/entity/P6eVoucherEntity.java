@@ -42,13 +42,17 @@ public class P6eVoucherEntity {
         this.voucher = key;
     }
 
+    /**
+     * 创建凭证
+     * @return 对象
+     */
     public P6eVoucherEntity create() {
         try {
             final KeyPair keyPair = P6eRsaUtil.initKey();
             publicSecretKey = P6eRsaUtil.getPublicKey(keyPair);
             privateSecretKey = P6eRsaUtil.getPrivateKey(keyPair);
             if (publicSecretKey == null || privateSecretKey == null) {
-                throw new NullPointerException(this.getClass() + " construction fetch key ==> NullPointerException.");
+                throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
             }
         } catch (Exception e) {
             throw new NullPointerException(e.getMessage());
@@ -56,16 +60,20 @@ public class P6eVoucherEntity {
         return this;
     }
 
+    /**
+     * 查询凭证
+     * @return 对象
+     */
     public P6eVoucherEntity get() {
         final String content = p6eCacheVoucher.get(voucher);
         if (content == null) {
-            throw new NullPointerException(this.getClass() + " construction fetch data ==> NullPointerException.");
+            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
         } else {
             final Map<String, String> map = P6eJsonUtil.fromJsonToMap(content, String.class, String.class);
             publicSecretKey = map.get("publicSecretKey");
             privateSecretKey = map.get("privateSecretKey");
             if (publicSecretKey == null || privateSecretKey == null) {
-                throw new NullPointerException(this.getClass() + " construction fetch key ==> NullPointerException.");
+                throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
             }
         }
         return this;
@@ -96,14 +104,26 @@ public class P6eVoucherEntity {
         p6eCacheVoucher.del(voucher);
     }
 
+    /**
+     * 获取公钥
+     * @return 公钥
+     */
     public String getPrivateSecretKey() {
         return privateSecretKey.replaceAll("\n", "");
     }
 
+    /**
+     * 获取私钥
+     * @return 私钥
+     */
     public String getPublicSecretKey() {
         return publicSecretKey.replaceAll("\n", "");
     }
 
+    /**
+     * 获取凭证编号
+     * @return 凭证编号
+     */
     public String getVoucher() {
         return voucher;
     }

@@ -1,7 +1,5 @@
 package com.p6e.germ.oauth2.infrastructure.cache;
 
-import org.springframework.stereotype.Component;
-
 import java.util.concurrent.TimeUnit;
 
 /**

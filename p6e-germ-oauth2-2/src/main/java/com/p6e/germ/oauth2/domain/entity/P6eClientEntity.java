@@ -36,6 +36,7 @@ public class P6eClientEntity {
         try {
             final String content = p6eCacheClient.getDbId(String.valueOf(id));
             if (content == null || "".equals(content)) {
+                // DB 查询数据
                 this.p6eOauth2ClientDb = p6eOauth2ClientMapper.queryById(id);
                 // 写入缓存数据
                 final String cache = P6eJsonUtil.toJson(this.p6eOauth2ClientDb);
@@ -45,11 +46,12 @@ public class P6eClientEntity {
                 this.p6eOauth2ClientDb = P6eJsonUtil.fromJson(content, P6eOauth2ClientDb.class);
             }
         } catch (Exception e) {
+            // 出现异常就删除 id
             this.p6eOauth2ClientDb = null;
             p6eCacheClient.delDbId(String.valueOf(id));
         }
         if (this.p6eOauth2ClientDb == null) {
-            throw new NullPointerException();
+            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
         }
     }
 
@@ -62,6 +64,7 @@ public class P6eClientEntity {
         try {
             final String content = p6eCacheClient.getDbKey(key);
             if (content == null || "".equals(content)) {
+                // DB 查询数据
                 this.p6eOauth2ClientDb = p6eOauth2ClientMapper.queryByKey(key);
                 // 写入缓存数据
                 final String cache = P6eJsonUtil.toJson(this.p6eOauth2ClientDb);
@@ -71,11 +74,12 @@ public class P6eClientEntity {
                 this.p6eOauth2ClientDb = P6eJsonUtil.fromJson(content, P6eOauth2ClientDb.class);
             }
         } catch (Exception e) {
+            // 出现异常就删除 key
             this.p6eOauth2ClientDb = null;
             p6eCacheClient.delDbKey(key);
         }
         if (this.p6eOauth2ClientDb == null) {
-            throw new NullPointerException();
+            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
         }
     }
 
@@ -84,9 +88,10 @@ public class P6eClientEntity {
      * @param p6eOauth2ClientDb DB 对象
      */
     public P6eClientEntity(P6eOauth2ClientDb p6eOauth2ClientDb) {
+        // 写入 DB 数据
         this.p6eOauth2ClientDb = p6eOauth2ClientDb;
         if (this.p6eOauth2ClientDb == null) {
-            throw new NullPointerException();
+            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
         }
     }
 
@@ -103,6 +108,7 @@ public class P6eClientEntity {
      * @return 创建的数据对象
      */
     public P6eOauth2ClientDb create() {
+        // 生产随机的编号，写入为 key 和 secret 数据
         p6eOauth2ClientDb.setKey(P6eGeneratorUtil.uuid());
         p6eOauth2ClientDb.setSecret(P6eGeneratorUtil.uuid());
         if (p6eOauth2ClientMapper.create(p6eOauth2ClientDb) > 0) {
@@ -139,6 +145,22 @@ public class P6eClientEntity {
     }
 
     /**
+     * 查询条数
+     * @return 条数
+     */
+    public Long count() {
+        return p6eOauth2ClientMapper.count(p6eOauth2ClientDb);
+    }
+
+    /**
+     * 查询多条数据
+     * @return 查询多条数据的列表
+     */
+    public List<P6eOauth2ClientDb> select() {
+        return p6eOauth2ClientMapper.queryAll(p6eOauth2ClientDb);
+    }
+
+    /**
      * 验证 scope 的参数
      * @param scope 参数
      * @return 验证结果
@@ -163,6 +185,7 @@ public class P6eClientEntity {
      * @return 验证结果
      */
     public boolean verificationRedirectUri(final String redirectUri) {
+        // 重定向的 URL 的分割
         final String[] redirectUrls = this.p6eOauth2ClientDb.getRedirectUri().split(",");
         for (String url : redirectUrls) {
             if (url.equals(redirectUri)) {
@@ -182,13 +205,5 @@ public class P6eClientEntity {
         map.put("name", p6eOauth2ClientDb.getName());
         map.put("id", String.valueOf(p6eOauth2ClientDb.getId()));
         return new P6eTokenEntity(String.valueOf(p6eOauth2ClientDb.getId()), map);
-    }
-
-    public Long count() {
-        return p6eOauth2ClientMapper.count(p6eOauth2ClientDb);
-    }
-
-    public List<P6eOauth2ClientDb> select() {
-        return p6eOauth2ClientMapper.queryAll(p6eOauth2ClientDb);
     }
 }

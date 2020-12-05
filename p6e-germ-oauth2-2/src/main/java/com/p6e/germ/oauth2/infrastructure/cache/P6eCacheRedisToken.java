@@ -85,5 +85,4 @@ public class P6eCacheRedisToken extends P6eCacheRedis implements IP6eCacheToken 
             this.getRedisTemplate(SOURCE_NAME).opsForValue().set(TOKEN_REFRESH_TOKEN_NAME + key, value, time, TimeUnit.SECONDS);
         }
     }
-
 }

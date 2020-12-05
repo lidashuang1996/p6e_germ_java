@@ -6,11 +6,12 @@ package com.p6e.germ.oauth2.infrastructure.cache;
  * @version 1.0
  */
 public interface IP6eCacheToken {
+
     /** 缓存名称 */
     String TOKEN_KEY_NAME = "P6E:OAUTH2:TOKEN:KEY:";
+    String TOKEN_USER_INFO_NAME = "P6E:OAUTH2:TOKEN:USER_INFO:";
     String TOKEN_ACCESS_TOKEN_NAME = "P6E:OAUTH2:TOKEN:ACCESS_TOKEN:";
     String TOKEN_REFRESH_TOKEN_NAME = "P6E:OAUTH2:TOKEN:REFRESH_TOKEN:";
-    String TOKEN_USER_INFO_NAME = "P6E:OAUTH2:TOKEN:USER_INFO:";
 
     /** 缓存的过期时间 */
     long TOKEN_TIME = 3600L;
@@ -84,6 +85,11 @@ public interface IP6eCacheToken {
      */
     public void setAccessToken(String key, String value);
 
+    /**
+     * 修改数据缓存
+     * @param key 数据名称
+     * @param time 缓存时间
+     */
     public void setAccessTokenExpirationTime(String key, long time);
 
     /**
@@ -99,6 +105,10 @@ public interface IP6eCacheToken {
      */
     public void delAccessToken(String key);
 
-
-    void setRefreshTokenExpirationTime(String accessToken, long time);
+    /**
+     * 修改数据缓存
+     * @param key 数据名称
+     * @param time 缓存时间
+     */
+    public void setRefreshTokenExpirationTime(String key, long time);
 }

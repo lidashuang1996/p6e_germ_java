@@ -2,7 +2,7 @@ package com.p6e.germ.oauth2.application.impl;
 
 import com.p6e.germ.oauth2.application.P6eLoginService;
 import com.p6e.germ.oauth2.domain.entity.*;
-import com.p6e.germ.oauth2.domain.keyvalue.P6eAuthKeyValue;
+import com.p6e.germ.oauth2.domain.keyvalue.P6eMarkKeyValue;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.model.P6eModel;
 import com.p6e.germ.oauth2.model.dto.P6eDefaultLoginDto;
@@ -54,20 +54,20 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                 // 查询 mark 信息
                 final P6eMarkEntity p6eMarkEntity = new P6eMarkEntity(param.getMark());
                 // 读取 mark 信息内容
-                final P6eAuthKeyValue p6eAuthKeyValue = p6eMarkEntity.getP6eAuthKeyValue();
+                final P6eMarkKeyValue p6eMarkKeyValue = p6eMarkEntity.getP6eMarkKeyValue();
                 // 查询用户信息并重制模型
                 final P6eTokenEntity p6eTokenEntity =
                         new P6eTokenEntity(param.getAccessToken(), P6eTokenEntity.ACCESS_TOKEN).resetModel();
                 // 写入返回数据 CODE
                 p6eLoginDto.setCode(p6eTokenEntity.getKey());
                 // 写入客户端信息
-                P6eCopyUtil.run(p6eAuthKeyValue, p6eLoginDto);
+                P6eCopyUtil.run(p6eMarkKeyValue, p6eLoginDto);
                 // 写入用户认证信息
                 P6eCopyUtil.run(p6eTokenEntity.getModel(), p6eLoginDto);
                 // 简化模式修改过期时间
                 final long simpleDateTime = 120;
                 final String simpleType = "TOKEN";
-                final String type = p6eAuthKeyValue.getResponseType();
+                final String type = p6eMarkKeyValue.getResponseType();
                 if (simpleType.equals(type.toUpperCase())) {
                     // 如果为简化模式对返回的数据进行一下修改
                     p6eTokenEntity.delRefreshToken();
@@ -121,17 +121,17 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                         // 创建用户认证信息并缓存
                         final P6eTokenEntity p6eTokenEntity = p6eUserEntity.createTokenCache().cache();
                         // 读取 MARK 信息
-                        final P6eAuthKeyValue p6eAuthKeyValue = p6eMarkEntity.getP6eAuthKeyValue();
+                        final P6eMarkKeyValue p6eMarkKeyValue = p6eMarkEntity.getP6eMarkKeyValue();
                         // 写入返回数据 CODE
                         p6eLoginDto.setCode(p6eTokenEntity.getKey());
                         // 写入客户端信息
-                        P6eCopyUtil.run(p6eAuthKeyValue, p6eLoginDto);
+                        P6eCopyUtil.run(p6eMarkKeyValue, p6eLoginDto);
                         // 写入用户认证信息
                         P6eCopyUtil.run(p6eTokenEntity.getModel(), p6eLoginDto);
                         // 简化模式修改过期时间
                         final long simpleDateTime = 120;
                         final String simpleType = "TOKEN";
-                        final String type = p6eMarkEntity.getP6eAuthKeyValue().getResponseType();
+                        final String type = p6eMarkEntity.getP6eMarkKeyValue().getResponseType();
                         if (simpleType.equals(type.toUpperCase())) {
                             // 如果为简化模式对返回的数据进行一下修改
                             p6eTokenEntity.delRefreshToken();

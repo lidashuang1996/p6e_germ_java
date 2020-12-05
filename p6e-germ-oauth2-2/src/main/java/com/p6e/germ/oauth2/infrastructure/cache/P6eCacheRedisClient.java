@@ -11,21 +11,6 @@ public class P6eCacheRedisClient extends P6eCacheRedis implements IP6eCacheClien
     private static final String SOURCE_NAME = "";
 
     @Override
-    public void set(String key, String value) {
-        this.getRedisTemplate(SOURCE_NAME).opsForValue().set(CLIENT_NAME + key, value, CLIENT_TIME, TimeUnit.SECONDS);
-    }
-
-    @Override
-    public String get(String key) {
-        return this.getRedisTemplate(SOURCE_NAME).opsForValue().get(CLIENT_NAME + key);
-    }
-
-    @Override
-    public void del(String key) {
-        this.getRedisTemplate(SOURCE_NAME).delete(CLIENT_NAME + key);
-    }
-
-    @Override
     public void setDbId(String key, String value) {
         this.getRedisTemplate(SOURCE_NAME).opsForValue().set(CLIENT_DB_ID_NAME + key, value, CLIENT_DB_TIME, TimeUnit.SECONDS);
     }
@@ -54,7 +39,4 @@ public class P6eCacheRedisClient extends P6eCacheRedis implements IP6eCacheClien
     public String getDbKey(String key) {
         return this.getRedisTemplate(SOURCE_NAME).opsForValue().get(CLIENT_DB_KEY_NAME + key);
     }
-
-
-
 }
