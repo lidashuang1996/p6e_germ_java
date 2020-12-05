@@ -1,5 +1,6 @@
 package com.p6e.germ.oauth2.model.db;
 
+import com.p6e.germ.oauth2.model.base.P6eBaseDb;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;

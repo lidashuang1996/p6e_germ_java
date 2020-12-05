@@ -2,7 +2,10 @@ package com.p6e.germ.oauth2.model.dto;
 
 import com.p6e.germ.oauth2.model.base.P6eResultDto;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -10,6 +13,8 @@ import java.util.Map;
  * @version 1.0
  */
 @Data
-public class P6eInfoDto extends P6eResultDto {
+@Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
+public class P6eInfoDto extends P6eResultDto<P6eInfoDto> implements Serializable {
     private Map<String, String> data;
 }

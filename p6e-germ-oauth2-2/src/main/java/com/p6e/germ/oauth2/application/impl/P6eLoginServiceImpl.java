@@ -23,6 +23,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
 
     @Override
     public P6eVoucherDto defVoucher() {
+        // 创建凭证对象
         final P6eVoucherDto p6eVoucherDto = new P6eVoucherDto();
         try {
             // 创建凭证并缓存
@@ -43,25 +44,32 @@ public class P6eLoginServiceImpl implements P6eLoginService {
 
     @Override
     public P6eLoginDto verification(P6eVerificationLoginDto param) {
+        // 创建登录信息返回对象
         final P6eLoginDto p6eLoginDto = new P6eLoginDto();
         try {
+            // 校验参数
             if (param == null || param.getMark() == null || param.getAccessToken() == null) {
                 p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
             } else {
+                // 查询 mark 信息
                 final P6eMarkEntity p6eMarkEntity = new P6eMarkEntity(param.getMark());
+                // 读取 mark 信息内容
                 final P6eAuthKeyValue p6eAuthKeyValue = p6eMarkEntity.getP6eAuthKeyValue();
-                // 查询缓存并重制模型
+                // 查询用户信息并重制模型
                 final P6eTokenEntity p6eTokenEntity =
                         new P6eTokenEntity(param.getAccessToken(), P6eTokenEntity.ACCESS_TOKEN).resetModel();
-                // 写入返回数据
+                // 写入返回数据 CODE
                 p6eLoginDto.setCode(p6eTokenEntity.getKey());
+                // 写入客户端信息
                 P6eCopyUtil.run(p6eAuthKeyValue, p6eLoginDto);
+                // 写入用户认证信息
                 P6eCopyUtil.run(p6eTokenEntity.getModel(), p6eLoginDto);
                 // 简化模式修改过期时间
                 final long simpleDateTime = 120;
                 final String simpleType = "TOKEN";
                 final String type = p6eAuthKeyValue.getResponseType();
                 if (simpleType.equals(type.toUpperCase())) {
+                    // 如果为简化模式对返回的数据进行一下修改
                     p6eTokenEntity.delRefreshToken();
                     p6eTokenEntity.setAccessTokenExpirationTime(simpleDateTime);
                     p6eLoginDto.setRefreshToken(null);
@@ -83,8 +91,10 @@ public class P6eLoginServiceImpl implements P6eLoginService {
 
     @Override
     public P6eLoginDto defaultLogin(P6eDefaultLoginDto login) {
+        // 创建登录信息返回对象
         final P6eLoginDto p6eLoginDto = new P6eLoginDto();
         try {
+            // 校验参数
             if (login == null
                     || login.getAccount() == null
                     || login.getPassword() == null
@@ -99,6 +109,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                 // 获取用户信息
                 final P6eUserEntity p6eUserEntity;
                 try {
+                    // 出现异常就是账号密码错误
                     p6eUserEntity = new P6eUserEntity(login.getAccount());
                 } catch (Exception e){
                     p6eLoginDto.setError(P6eModel.Error.ACCOUNT_OR_PASSWORD);
@@ -107,18 +118,22 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                 // 解密验证账号密码
                 if (p6eUserEntity.defaultVerification(p6eVoucherEntity.execute(login.getPassword()))) {
                     try {
+                        // 创建用户认证信息并缓存
                         final P6eTokenEntity p6eTokenEntity = p6eUserEntity.createTokenCache().cache();
+                        // 读取 MARK 信息
                         final P6eAuthKeyValue p6eAuthKeyValue = p6eMarkEntity.getP6eAuthKeyValue();
-                        p6eTokenEntity.cache();
+                        // 写入返回数据 CODE
                         p6eLoginDto.setCode(p6eTokenEntity.getKey());
+                        // 写入客户端信息
+                        P6eCopyUtil.run(p6eAuthKeyValue, p6eLoginDto);
+                        // 写入用户认证信息
                         P6eCopyUtil.run(p6eTokenEntity.getModel(), p6eLoginDto);
-                        P6eCopyUtil.run(p6eMarkEntity.getP6eAuthKeyValue(), p6eLoginDto);
-
                         // 简化模式修改过期时间
                         final long simpleDateTime = 120;
                         final String simpleType = "TOKEN";
                         final String type = p6eMarkEntity.getP6eAuthKeyValue().getResponseType();
                         if (simpleType.equals(type.toUpperCase())) {
+                            // 如果为简化模式对返回的数据进行一下修改
                             p6eTokenEntity.delRefreshToken();
                             p6eTokenEntity.setAccessTokenExpirationTime(simpleDateTime);
                             p6eLoginDto.setRefreshToken(null);

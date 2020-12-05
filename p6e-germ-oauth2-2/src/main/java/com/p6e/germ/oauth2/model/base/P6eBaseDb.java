@@ -1,4 +1,4 @@
-package com.p6e.germ.oauth2.model.db;
+package com.p6e.germ.oauth2.model.base;
 
 import lombok.Data;
 import lombok.experimental.Accessors;

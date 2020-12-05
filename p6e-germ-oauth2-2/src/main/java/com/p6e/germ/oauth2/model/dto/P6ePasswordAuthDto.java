@@ -1,6 +1,7 @@
 package com.p6e.germ.oauth2.model.dto;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
@@ -9,6 +10,7 @@ import java.io.Serializable;
  * @version 1.0
  */
 @Data
+@Accessors(chain = true)
 public class P6ePasswordAuthDto implements Serializable {
     private String clientId;
     private String clientSecret;

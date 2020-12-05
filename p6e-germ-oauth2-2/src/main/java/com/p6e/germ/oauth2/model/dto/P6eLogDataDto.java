@@ -2,6 +2,8 @@ package com.p6e.germ.oauth2.model.dto;
 
 import com.p6e.germ.oauth2.model.base.P6eResultDto;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
@@ -10,6 +12,8 @@ import java.io.Serializable;
  * @version 1.0
  */
 @Data
+@Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
 public class P6eLogDataDto extends P6eResultDto<P6eLogDataDto> implements Serializable {
     private Integer id;
     private String uid;

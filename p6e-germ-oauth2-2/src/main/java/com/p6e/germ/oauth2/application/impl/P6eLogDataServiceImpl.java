@@ -48,8 +48,6 @@ public class P6eLogDataServiceImpl implements P6eLogDataService {
             p6eLogDataDto.initPaging(p6eLogEntity.get());
             // 写入查询的内容数据
             p6eLogDataDto.setList(P6eCopyUtil.run(p6eLogEntity.select(), P6eLogDataDto.class));
-
-
         } catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());

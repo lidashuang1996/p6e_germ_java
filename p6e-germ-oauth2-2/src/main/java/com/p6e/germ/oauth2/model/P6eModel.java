@@ -68,22 +68,6 @@ public final class P6eModel {
         return new P6eModel(error);
     }
 
-    public static P6eModel build(String content) {
-        return new P6eModel(content);
-    }
-
-    public static P6eModel build(String content, Object data) {
-        return new P6eModel(content, data);
-    }
-
-    public static P6eModel build(int code, String message) {
-        return new P6eModel(code, message, null);
-    }
-
-    public static P6eModel build(int code, String message, Object data) {
-        return new P6eModel(code, message, data);
-    }
-
     private P6eModel() {
         this.code = 0;
         this.message = "SUCCESS";
@@ -92,34 +76,6 @@ public final class P6eModel {
     private P6eModel(Error error) {
         this.code = error.code;
         this.message = error.name();
-    }
-
-    private P6eModel(String content) {
-        this(content, null);
-    }
-
-    private P6eModel(String content, Object data) {
-        try {
-            // 这里采用符号分割要返回的数据
-            String[] ps = content.split("-");
-            // 读取 code 数据
-            int code = Integer.parseInt(ps[0]);
-            // 读取消息的数据
-            String message = ps[1];
-            this.setCode(code);
-            this.setData(data);
-            this.setMessage(message);
-        } catch (Exception e) {
-            this.setCode(500);
-            this.setData(null);
-            this.setMessage("Parsing return string exceptions ...");
-        }
-    }
-
-    private P6eModel(Integer code, String message, Object data) {
-        this.setCode(code);
-        this.setMessage(message);
-        this.setData(data);
     }
 
     public Integer getCode() {
