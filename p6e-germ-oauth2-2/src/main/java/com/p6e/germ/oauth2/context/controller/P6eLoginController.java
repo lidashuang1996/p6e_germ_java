@@ -5,14 +5,8 @@ import com.p6e.germ.oauth2.context.support.P6eBaseController;
 import com.p6e.germ.oauth2.context.support.model.*;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.model.P6eModel;
-import com.p6e.germ.oauth2.model.dto.P6eDefaultLoginDto;
-import com.p6e.germ.oauth2.model.dto.P6eLoginDto;
-import com.p6e.germ.oauth2.model.dto.P6eVerificationLoginDto;
-import com.p6e.germ.oauth2.model.dto.P6eVoucherDto;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.p6e.germ.oauth2.model.dto.*;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -43,6 +37,26 @@ public class P6eLoginController extends P6eBaseController {
     public P6eModel def(@RequestBody P6eDefaultLoginParam param) {
         final P6eLoginDto p6eLoginDto =
                 P6eApplication.login.defaultLogin(P6eCopyUtil.run(param, P6eDefaultLoginDto.class));
+        if (p6eLoginDto.getError() == null) {
+            return P6eModel.build().setData(P6eCopyUtil.run(p6eLoginDto, P6eDefaultLoginResult.class));
+        } else {
+            return P6eModel.build(p6eLoginDto.getError());
+        }
+    }
+
+    @GetMapping("/login/code/generate")
+    public P6eModel generateCode(P6eCodeLoginParam param) {
+        final P6eGenerateCodeLoginDto p6eGenerateCodeLoginDto = P6eApplication.login.generateCode(param.getMark());
+        if (p6eGenerateCodeLoginDto.getError() == null) {
+            return P6eModel.build().setData(P6eCopyUtil.run(p6eGenerateCodeLoginDto, P6eCodeLoginResult.class));
+        } else {
+            return P6eModel.build(p6eGenerateCodeLoginDto.getError());
+        }
+    }
+
+    @GetMapping("/login/code/get")
+    public P6eModel getCode(P6eCodeLoginParam param) {
+        final P6eLoginDto p6eLoginDto = P6eApplication.login.getCodeLogin(param.getCode());
         if (p6eLoginDto.getError() == null) {
             return P6eModel.build().setData(P6eCopyUtil.run(p6eLoginDto, P6eDefaultLoginResult.class));
         } else {

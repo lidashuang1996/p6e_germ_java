@@ -18,6 +18,7 @@ public final class P6eCache {
     public static IP6eCacheClient client;
     /** 凭证缓存 */
     public static IP6eCacheVoucher voucher;
+    public static IP6eCodeCache code;
 
     /**
      * 初始化操作
@@ -33,5 +34,6 @@ public final class P6eCache {
         client = P6eSpringUtil.getBean(IP6eCacheClient.class, new P6eCacheRedisClient());
         // 凭证缓存
         voucher = P6eSpringUtil.getBean(IP6eCacheVoucher.class, new P6eCacheRedisVoucher());
+        code = P6eSpringUtil.getBean(IP6eCodeCache.class, null);
     }
 }

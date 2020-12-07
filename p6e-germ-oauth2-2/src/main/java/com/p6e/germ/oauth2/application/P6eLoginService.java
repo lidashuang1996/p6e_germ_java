@@ -1,9 +1,6 @@
 package com.p6e.germ.oauth2.application;
 
-import com.p6e.germ.oauth2.model.dto.P6eDefaultLoginDto;
-import com.p6e.germ.oauth2.model.dto.P6eLoginDto;
-import com.p6e.germ.oauth2.model.dto.P6eVerificationLoginDto;
-import com.p6e.germ.oauth2.model.dto.P6eVoucherDto;
+import com.p6e.germ.oauth2.model.dto.*;
 
 /**
  * 登录服务
@@ -46,8 +43,23 @@ public interface P6eLoginService {
     public P6eLoginDto weChatLogin();
 
     /**
+     * 生成扫码登录的基础信息
+     * @param mark 客户端的基本信息
+     * @return 生成扫码登录凭证信息对象
+     */
+    public P6eGenerateCodeLoginDto generateCode(String mark);
+
+    /**
      * 扫码登录
+     * @param param 扫描登录凭证和认证信息
      * @return 登录结果对象
      */
-    public P6eLoginDto scanCodeLogin();
+    public P6eLoginDto codeLogin(P6eCodeLoginDto param);
+
+    /**
+     * 获取扫码登录数据
+     * @param code CODE 标记
+     * @return 登录结果对象
+     */
+    public P6eLoginDto getCodeLogin(String code);
 }

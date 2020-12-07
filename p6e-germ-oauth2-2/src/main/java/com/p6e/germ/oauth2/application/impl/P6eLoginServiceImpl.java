@@ -2,14 +2,12 @@ package com.p6e.germ.oauth2.application.impl;
 
 import com.p6e.germ.oauth2.application.P6eLoginService;
 import com.p6e.germ.oauth2.domain.entity.*;
+import com.p6e.germ.oauth2.domain.keyvalue.P6eCodeKeyValue;
 import com.p6e.germ.oauth2.domain.keyvalue.P6eMarkKeyValue;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.model.P6eModel;
 import com.p6e.germ.oauth2.model.db.P6eOauth2LogDb;
-import com.p6e.germ.oauth2.model.dto.P6eDefaultLoginDto;
-import com.p6e.germ.oauth2.model.dto.P6eLoginDto;
-import com.p6e.germ.oauth2.model.dto.P6eVerificationLoginDto;
-import com.p6e.germ.oauth2.model.dto.P6eVoucherDto;
+import com.p6e.germ.oauth2.model.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -204,7 +202,84 @@ public class P6eLoginServiceImpl implements P6eLoginService {
     }
 
     @Override
-    public P6eLoginDto scanCodeLogin() {
-        return null;
+    public P6eGenerateCodeLoginDto generateCode(String mark) {
+        final P6eGenerateCodeLoginDto p6eGenerateCodeLoginDto = new P6eGenerateCodeLoginDto().setMark(mark);
+        try {
+            if (mark == null) {
+                p6eGenerateCodeLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            } else {
+                // 写入 mark 缓存
+                final String key = new P6eCodeEntity().create(mark).getKey();
+                // 写入 CODE 数据
+                p6eGenerateCodeLoginDto.setCode(key);
+            }
+        }catch (RuntimeException e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            p6eGenerateCodeLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+        } catch (Exception ee) {
+            LOGGER.error(ee.getMessage());
+            p6eGenerateCodeLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+        }
+        return p6eGenerateCodeLoginDto;
+    }
+
+    @Override
+    public P6eLoginDto codeLogin(P6eCodeLoginDto param) {
+        final P6eLoginDto p6eLoginDto = new P6eLoginDto();
+        try {
+            if (param == null || param.getCode() == null || param.getMark() == null || param.getAccessToken() == null) {
+                p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            } else {
+                final P6eCodeEntity p6eCodeEntity = new P6eCodeEntity(param.getCode());
+                // 验证 MARK
+                if (p6eCodeEntity.verificationMark(param.getMark())) {
+                    // 验证 ACCESS_TOKEN
+                    final P6eLoginDto result = this.verification(P6eCopyUtil.run(param, P6eVerificationLoginDto.class));
+                    if (result.getError() == null) {
+                        // 写入用户的数据
+                        P6eCopyUtil.run(result, p6eLoginDto);
+                        // 写入到缓存
+                        p6eCodeEntity.setData(P6eCopyUtil.run(result, P6eCodeKeyValue.class));
+                    } else {
+                        p6eLoginDto.setError(result.getError());
+                    }
+                } else {
+                    p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                }
+            }
+        }catch (RuntimeException e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+        } catch (Exception ee) {
+            LOGGER.error(ee.getMessage());
+            p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+        }
+        return p6eLoginDto;
+    }
+
+    @Override
+    public P6eLoginDto getCodeLogin(String code) {
+        final P6eLoginDto p6eLoginDto = new P6eLoginDto();
+        try {
+            if (code == null) {
+                p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            } else {
+                final P6eCodeKeyValue p6eCodeKeyValue = new P6eCodeEntity(code).getP6eCodeKeyValue();
+                if (p6eCodeKeyValue.getMark() == null) {
+                    // 写入用户的数据
+                    P6eCopyUtil.run(p6eCodeKeyValue, p6eLoginDto);
+                }
+            }
+        }catch (RuntimeException e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            p6eLoginDto.setError(P6eModel.Error.EXPIRATION_EXCEPTION);
+        } catch (Exception ee) {
+            LOGGER.error(ee.getMessage());
+            p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+        }
+        return p6eLoginDto;
     }
 }
