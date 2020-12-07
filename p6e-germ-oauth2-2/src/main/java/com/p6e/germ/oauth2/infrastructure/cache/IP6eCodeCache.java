@@ -6,10 +6,10 @@ package com.p6e.germ.oauth2.infrastructure.cache;
  */
 public interface IP6eCodeCache {
     /** 凭证缓存的前缀名称 */
-    String VOUCHER_NAME = "P6E:OAUTH2:VOUCHER:";
+    String CODE_NAME = "P6E:OAUTH2:CODE:";
 
     /** 凭证缓存的过期时间 */
-    long VOUCHER_TIME = 300;
+    long CODE_TIME = 60;
 
     /**
      * 写入数据

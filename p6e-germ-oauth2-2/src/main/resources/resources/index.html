@@ -189,11 +189,45 @@
             justify-content: center;
             align-items: center;
         }
+        .p6e-main-login-content-switch {
+            width: 60px;
+            height: 60px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+        .p6e-main-login-content-switch img {
+            width: 100%;
+            height: 100%;
+        }
+        .p6e-main-login-content-switch:before {
+            content: '';
+            width: 0;
+            height: 0;
+            border-bottom: 60px solid #ffffff;
+            border-right: 60px solid transparent;
+            position: absolute;
+        }
+        .p6e-main-login-content-switch-pc {
+            display: none;
+        }
+        .p6e-main-login-content-code {
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .p6e-main-login-content-code-box {
+            border: 1px solid #cccccc;
+            padding: 20px;
+            border-radius: 12px;
+        }
     </style>
     <!-- JQ -->
     <script type="text/javascript" src="./js/jsquery-2.1.1.js"></script>
     <!-- RSA -->
     <script src="./js/jssencrypt.js"></script>
+    <script src="./js/qrcode.min.js"></script>
 </head>
 <body>
 <div class="main">
@@ -209,6 +243,11 @@
             <p class="p6e-main-login-bottom-copyright">p6e oauth2. github https://github.com/lidashuang1996</p>
         </div>
         <div class="p6e-main-login-content">
+            <!-- 二维码 -->
+            <div class="p6e-main-login-content-switch" onclick="switchCode()" >
+                <img class="p6e-main-login-content-switch-ewm" src="./images/ewm.png" alt="SWITCH_EWM"/>
+                <img class="p6e-main-login-content-switch-pc" src="./images/pc.png" alt="SWITCH_PC"/>
+            </div>
             <div class="p6e-main-login-content-title">
                 <p class="title">P6e Oauth2 登录</p>
                 <p class="subtitle">Oauth2 授权码模式</p>
@@ -216,6 +255,9 @@
             <div class="p6e-main-login-content-client">
                 <div class="ico"></div>
                 <div class="name"></div>
+            </div>
+            <div class="p6e-main-login-content-code">
+                <div class="p6e-main-login-content-code-box" id="qrcode"></div>
             </div>
             <div class="p6e-main-content-login-input p6e-main-content-login-input-account">
                 <label class="p6e-main-content-login-account-title">
@@ -274,10 +316,43 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    function switchCode() {
+        isCode = !isCode;
+        if (isCode) {
+            $('.p6e-main-login-content-switch-ewm').css('display', 'none');
+            $('.p6e-main-login-content-switch-pc').css('display', 'block');
+            $('.p6e-main-login-content-code').css('display', 'flex');
+            $('.p6e-main-content-login-input').css('display', 'none');
+            $('.p6e-main-content-login-button').css('display', 'none');
+            if (qrCode === null) {
+                qrCode = new QRCode('qrcode', {
+                    text: 'your content',
+                    width: 180,
+                    height: 180,
+                    colorDark : '#3C81E4',
+                    colorLight : '#ffffff',
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+            } else {
+                qrCode.makeCode("12321321321321321");
+            }
+        } else {
+            $('.p6e-main-login-content-switch-ewm').css('display', 'block');
+            $('.p6e-main-login-content-switch-pc').css('display', 'none');
+            $('.p6e-main-login-content-code').css('display', 'none');
+            $('.p6e-main-content-login-input').css('display', 'block');
+            $('.p6e-main-content-login-button').css('display', 'block');
+        }
+    }
+</script>
 <!--
 http://XXXX/?client_id=1234567890&redirect_uri=http://127.0.0.1:10000&response_type=code&scope=all&state=3123
 -->
 <script type="text/javascript">
+    /** */
+    let isCode = false;
+    let qrCode = null;
     /** 是否初始化 */
     let isInit = false;
     /** 是否登录 */
@@ -287,8 +362,8 @@ http://XXXX/?client_id=1234567890&redirect_uri=http://127.0.0.1:10000&response_t
     /** 初始化的参数 */
     const initParams = {};
     /** 基本的 URL 的参数 */
-    const baseUrl = '';
-    /** const baseUrl = 'http://127.0.0.1:9900'; */
+    // const baseUrl = '';
+    const baseUrl = 'http://127.0.0.1:9900';
 </script>
 <script type="text/javascript">
     /**
@@ -638,6 +713,8 @@ http://XXXX/?client_id=1234567890&redirect_uri=http://127.0.0.1:10000&response_t
         }
     }
 
+
+
     $(function () {
         init();
         // 获取客户端信息
@@ -649,11 +726,13 @@ http://XXXX/?client_id=1234567890&redirect_uri=http://127.0.0.1:10000&response_t
             if (cache === null || cache === undefined) {
                 // 现实登录页面
                 $('.p6e-main-content-login-input').css('display', 'block');
+                $('.p6e-main-login-content-switch').css('display', 'block');
                 $('.p6e-main-content-login-button').css('display', 'block');
                 $('.p6e-main-content-login-authorization').css('display', 'none');
             } else {
                 // 显示授权页面
                 $('.p6e-main-content-login-input').css('display', 'none');
+                $('.p6e-main-login-content-switch').css('display', 'none');
                 $('.p6e-main-content-login-button').css('display', 'none');
                 $('.p6e-main-content-login-authorization').css('display', 'block');
             }

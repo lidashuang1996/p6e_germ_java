@@ -58,7 +58,11 @@ public class P6eLoginController extends P6eBaseController {
     public P6eModel getCode(P6eCodeLoginParam param) {
         final P6eLoginDto p6eLoginDto = P6eApplication.login.getCodeLogin(param.getCode());
         if (p6eLoginDto.getError() == null) {
-            return P6eModel.build().setData(P6eCopyUtil.run(p6eLoginDto, P6eDefaultLoginResult.class));
+            if (p6eLoginDto.getAccessToken() == null) {
+                return P6eModel.build();
+            } else {
+                return P6eModel.build().setData(P6eCopyUtil.run(p6eLoginDto, P6eDefaultLoginResult.class));
+            }
         } else {
             return P6eModel.build(p6eLoginDto.getError());
         }

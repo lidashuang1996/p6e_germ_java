@@ -231,9 +231,11 @@ public class P6eLoginServiceImpl implements P6eLoginService {
             if (param == null || param.getCode() == null || param.getMark() == null || param.getAccessToken() == null) {
                 p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
             } else {
-                final P6eCodeEntity p6eCodeEntity = new P6eCodeEntity(param.getCode());
+                // 读取 MARK 数据
+                final String mark = param.getMark();
+                final P6eCodeEntity p6eCodeEntity = new P6eCodeEntity(param.getCode()).create(mark);
                 // 验证 MARK
-                if (p6eCodeEntity.verificationMark(param.getMark())) {
+                if (p6eCodeEntity.verificationMark(mark)) {
                     // 验证 ACCESS_TOKEN
                     final P6eLoginDto result = this.verification(P6eCopyUtil.run(param, P6eVerificationLoginDto.class));
                     if (result.getError() == null) {
@@ -266,7 +268,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
             if (code == null) {
                 p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
             } else {
-                final P6eCodeKeyValue p6eCodeKeyValue = new P6eCodeEntity(code).getP6eCodeKeyValue();
+                final P6eCodeKeyValue p6eCodeKeyValue = new P6eCodeEntity(code).get().getP6eCodeKeyValue();
                 if (p6eCodeKeyValue.getMark() == null) {
                     // 写入用户的数据
                     P6eCopyUtil.run(p6eCodeKeyValue, p6eLoginDto);

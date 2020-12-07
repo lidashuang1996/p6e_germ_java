@@ -1,0 +1,13 @@
+
+### 认证获取MARK
+GET {{url}}/auth?client_id=1234567890&redirect_uri=http://127.0.0.1:10000&response_type=code&scope=all&state=3123
+
+### 生成 CODE
+GET {{url}}/login/code/generate?mark=f8f2e6b0fb394bfe99fb03e637bfe8af
+
+### 轮询获取的 CODE
+GET {{url}}/login/code/get?code=e3babcc9e1ff4ad098b47045d9cadfed
+
+### 写入信息
+GET {{url}}/context/login/code?code=e3babcc9e1ff4ad098b47045d9cadfed&mark=f8f2e6b0fb394bfe99fb03e637bfe8af&access_token=a9dce59753ae4d2eaa7c8acb54a19402
+
