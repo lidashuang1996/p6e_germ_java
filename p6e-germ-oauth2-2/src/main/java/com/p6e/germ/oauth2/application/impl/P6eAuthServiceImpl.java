@@ -50,17 +50,7 @@ public class P6eAuthServiceImpl implements P6eAuthService {
     }
 
     @Override
-    public P6eAuthDto code(P6eCodeAuthDto param) {
-        return verification(P6eCopyUtil.run(param, P6eVerificationAuthDto.class));
-    }
-
-    @Override
-    public P6eAuthDto simple(P6eSimpleAuthDto param) {
-        return verification(P6eCopyUtil.run(param, P6eVerificationAuthDto.class));
-    }
-
-    @Override
-    public P6eAuthTokenDto codeCallback(P6eCodeCallbackAuthDto param) {
+    public P6eAuthTokenDto code(P6eCodeAuthDto param) {
         final P6eAuthTokenDto p6eAuthTokenDto = new P6eAuthTokenDto();
         try {
             // 读取客户端信息
@@ -140,7 +130,7 @@ public class P6eAuthServiceImpl implements P6eAuthService {
             if (p6eClientEntity.verificationScope(param.getScope())
                     && p6eClientEntity.verificationRedirectUri(param.getRedirectUri())
                     && p6eClientEntity.verificationSecret(param.getClientSecret())) {
-                final P6eUserEntity p6eUserEntity = new P6eUserEntity(param.getAccount());
+                final P6eUserEntity p6eUserEntity = new P6eUserEntity(new P6eUserEntity.Account(param.getAccount()));
                 if (p6eUserEntity.defaultVerification(param.getPassword())) {
                     // 生成缓存对象写入缓存，并返回数据
                     final P6eTokenEntity p6eTokenEntity = p6eUserEntity.createTokenCache().cache();

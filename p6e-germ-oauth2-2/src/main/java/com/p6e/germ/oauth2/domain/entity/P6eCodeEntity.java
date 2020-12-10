@@ -31,7 +31,6 @@ public class P6eCodeEntity {
             throw new RuntimeException();
         }
         this.p6eCodeKeyValue = new P6eCodeKeyValue().setMark(mark);
-        P6eCache.code.set(this.key, P6eJsonUtil.toJson(this.p6eCodeKeyValue));
         return this;
     }
 
@@ -60,6 +59,11 @@ public class P6eCodeEntity {
             return p6eCodeKeyValue.getMark().equals(mark);
         }
         return false;
+    }
+
+    public P6eCodeEntity cache() {
+        P6eCache.code.set(this.key, P6eJsonUtil.toJson(this.p6eCodeKeyValue));
+        return this;
     }
 
     public void clean() {

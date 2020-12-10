@@ -10,18 +10,18 @@ import com.p6e.germ.oauth2.model.dto.*;
 public interface P6eLoginService {
 
     /**
-     * 获取凭证信息
-     * 用于用户的登录密码的加密
-     * @return 凭证对象
-     */
-    public P6eVoucherDto defVoucher();
-
-    /**
      * 验证的用户的 ACCESS TOKEN 数据
      * @param param 验证对象
      * @return 结果对象
      */
     public P6eLoginDto verification(P6eVerificationLoginDto param);
+
+    /**
+     * 获取凭证信息
+     * 用于用户的登录密码的加密
+     * @return 凭证对象
+     */
+    public P6eVoucherDto defaultVoucher();
 
     /**
      * 默认登陆（账号密码登录）
@@ -31,10 +31,26 @@ public interface P6eLoginService {
     public P6eLoginDto defaultLogin(P6eDefaultLoginDto param);
 
     /**
+     * 获取 QQ 登录的信息
+     * @param mark 记号
+     * @param display 显示参数
+     * @return 获取的信息
+     */
+    public P6eUrlLoginDto qqInfo(String mark, String display);
+
+    /**
      * QQ 登录
+     * @param param QQ登陆认证信息
      * @return 登录结果对象
      */
-    public P6eLoginDto qqLogin();
+    public P6eLoginDto qqLogin(P6eQqLoginDto param);
+
+    /**
+     * 获取微信登录的信息
+     * @param display 显示参数
+     * @return 获取的信息
+     */
+    public P6eUrlLoginDto weChatInfo(String display);
 
     /**
      * 微信登录

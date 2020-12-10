@@ -12,9 +12,10 @@ import java.io.Serializable;
 @Data
 @Accessors(chain = true)
 public class P6eCodeAuthDto implements Serializable {
-    private String responseType;
     private String clientId;
-    private String redirectUri;
+    private String clientSecret;
     private String scope;
-    private String state;
+    private String grantType;
+    private String redirectUri;
+    private String code;
 }

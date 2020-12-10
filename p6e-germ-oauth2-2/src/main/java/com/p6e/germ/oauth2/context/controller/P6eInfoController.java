@@ -18,31 +18,18 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/info")
 public class P6eInfoController extends P6eBaseController {
 
-    /**
-     * 请求的携带认证信息的参数
-     */
-    private static final String AUTH_PARAM_NAME = "access_token";
-
-    /**
-     * 请求头内容的前缀
-     */
-    private static final String AUTH_HEADER_BEARER = "Bearer ";
-
-    /**
-     * 请求头名称
-     */
-    private static final String AUTH_HEADER_NAME = "authentication";
-
     @RequestMapping
-    public P6eModel def(final HttpServletRequest request) {
+    public P6eModel def(HttpServletRequest request) {
+        // 请求参数中读取 token 参数
         String token = request.getParameter(AUTH_PARAM_NAME);
         if (token == null) {
+            // 头部里面读取 token 参数
             final String content = request.getHeader(AUTH_HEADER_NAME);
             if (content != null && content.startsWith(AUTH_HEADER_BEARER)) {
                 token = content.substring(7);
             }
         }
-        // 更具 token 获取用户数据
+        // 通过 token 获取用户数据
         if (token != null) {
             final P6eInfoDto p6eInfoDto = P6eApplication.auth.info(token);
             if (p6eInfoDto.getError() == null) {

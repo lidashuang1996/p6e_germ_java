@@ -17,25 +17,11 @@ public interface P6eAuthService {
     public P6eAuthDto verification(P6eVerificationAuthDto param) ;
 
     /**
-     * code 方式
-     * @param param 参数
-     * @return 结果
-     */
-    public P6eAuthDto code(P6eCodeAuthDto param);
-
-    /**
-     * 简化方式
-     * @param param 参数
-     * @return 结果
-     */
-    public P6eAuthDto simple(P6eSimpleAuthDto param);
-
-    /**
      * code 回调验证方式
      * @param param 参数
      * @return 结果
      */
-    public P6eAuthTokenDto codeCallback(P6eCodeCallbackAuthDto param);
+    public P6eAuthTokenDto code(P6eCodeAuthDto param);
 
     /**
      * 客户端方式

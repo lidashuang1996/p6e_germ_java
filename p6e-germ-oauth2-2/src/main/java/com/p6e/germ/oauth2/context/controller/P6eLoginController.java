@@ -70,7 +70,7 @@ public class P6eLoginController extends P6eBaseController {
 
     @RequestMapping("/voucher")
     public P6eModel voucher() {
-        final P6eVoucherDto p6eVoucherDto = P6eApplication.login.defVoucher();
+        final P6eVoucherDto p6eVoucherDto = P6eApplication.login.defaultVoucher();
         if (p6eVoucherDto.getError() == null) {
             return P6eModel.build().setData(P6eCopyUtil.run(p6eVoucherDto, P6eVoucherResult.class));
         } else {

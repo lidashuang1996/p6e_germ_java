@@ -8,7 +8,7 @@ import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
  */
 public final class P6eCache {
     /** CODE 缓存 */
-    public static IP6eCodeCache code;
+    public static IP6eCacheCode code;
     /** 认证缓存 */
     public static IP6eCacheAuth auth;
     /** 授权记号缓存 */
@@ -19,13 +19,14 @@ public final class P6eCache {
     public static IP6eCacheClient client;
     /** 凭证缓存 */
     public static IP6eCacheVoucher voucher;
+    public static IP6eCacheState state;
 
     /**
      * 初始化操作
      */
     public static void init() {
         // CODE 缓存
-        code = P6eSpringUtil.getBean(IP6eCodeCache.class, new P6eCodeRedisCache());
+        code = P6eSpringUtil.getBean(IP6eCacheCode.class, new P6eCacheRedisCode());
         // 认证缓存
         auth = P6eSpringUtil.getBean(IP6eCacheAuth.class, new P6eCacheRedisAuth());
         // 授权记号缓存
@@ -36,5 +37,6 @@ public final class P6eCache {
         client = P6eSpringUtil.getBean(IP6eCacheClient.class, new P6eCacheRedisClient());
         // 凭证缓存
         voucher = P6eSpringUtil.getBean(IP6eCacheVoucher.class, new P6eCacheRedisVoucher());
+        state = P6eSpringUtil.getBean(IP6eCacheState.class, new P6eCacheRedisState());
     }
 }

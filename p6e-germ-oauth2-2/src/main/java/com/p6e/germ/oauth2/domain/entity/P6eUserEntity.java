@@ -37,8 +37,39 @@ public class P6eUserEntity implements Serializable {
      * 构造创建
      * @param account 账号
      */
-    public P6eUserEntity(String account) {
-        this.p6eOauth2UserDb = p6eUserMapper.queryByAccount(account);
+    public P6eUserEntity(Account account) {
+        if (account == null) {
+            throw new NullPointerException();
+        }
+        this.p6eOauth2UserDb = p6eUserMapper.queryByAccount(account.getData());
+        if (this.p6eOauth2UserDb == null) {
+            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
+        }
+    }
+
+    /**
+     * 构造创建
+     * @param qq qq
+     */
+    public P6eUserEntity(Qq qq) {
+        if (qq == null) {
+            throw new NullPointerException();
+        }
+        this.p6eOauth2UserDb = p6eUserMapper.queryByAccount(qq.getData());
+        if (this.p6eOauth2UserDb == null) {
+            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
+        }
+    }
+
+    /**
+     * 构造创建
+     * @param weChat weChat
+     */
+    public P6eUserEntity(WeChat weChat) {
+        if (weChat == null) {
+            throw new NullPointerException();
+        }
+        this.p6eOauth2UserDb = p6eUserMapper.queryByAccount(weChat.getData());
         if (this.p6eOauth2UserDb == null) {
             throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
         }
@@ -138,4 +169,55 @@ public class P6eUserEntity implements Serializable {
         // 对 0-8 的内容再 md5 加密一次，8 以后的内容不进行加密
         return DigestUtils.md5DigestAsHex(md5Pwd1.getBytes(StandardCharsets.UTF_8)) + md5Pwd2;
     }
+
+
+    public static class Account {
+        private String data;
+
+        public Account(String data) {
+            this.data = data;
+        }
+
+        public String getData() {
+            return data;
+        }
+
+        public void setData(String data) {
+            this.data = data;
+        }
+    }
+
+    public static class Qq {
+        private String data;
+
+        public Qq(String data) {
+            this.data = data;
+        }
+
+        public String getData() {
+            return data;
+        }
+
+        public void setData(String data) {
+            this.data = data;
+        }
+    }
+
+    public static class WeChat {
+        private String data;
+
+        public WeChat(String data) {
+            this.data = data;
+        }
+
+        public String getData() {
+            return data;
+        }
+
+        public void setData(String data) {
+            this.data = data;
+        }
+    }
+
+
 }

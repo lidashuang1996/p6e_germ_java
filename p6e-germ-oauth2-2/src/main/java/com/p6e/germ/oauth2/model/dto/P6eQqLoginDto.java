@@ -11,11 +11,7 @@ import java.io.Serializable;
  */
 @Data
 @Accessors(chain = true)
-public class P6eCodeCallbackAuthDto implements Serializable {
-    private String clientId;
-    private String clientSecret;
-    private String scope;
-    private String grantType;
-    private String redirectUri;
+public class P6eQqLoginDto implements Serializable {
     private String code;
+    private String state;
 }

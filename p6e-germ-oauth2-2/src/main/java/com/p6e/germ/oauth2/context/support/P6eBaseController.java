@@ -19,6 +19,91 @@ public class P6eBaseController {
     protected static final Logger LOGGER = LoggerFactory.getLogger(P6eBaseController.class);
 
     /**
+     * 请求的携带认证信息的参数
+     */
+    protected static final String AUTH_PARAM_NAME = "access_token";
+
+    /**
+     * 请求头内容的前缀
+     */
+    protected static final String AUTH_HEADER_BEARER = "Bearer ";
+
+    /**
+     * 请求头名称
+     */
+    protected static final String AUTH_HEADER_NAME = "authentication";
+
+    /**
+     * CODE 认证类型
+     */
+    protected static final String CODE_TYPE = "CODE";
+
+    /**
+     * 简化认证类型
+     */
+    protected static final String TOKEN_TYPE = "TOKEN";
+
+    /**
+     * 客户端参数名称
+     */
+    protected static final String CLIENT_ID_PARAM = "client_id";
+
+    /**
+     * 重定向 URL 参数名称
+     */
+    protected static final String REDIRECT_URI_PARAM = "redirect_uri";
+
+    /**
+     * 资源类型参数名称
+     */
+    protected static final String RESPONSE_TYPE_PARAM = "response_type";
+
+//    /**
+//     * 请求的携带认证信息的参数
+//     */
+//    protected static final String AUTH_PARAM_NAME = "access_token";
+//
+//    /**
+//     * 请求头内容的前缀
+//     */
+//    protected static final String AUTH_HEADER_BEARER = "Bearer ";
+//
+//    /**
+//     * 请求头名称
+//     */
+//    protected static final String AUTH_HEADER_NAME = "authentication";
+
+    /** 认证的类型 - 密码 */
+    protected static final String PASSWORD_TYPE = "PASSWORD";
+    /** 认证的类型 - CODE */
+    protected static final String AUTH_CODE_TYPE = "AUTHORIZATION_CODE";
+    /** 认证的类型 - 客户端 */
+    protected static final String CLIENT_TYPE = "CLIENT_CREDENTIALS";
+
+//    private static final String CLIENT_ID_PARAM = "client_id";
+protected static final String CLIENT_SECRET_PARAM = "client_secret";
+    protected static final String GRANT_TYPE_PARAM = "grant_type";
+//    private static final String REDIRECT_URI_PARAM = "redirect_uri";
+
+
+
+    /**
+     * 请求的携带认证信息的参数
+     */
+//    private static final String AUTH_PARAM_NAME = "access_token";
+    protected static final String REFRESH_TOKEN_NAME = "refresh_token";
+
+    /**
+     * 请求头内容的前缀
+     */
+//    private static final String AUTH_HEADER_BEARER = "Bearer ";
+
+    /**
+     * 请求头名称
+     */
+//    private static final String AUTH_HEADER_NAME = "authentication";
+
+    /**
      * 获取基础的请求与的对象 ServletRequestAttributes
      * @return ServletRequestAttributes 返回的对象
      */
