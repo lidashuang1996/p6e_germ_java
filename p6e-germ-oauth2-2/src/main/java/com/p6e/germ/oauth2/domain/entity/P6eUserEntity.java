@@ -1,5 +1,6 @@
 package com.p6e.germ.oauth2.domain.entity;
 
+import com.p6e.germ.oauth2.infrastructure.utils.P6eGeneratorUtil;
 import com.p6e.germ.oauth2.model.db.P6eOauth2UserDb;
 import com.p6e.germ.oauth2.infrastructure.repository.mapper.P6eOauth2UserMapper;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
@@ -55,9 +56,22 @@ public class P6eUserEntity implements Serializable {
         if (qq == null) {
             throw new NullPointerException();
         }
-        this.p6eOauth2UserDb = p6eUserMapper.queryByAccount(qq.getData());
-        if (this.p6eOauth2UserDb == null) {
-            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
+        final P6eOauth2UserDb result = p6eUserMapper.queryByQq(qq.getData());
+        if (result == null) {
+            // 生成新用户
+            final P6eOauth2UserDb param = new P6eOauth2UserDb();
+            param.setQq(qq.getData());
+            param.setPassword(encryption(P6eGeneratorUtil.uuid()));
+            if (p6eUserMapper.create(param) > 0) {
+                this.p6eOauth2UserDb = p6eUserMapper.queryById(param.getId());
+                if (this.p6eOauth2UserDb == null) {
+                    throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
+                }
+            } else {
+                throw new RuntimeException(this.getClass() + " construction data ==> RuntimeException.");
+            }
+        } else {
+            this.p6eOauth2UserDb = result;
         }
     }
 

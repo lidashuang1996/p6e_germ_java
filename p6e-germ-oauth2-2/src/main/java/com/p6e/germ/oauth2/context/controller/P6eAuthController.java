@@ -9,8 +9,11 @@ import com.p6e.germ.oauth2.model.P6eModel;
 import com.p6e.germ.oauth2.model.dto.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Oauth2 接口
@@ -23,11 +26,10 @@ public class P6eAuthController extends P6eBaseController {
 
     /**
      * 请求转发到首页
-     * request.getRequestDispatcher("/index.html").forward(request, response);
      */
     @RequestMapping
-    public String def(HttpServletRequest request, HttpServletResponse response) {
-        return "forward:/index.html";
+    public void def(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        request.getRequestDispatcher("/index.html").forward(request, response);
     }
 
     /**

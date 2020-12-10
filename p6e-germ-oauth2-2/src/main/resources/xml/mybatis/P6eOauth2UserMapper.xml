@@ -30,6 +30,15 @@
             OR `phone` = #{account};
     </select>
 
+    <select id="queryByQq" parameterType="String" resultType="com.p6e.germ.oauth2.model.db.P6eOauth2UserDb">
+        SELECT
+            `id`, `email`, `phone`, `password`, `qq`, `wechat`
+        FROM
+            `p6e_oauth2_user`
+        WHERE
+            `qq` = #{qq};
+    </select>
+
     <select id="queryAll" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2UserDb">
         SELECT
             `id`, `email`, `phone`, `password`, `qq`, `wechat`
@@ -38,11 +47,24 @@
         LIMIT #{page}, #{size};
     </select>
 
-    <insert id="create" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2UserDb">
+    <insert id="create" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2UserDb"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
          INSERT INTO  `p6e_oauth2_user`
-        (`email`, `phone`, `password`, `qq`, `wechat`)
+         (
+            `password`
+            <if test="qq != null">, `qq`</if>
+            <if test="email != null">, `email`</if>
+            <if test="phone != null">, `phone`</if>
+            <if test="weChat != null">, `wechat`</if>
+        )
         VALUE
-        (#{email}, #{phone}, #{password}, #{qq}, #{weChat});
+        (
+            #{password}
+            <if test="qq != null">, #{qq}</if>
+            <if test="email != null">, #{email}</if>
+            <if test="phone != null">, #{phone}</if>
+            <if test="weChat != null">, #{weChat}</if>
+        );
     </insert>
 
     <update id="update" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2UserDb">

@@ -61,6 +61,21 @@ public class P6eBaseController {
 //    /**
 //     * 请求的携带认证信息的参数
 //     */
+//    private static final String AUTH_PARAM_NAME = "access_token";
+//
+//    /**
+//     * 请求头内容的前缀
+//     */
+//    private static final String AUTH_HEADER_BEARER = "Bearer ";
+//
+//    /**
+//     * 请求头名称
+//     */
+//    private static final String AUTH_HEADER_NAME = "authentication";
+
+//    /**
+//     * 请求的携带认证信息的参数
+//     */
 //    protected static final String AUTH_PARAM_NAME = "access_token";
 //
 //    /**

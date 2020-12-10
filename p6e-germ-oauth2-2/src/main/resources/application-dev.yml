@@ -31,12 +31,4 @@ spring:
 
 
 server:
-  port: 80
-
-p6e:
-  oauth2:
-    qq:
-      client-id: 101701115
-      client-secret: 165716bf22444998e0394d0e244e13d7
-      redirect-uri: http://www.zhimamimi.com/login/qq/callback
-
+  port: 9900

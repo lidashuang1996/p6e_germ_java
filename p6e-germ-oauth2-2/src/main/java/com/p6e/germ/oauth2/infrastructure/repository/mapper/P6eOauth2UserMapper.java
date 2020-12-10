@@ -32,6 +32,13 @@ public interface P6eOauth2UserMapper {
     public P6eOauth2UserDb queryByAccount(String account);
 
     /**
+     * 更具 ACCOUNT 查询数据
+     * @param qq 数据的 qq
+     * @return 查询结果对象
+     */
+    public P6eOauth2UserDb queryByQq(String qq);
+
+    /**
      * 全部查询数据
      * @param db 参数对象
      * @return 查询结果对象
