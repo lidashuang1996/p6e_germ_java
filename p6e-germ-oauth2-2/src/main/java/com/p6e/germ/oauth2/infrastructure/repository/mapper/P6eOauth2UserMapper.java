@@ -15,7 +15,7 @@ public interface P6eOauth2UserMapper {
      * @param db 参数对象
      * @return 条数
      */
-    public int count(P6eOauth2UserDb db);
+    public Long count(P6eOauth2UserDb db);
 
     /**
      * 更具 ID 查询数据

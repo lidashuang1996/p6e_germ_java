@@ -1,5 +1,6 @@
 package com.p6e.germ.oauth2.domain.entity;
 
+import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eGeneratorUtil;
 import com.p6e.germ.oauth2.model.db.P6eOauth2UserDb;
 import com.p6e.germ.oauth2.infrastructure.repository.mapper.P6eOauth2UserMapper;
@@ -9,6 +10,7 @@ import org.springframework.util.DigestUtils;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -137,6 +139,27 @@ public class P6eUserEntity implements Serializable {
         if (p6eUserMapper.update(p6eOauth2UserDb) > 0) {
             this.p6eOauth2UserDb = p6eUserMapper.queryById(p6eOauth2UserDb.getId());
             return p6eOauth2UserDb;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 查询数据
+     * @return DB 对象
+     */
+    public List<P6eOauth2UserDb> select() {
+        return p6eUserMapper.queryAll(p6eOauth2UserDb);
+    }
+
+    /**
+     * 查询数据
+     * @return DB 对象
+     */
+    public Long count() {
+        final Long result = p6eUserMapper.count(p6eOauth2UserDb);
+        if (result >= 0) {
+            return result;
         } else {
             return null;
         }

@@ -4,7 +4,7 @@
 
 <mapper namespace="com.p6e.germ.oauth2.infrastructure.repository.mapper.P6eOauth2UserMapper">
 
-    <select id="count" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2UserDb" resultType="int">
+    <select id="count" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2UserDb" resultType="long">
         SELECT
             COUNT(`id`)
         FROM

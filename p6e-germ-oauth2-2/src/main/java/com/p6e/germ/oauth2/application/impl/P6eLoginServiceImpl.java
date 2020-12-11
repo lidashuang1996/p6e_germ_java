@@ -345,12 +345,16 @@ public class P6eLoginServiceImpl implements P6eLoginService {
     }
 
     @Override
-    public P6eUrlLoginDto weChatInfo(String display) {
+    public P6eUrlLoginDto weChatInfo(String mark, String display) {
+        // 同 QQ 登录
+        // 微信授权直接 GG
         return null;
     }
 
     @Override
-    public P6eLoginDto weChatLogin() {
+    public P6eLoginDto weChatLogin(P6eWeChatLoginDto param) {
+        // 同 QQ 登陆
+        // 微信授权直接 GG
         return null;
     }
 
