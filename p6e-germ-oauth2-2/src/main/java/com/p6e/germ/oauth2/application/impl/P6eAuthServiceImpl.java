@@ -5,6 +5,7 @@ import com.p6e.germ.oauth2.domain.entity.*;
 import com.p6e.germ.oauth2.domain.keyvalue.P6eMarkKeyValue;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.model.P6eModel;
+import com.p6e.germ.oauth2.model.db.P6eOauth2ClientDb;
 import com.p6e.germ.oauth2.model.db.P6eOauth2LogDb;
 import com.p6e.germ.oauth2.model.dto.*;
 import org.slf4j.Logger;
@@ -19,6 +20,30 @@ public class P6eAuthServiceImpl implements P6eAuthService {
 
     /** 注入日志系统 */
     private final static Logger LOGGER = LoggerFactory.getLogger(P6eAuthService.class);
+
+    @Override
+    public P6eAuthDto mark(String mark) {
+        final P6eAuthDto p6eAuthDto = new P6eAuthDto();
+        try {
+            if (mark == null) {
+                p6eAuthDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            } else {
+                // 读取 mark 的数据
+                final P6eMarkKeyValue p6eMarkKeyValue = new P6eMarkEntity(mark).getP6eMarkKeyValue();
+                final P6eOauth2ClientDb p6eOauth2ClientDb = new P6eClientEntity(p6eMarkKeyValue.getId()).get();
+                // 写入数据
+                p6eAuthDto.setMark(mark);
+                P6eCopyUtil.run(p6eOauth2ClientDb, p6eAuthDto);
+            }
+        } catch (RuntimeException e) {
+            LOGGER.error(e.getMessage());
+            p6eAuthDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+        } catch (Exception ee) {
+            LOGGER.error(ee.getMessage());
+            p6eAuthDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+        }
+        return p6eAuthDto;
+    }
 
     @Override
     public P6eAuthDto verification(P6eVerificationAuthDto param) {

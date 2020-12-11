@@ -406,6 +406,8 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                     p6eLoginDto.setCode(p6eTokenEntity.getKey());
                     // 写入用户认证信息
                     P6eCopyUtil.run(p6eTokenEntity.getModel(), p6eLoginDto);
+                    // code 写入数据
+                    p6eCodeEntity.setData(P6eCopyUtil.run(p6eLoginDto, P6eCodeKeyValue.class));
                     // CID / UID
                     int cid = p6eMarkKeyValue.getId();
                     int uid = Integer.parseInt(p6eTokenEntity.getValue().get("id"));

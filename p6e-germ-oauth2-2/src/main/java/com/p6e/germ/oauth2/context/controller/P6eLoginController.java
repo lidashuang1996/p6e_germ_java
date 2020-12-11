@@ -100,8 +100,7 @@ public class P6eLoginController extends P6eBaseController {
     }
 
     @RequestMapping("/login/qq/callback")
-    public void qqLoginCallback(P6eQqCallbackLoginParam param,
-                                    HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void qqLoginCallback(P6eQqCallbackLoginParam param, HttpServletResponse response) throws Exception {
         final String dataType = "data";
         if (dataType.equals(param.getType())) {
             // 通过首页发送请求，然后跳转
@@ -118,8 +117,7 @@ public class P6eLoginController extends P6eBaseController {
             response.getWriter().close();
         } else {
             // 回到首页
-            request.getRequestDispatcher("/index.html?code="
-                    + param.getCode() + "&state=" + param.getState()).forward(request, response);
+            response.sendRedirect("/index.html?type=qq&code=" + param.getCode() + "&state=" + param.getState());
         }
     }
 

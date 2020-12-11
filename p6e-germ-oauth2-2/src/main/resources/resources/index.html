@@ -240,7 +240,7 @@
         </div>
         <!-- 下部的内容 -->
         <div class="p6e-main-login-bottom">
-            <p class="p6e-main-login-bottom-copyright">p6e oauth2. github https://github.com/lidashuang1996</p>
+            <p class="p6e-main-login-bottom-copyright">p6e oauth2. github https://github.com/lidashuang1996<span onclick="qqLogin()">QQ登录</span></p>
         </div>
         <div class="p6e-main-login-content">
             <!-- 二维码 -->
@@ -316,26 +316,104 @@
         </div>
     </div>
 </div>
+<script>
+    function qqLogin() {
+        window.location.href = baseUrl + "/login/qq?mark=" + initData.mark;
+    }
+</script>
 <script type="text/javascript">
     function switchCode() {
         isCode = !isCode;
+        const getCodeData = (code) => {
+            $.ajax({
+                type: 'GET',
+                url: baseUrl + '/login/code/get?code=' + code,
+                contentType: 'application/json',
+                dataType: 'JSON',
+                success: (res) => {
+                    // 处理数据
+                    if (res.code === 0) {
+                        console.log('lx ==> ' + res.data);
+                        if (res.data === null
+                            || res.data === undefined
+                            || res.data.accessToken === null
+                            || res.data.accessToken === undefined) {
+                            // 递归获取数据
+                            setTimeout(() => {
+                                if (new Date().getTime() > qrCodeDate + 50000) {
+                                    generateCodeData();
+                                } else {
+                                    getCodeData(code);
+                                }
+                            }, 1500);
+                        } else {
+                            loginSuccess(res);
+                        }
+                    } else {
+                        $('.p6e-main-error').text(res.message);
+                        $('.p6e-main-login').css('display', 'none');
+                        $('.p6e-main-error').css('display', 'block');
+                    }
+                }, error: (e) => {
+                    $('.p6e-main-error').text(e);
+                    $('.p6e-main-login').css('display', 'none');
+                    $('.p6e-main-error').css('display', 'block');
+                }
+            });
+        }
+        const generateCodeData = () => {
+            // 直接返回
+            if (qrCodeLoading) {
+                return;
+            }
+            qrCodeLoading = true;
+            $.ajax({
+                type: 'GET',
+                url: baseUrl + '/login/code/generate?mark=' + initData.mark,
+                contentType: 'application/json',
+                dataType: 'JSON',
+                success: (res) => {
+                    qrCodeLoading = false;
+                    // 处理数据
+                    if (res.code === 0) {
+                        console.log(res.data);
+                        // 获取时间戳
+                        qrCodeDate = new Date().getTime();
+                        if (qrCode === null) {
+                            qrCode = new QRCode('qrcode', {
+                                text: JSON.stringify(res.data),
+                                width: 180,
+                                height: 180,
+                                colorDark : '#3C81E4',
+                                colorLight : '#ffffff',
+                                correctLevel : QRCode.CorrectLevel.H
+                            });
+                            // 启动轮训获取数据
+                            getCodeData(res.data.code);
+                        } else {
+                            qrCode.makeCode(JSON.stringify(res.data));
+                        }
+                    } else {
+                        $('.p6e-main-error').text(res.message);
+                        $('.p6e-main-login').css('display', 'none');
+                        $('.p6e-main-error').css('display', 'block');
+                    }
+                }, error: (e) => {
+                    qrCodeLoading = false;
+                    $('.p6e-main-error').text(e);
+                    $('.p6e-main-login').css('display', 'none');
+                    $('.p6e-main-error').css('display', 'block');
+                }
+            });
+        };
         if (isCode) {
             $('.p6e-main-login-content-switch-ewm').css('display', 'none');
             $('.p6e-main-login-content-switch-pc').css('display', 'block');
             $('.p6e-main-login-content-code').css('display', 'flex');
             $('.p6e-main-content-login-input').css('display', 'none');
             $('.p6e-main-content-login-button').css('display', 'none');
-            if (qrCode === null) {
-                qrCode = new QRCode('qrcode', {
-                    text: 'your content',
-                    width: 180,
-                    height: 180,
-                    colorDark : '#3C81E4',
-                    colorLight : '#ffffff',
-                    correctLevel : QRCode.CorrectLevel.H
-                });
-            } else {
-                qrCode.makeCode("12321321321321321");
+            if (new Date().getTime() > qrCodeDate + 50000) {
+                generateCodeData();
             }
         } else {
             $('.p6e-main-login-content-switch-ewm').css('display', 'block');
@@ -353,6 +431,8 @@ http://XXXX/?client_id=1234567890&redirect_uri=http://127.0.0.1:10000&response_t
     /** */
     let isCode = false;
     let qrCode = null;
+    let qrCodeDate = 0;
+    let qrCodeLoading = false;
     /** 是否初始化 */
     let isInit = false;
     /** 是否登录 */
@@ -363,7 +443,7 @@ http://XXXX/?client_id=1234567890&redirect_uri=http://127.0.0.1:10000&response_t
     const initParams = {};
     /** 基本的 URL 的参数 */
     const baseUrl = '';
-    // const baseUrl = 'http://127.0.0.1:9900';
+    // const baseUrl = 'http://127.0.0.1:80';
 </script>
 <script type="text/javascript">
     /**
@@ -716,27 +796,66 @@ http://XXXX/?client_id=1234567890&redirect_uri=http://127.0.0.1:10000&response_t
 
 
     $(function () {
+        // 读取 URL 参数
         init();
-        // 获取客户端信息
-        getClientData(() => {
-            // 初始化完成
-            isInit = true;
-            // 验证本地是否存在缓存数据
-            const cache = getCache();
-            if (cache === null || cache === undefined) {
-                // 现实登录页面
-                $('.p6e-main-content-login-input').css('display', 'block');
-                $('.p6e-main-login-content-switch').css('display', 'block');
-                $('.p6e-main-content-login-button').css('display', 'block');
-                $('.p6e-main-content-login-authorization').css('display', 'none');
-            } else {
-                // 显示授权页面
-                $('.p6e-main-content-login-input').css('display', 'none');
-                $('.p6e-main-login-content-switch').css('display', 'none');
-                $('.p6e-main-content-login-button').css('display', 'none');
-                $('.p6e-main-content-login-authorization').css('display', 'block');
+        // 判断是否是回调数据
+        if (initParams !== null
+            && initParams !== undefined
+            && initParams.type !== null
+            && initParams.type !== undefined
+            && initParams.code !== null
+            && initParams.code !== undefined
+            && initParams.state !== null
+            && initParams.state !== undefined
+            && (initParams.type === 'qq' || initParams.type === 'we_chat')) {
+            // QQ
+            if (initParams.type === 'qq') {
+                // 发送请求到服务器
+                $.ajax({
+                    type: 'GET',
+                    url: baseUrl + '/login/qq/callback?type=data&code=' + initParams.code + '&state=' + initParams.state,
+                    contentType: 'application/json',
+                    dataType: 'JSON',
+                    success: (res) => {
+                        // 处理数据
+                        if (res.code === 0) {
+                            loginSuccess(res);
+                        } else {
+                            $('.p6e-main-error').text(res.message);
+                            $('.p6e-main-login').css('display', 'none');
+                            $('.p6e-main-error').css('display', 'block');
+                        }
+                    }, error: (e) => {
+                        $('.p6e-main-error').text(e);
+                        $('.p6e-main-login').css('display', 'none');
+                        $('.p6e-main-error').css('display', 'block');
+                    }
+                });
             }
-        });
+            // 微信
+            if (initParams.type === 'we_chat') {}
+        } else {
+            // 获取客户端信息
+            getClientData(() => {
+                // 初始化完成
+                isInit = true;
+                // 验证本地是否存在缓存数据
+                const cache = getCache();
+                if (cache === null || cache === undefined) {
+                    // 现实登录页面
+                    $('.p6e-main-content-login-input').css('display', 'block');
+                    $('.p6e-main-login-content-switch').css('display', 'block');
+                    $('.p6e-main-content-login-button').css('display', 'block');
+                    $('.p6e-main-content-login-authorization').css('display', 'none');
+                } else {
+                    // 显示授权页面
+                    $('.p6e-main-content-login-input').css('display', 'none');
+                    $('.p6e-main-login-content-switch').css('display', 'none');
+                    $('.p6e-main-content-login-button').css('display', 'none');
+                    $('.p6e-main-content-login-authorization').css('display', 'block');
+                }
+            });
+        }
     });
 </script>
 </body>

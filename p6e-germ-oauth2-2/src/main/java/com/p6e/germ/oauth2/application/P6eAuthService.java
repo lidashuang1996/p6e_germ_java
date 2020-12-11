@@ -10,6 +10,13 @@ import com.p6e.germ.oauth2.model.dto.*;
 public interface P6eAuthService {
 
     /**
+     * 读取 mark 里面的数据
+     * @param mark mark 内容
+     * @return 查询的数据
+     */
+    public P6eAuthDto mark(String mark);
+
+    /**
      * 验证客户端数据并返回验证成功的客户端数据
      * @param param 客户端数据
      * @return 验证后的客户端数据
