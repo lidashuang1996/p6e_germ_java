@@ -12,15 +12,15 @@ spring:
   application:
     name: P6E_GERM_OAUTH2
   datasource:
-    url: jdbc:mysql://119.23.25.159:3306/p6e?autoReconnect=true&useSSL=false&characterEncoding=UTF-8
+    url: jdbc:mysql://12321321:3306/p6e?autoReconnect=true&useSSL=false&characterEncoding=UTF-8
     username: root
-    password: Root1234!@#$
+    password: 32131
     driver-class-name: com.mysql.cj.jdbc.Driver
   redis:
     database: 9
-    host: 119.23.25.159
+    host: 321321
     port: 6379
-    password: lidashuang
+    password: 3123123
     timeout: 10000
     jedis:
       pool:

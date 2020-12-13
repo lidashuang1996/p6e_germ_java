@@ -18,9 +18,9 @@ spring:
       # 数据源1配置
       source-1:
         database: 11
-        host: 111.229.238.242
+        host: xxx
         port: 6379
-        password: Root1234!@#$
+        password: xxx
         # 连接超时时间（毫秒）
         timeout: 60000
         # 线程池配置
@@ -37,9 +37,9 @@ spring:
       # 数据源2配置
       source-2:
         database: 10
-        host: 111.229.238.242
+        host: xxx
         port: 6379
-        password: Root1234!@#$
+        password: xxx
         # 连接超时时间（毫秒）
         timeout: 60000
         # 线程池配置

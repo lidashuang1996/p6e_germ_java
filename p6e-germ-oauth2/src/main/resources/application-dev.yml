@@ -21,9 +21,9 @@ spring:
   application:
     name: P6E_GERM_OAUTH2
   datasource:
-    url: jdbc:mysql://119.23.25.159:3306/oauth2?autoReconnect=true&useSSL=false&characterEncoding=UTF-8
+    url: jdbc:mysql://123123:3306/oauth2?autoReconnect=true&useSSL=false&characterEncoding=UTF-8
     username: root
-    password: Root1234!@#$
+    password: 123123
     driver-class-name: com.mysql.cj.jdbc.Driver
   redis:
     database: 11
