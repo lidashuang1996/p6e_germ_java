@@ -3,32 +3,38 @@
     {
       "name": "p6e.database.defaultPage",
       "type": "java.lang.Integer",
-      "description": "Default page number configuration for queries."
+      "description": "Default page number configuration for queries.",
+      "defaultValue": 1
     },
     {
       "name": "p6e.database.defaultSize",
       "type": "java.lang.Integer",
-      "description": "Default size number configuration for queries."
+      "description": "Default size number configuration for queries.",
+      "defaultValue": 16
     },
     {
       "name": "p6e.database.defaultMaxSize",
       "type": "java.lang.Integer",
-      "description": "Default max size number configuration for queries."
+      "description": "Default max size number configuration for queries.",
+      "defaultValue": 300
     },
     {
       "name": "p6e.oauth2.qq.responseType",
       "type": "java.lang.String",
-      "description": "Oauth2 QQ authorized login response type."
+      "description": "Oauth2 QQ authorized login response type.",
+      "defaultValue": "code"
     },
     {
       "name": "p6e.oauth2.qq.grantType",
       "type": "java.lang.String",
-      "description": "Oauth2 QQ authorized login response type."
+      "description": "Oauth2 QQ authorized login response type.",
+      "defaultValue": "authorization_code"
     },
     {
       "name": "p6e.oauth2.qq.scope",
       "type": "java.lang.String",
-      "description": "Oauth2 QQ authorized login response type."
+      "description": "Oauth2 QQ authorized login response type.",
+      "defaultValue": "get_user_info"
     },
     {
       "name": "p6e.oauth2.qq.clientId",
@@ -48,17 +54,20 @@
     {
       "name": "p6e.oauth2.qq.authUrl",
       "type": "java.lang.String",
-      "description": "Oauth2 QQ authorized login auth url."
+      "description": "Oauth2 QQ authorized login auth url.",
+      "defaultValue": "https://graph.qq.com/oauth2.0/authorize"
     },
     {
       "name": "p6e.oauth2.qq.tokenUrl",
       "type": "java.lang.String",
-      "description": "Oauth2 QQ authorized login token url."
+      "description": "Oauth2 QQ authorized login token url.",
+      "defaultValue": "https://graph.qq.com/oauth2.0/token"
     },
     {
       "name": "p6e.oauth2.qq.infoUrl",
       "type": "java.lang.String",
-      "description": "Oauth2 QQ authorized login info url."
+      "description": "Oauth2 QQ authorized login info url.",
+      "defaultValue": "https://graph.qq.com/oauth2.0/me"
     }
   ]
 }
