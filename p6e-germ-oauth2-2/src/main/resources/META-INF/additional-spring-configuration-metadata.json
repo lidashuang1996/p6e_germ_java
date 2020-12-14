@@ -19,6 +19,12 @@
       "defaultValue": 300
     },
     {
+      "name": "p6e.oauth2.qq.enable",
+      "type": "java.lang.Boolean",
+      "description": "Oauth2 QQ authorized login is enable.",
+      "defaultValue": false
+    },
+    {
       "name": "p6e.oauth2.qq.responseType",
       "type": "java.lang.String",
       "description": "Oauth2 QQ authorized login response type.",
@@ -68,6 +74,59 @@
       "type": "java.lang.String",
       "description": "Oauth2 QQ authorized login info url.",
       "defaultValue": "https://graph.qq.com/oauth2.0/me"
+    },
+    {
+      "name": "p6e.oauth2.weChat.enable",
+      "type": "java.lang.String",
+      "description": "Oauth2 we chat authorized login is enable.",
+      "defaultValue": true
+    },
+    {
+      "name": "p6e.oauth2.weChat.responseType",
+      "type": "java.lang.String",
+      "description": "Oauth2 we chat authorized login response type.",
+      "defaultValue": "code"
+    },
+    {
+      "name": "p6e.oauth2.weChat.grantType",
+      "type": "java.lang.String",
+      "description": "Oauth2 we chat authorized login grant type.",
+      "defaultValue": "authorization_code"
+    },
+    {
+      "name": "p6e.oauth2.weChat.scope",
+      "type": "java.lang.String",
+      "description": "Oauth2 we chat authorized login scope.",
+      "defaultValue": "snsapi_login"
+    },
+    {
+      "name": "p6e.oauth2.weChat.clientId",
+      "type": "java.lang.String",
+      "description": "Oauth2 we chat authorized login client id."
+    },
+    {
+      "name": "p6e.oauth2.weChat.clientSecret",
+      "type": "java.lang.String",
+      "description": "Oauth2 we chat authorized login client secret."
+    },
+    {
+      "name": "p6e.oauth2.weChat.redirectUri",
+      "type": "java.lang.String",
+      "description": "Oauth2 we chat authorized login redirect uri."
+    },
+    {
+      "name": "p6e.oauth2.weChat.authUrl",
+      "type": "java.lang.String",
+      "description": "Oauth2 we chat authorized login auth url.",
+      "defaultValue": "https://open.weixin.qq.com/connect/qrconnect"
+    },
+    {
+      "name": "p6e.oauth2.weChat.tokenUrl",
+      "type": "java.lang.String",
+      "description": "Oauth2 we chat authorized login token url.",
+      "defaultValue": "https://api.weixin.qq.com/sns/oauth2/access_token"
     }
   ]
 }
+
+

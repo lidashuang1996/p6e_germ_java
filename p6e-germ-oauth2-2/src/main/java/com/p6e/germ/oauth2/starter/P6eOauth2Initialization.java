@@ -1,5 +1,7 @@
 package com.p6e.germ.oauth2.starter;
 
+import com.p6e.germ.oauth2.config.P6eConfig;
+import com.p6e.germ.oauth2.infrastructure.utils.P6eJsonUtil;
 import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +34,7 @@ public class P6eOauth2Initialization implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         LOGGER.info("P6e oauth2 init start.");
         P6eSpringUtil.init(applicationContext);
+        LOGGER.info("P6e oauth2 config ==> " + P6eJsonUtil.toJson(applicationContext.getBean(P6eConfig.class)));
         LOGGER.info("P6e oauth2 init end.");
     }
 

@@ -105,20 +105,61 @@ public class P6eLoginController extends P6eBaseController {
         if (dataType.equals(param.getType())) {
             // 通过首页发送请求，然后跳转
             final P6eModel p6eModel;
-            final P6eLoginDto p6eLoginDto = P6eApplication.login.qqLogin(P6eCopyUtil.run(param, P6eQqLoginDto.class));
-            if (p6eLoginDto.getError() == null) {
-                p6eModel = P6eModel.build().setData(P6eCopyUtil.run(p6eLoginDto, P6eVerificationLoginResult.class));
-            } else {
-                p6eModel = P6eModel.build(p6eLoginDto.getError());
-            }
-            // 写入返回的数据
-            response.getWriter().write(P6eJsonUtil.toJson(p6eModel));
+            final P6eLoginDto p6eLoginDto =
+                    P6eApplication.login.qqLogin(P6eCopyUtil.run(param, P6eQqLoginDto.class));
+            response.getWriter().write(P6eJsonUtil.toJson(loginResult(p6eLoginDto)));
             response.getWriter().flush();
             response.getWriter().close();
         } else {
             // 回到首页
             response.sendRedirect("/index.html?type=qq&code=" + param.getCode() + "&state=" + param.getState());
         }
+    }
+
+    @RequestMapping("/we_chat/qq")
+    public void weChatLogin(HttpServletResponse response, P6eWeChatLoginParam param) throws Exception {
+        final P6eUrlLoginDto p6eUrlLoginDto = P6eApplication.login.weChatInfo(param.getMark());
+        if (p6eUrlLoginDto.getError() == null) {
+            // 重定向 URL
+            response.sendRedirect(p6eUrlLoginDto.getUrl());
+        } else {
+            // 写入返回的数据
+            response.getWriter().write(P6eJsonUtil.toJson(P6eModel.build(p6eUrlLoginDto.getError())));
+            response.getWriter().flush();
+            response.getWriter().close();
+        }
+    }
+
+    @RequestMapping("/we_chat/qq/callback")
+    public void weChatLoginCallback(P6eQqCallbackLoginParam param, HttpServletResponse response) throws Exception {
+        final String dataType = "data";
+        if (dataType.equals(param.getType())) {
+            // 通过首页发送请求，然后跳转
+            final P6eModel p6eModel;
+            final P6eLoginDto p6eLoginDto =
+                    P6eApplication.login.weChatLogin(P6eCopyUtil.run(param, P6eWeChatLoginDto.class));
+            response.getWriter().write(P6eJsonUtil.toJson(loginResult(p6eLoginDto)));
+            response.getWriter().flush();
+            response.getWriter().close();
+        } else {
+            // 回到首页
+            response.sendRedirect("/index.html?type=we_chat&code=" + param.getCode() + "&state=" + param.getState());
+        }
+    }
+
+    /**
+     * 登录返回
+     * @param p6eLoginDto 登录的服务
+     * @return 返回的类型
+     */
+    private P6eModel loginResult(P6eLoginDto p6eLoginDto) {
+        final P6eModel p6eModel;
+        if (p6eLoginDto.getError() == null) {
+            p6eModel = P6eModel.build().setData(P6eCopyUtil.run(p6eLoginDto, P6eVerificationLoginResult.class));
+        } else {
+            p6eModel = P6eModel.build(p6eLoginDto.getError());
+        }
+        return p6eModel;
     }
 
 }

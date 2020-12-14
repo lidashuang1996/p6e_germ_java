@@ -48,10 +48,9 @@ public interface P6eLoginService {
     /**
      * 获取微信登录的信息
      * @param mark 记号
-     * @param display 显示参数
      * @return 获取的信息
      */
-    public P6eUrlLoginDto weChatInfo(String mark, String display);
+    public P6eUrlLoginDto weChatInfo(String mark);
 
     /**
      * 微信登录

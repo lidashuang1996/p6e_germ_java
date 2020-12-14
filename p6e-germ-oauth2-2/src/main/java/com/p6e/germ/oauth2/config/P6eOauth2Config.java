@@ -176,6 +176,8 @@ public class P6eOauth2Config implements Serializable {
      * PC网站接入时，错误码详细信息请参见：100000-100031：PC网站接入时的公共返回码。
      */
     public static class QQ {
+        /** 是否启用 */
+        private boolean enable = true;
         /** response_type */
         private String responseType = "code";
         /** grant_type */
@@ -194,6 +196,14 @@ public class P6eOauth2Config implements Serializable {
         private String tokenUrl = "https://graph.qq.com/oauth2.0/token";
         /** 获取用户信息 */
         private String infoUrl = "https://graph.qq.com/oauth2.0/me";
+
+        public boolean isEnable() {
+            return enable;
+        }
+
+        public void setEnable(boolean enable) {
+            this.enable = enable;
+        }
 
         public String getScope() {
             return scope;
@@ -268,8 +278,268 @@ public class P6eOauth2Config implements Serializable {
         }
     }
 
+    /**
+     * 第一步：请求CODE
+     *
+     * 第三方使用网站应用授权登录前请注意已获取相应网页授权作用域（scope=snsapi_login）
+     * 则可以通过在PC端打开以下链接：
+     * https://open.weixin.qq.com/connect/qrconnect?appid=APPID&redirect_uri=REDIRECT_URI&response_type=code&scope=SCOPE&state=STATE#wechat_redirect
+     * 若提示“该链接无法访问”，请检查参数是否填写错误，如redirect_uri的域名与审核时填写的授权域名不一致或scope不为snsapi_login。
+     *
+     * 参数说明
+     *
+     * 参数	            是否必须	    说明
+     * appid	        是	        应用唯一标识
+     * redirect_uri	    是	        请使用urlEncode对链接进行处理
+     * response_type	是	        填code
+     * scope	        是	        应用授权作用域，拥有多个作用域用逗号（,）分隔，网页应用目前仅填写snsapi_login
+     * state	        否	        用于保持请求和回调的状态，授权请求后原样带回给第三方。
+     * 该参数可用于防止csrf攻击（跨站请求伪造攻击），建议第三方带上该参数，可设置为简单的随机数加session进行校验
+     *
+     * 返回说明
+     * 用户允许授权后，将会重定向到redirect_uri的网址上，并且带上code和state参数
+     *
+     * redirect_uri?code=CODE&state=STATE
+     * 若用户禁止授权，则重定向后不会带上code参数，仅会带上state参数
+     *
+     * redirect_uri?state=STATE
+     * 请求示例
+     *
+     * 登录一号店网站应用 https://passport.yhd.com/wechat/login.do 打开后，
+     * 一号店会生成state参数，跳转到
+     * https://open.weixin.qq.com/connect/qrconnect?appid=wxbdc5610cc59c1631&redirect_uri=https%3A%2F%2Fpassport.yhd.com%2Fwechat%2Fcallback.do&response_type=code&scope=snsapi_login&state=3d6be0a4035d839573b04816624a415e#wechat_redirect
+     * 微信用户使用微信扫描二维码并且确认登录后，PC端会跳转到
+     * https://passport.yhd.com/wechat/callback.do?code=CODE&state=3d6be0a4035d839573b04816624a415e
+     * 为了满足网站更定制化的需求，我们还提供了第二种获取code的方式，支持网站将微信登录二维码内嵌到自己页面中，用户使用微信扫码授权后通过JS将code返回给网站。
+     * JS微信登录主要用途：网站希望用户在网站内就能完成登录，无需跳转到微信域下登录后再返回，提升微信登录的流畅性与成功率。
+     *
+     * 网站内嵌二维码微信登录JS实现办法：
+     *
+     * 步骤1：在页面中先引入如下JS文件（支持https）：
+     * http://res.wx.qq.com/connect/zh_CN/htmledition/js/wxLogin.js
+     *
+     * 步骤2：在需要使用微信登录的地方实例以下JS对象：
+     *
+     *  var obj = new WxLogin({
+     *  self_redirect:true,
+     *  id:"login_container",
+     *  appid: "",
+     *  scope: "",
+     *  redirect_uri: "",
+     *   state: "",
+     *  style: "",
+     *  href: ""
+     *  });
+     * 参数说明
+     *
+     * 参数	            是否必须	    说明
+     * self_redirect	否	        true：手机点击确认登录后可以在 iframe 内跳转到 redirect_uri，false：手机点击确认登录后可以在 top window 跳转到 redirect_uri。默认为 false。
+     * id	            是	        第三方页面显示二维码的容器id
+     * appid	        是	        应用唯一标识，在微信开放平台提交应用审核通过后获得
+     * scope	        是	        应用授权作用域，拥有多个作用域用逗号（,）分隔，网页应用目前仅填写snsapi_login即可
+     * redirect_uri	    是	        重定向地址，需要进行UrlEncode
+     * state	        否	        用于保持请求和回调的状态，授权请求后原样带回给第三方。该参数可用于防止csrf攻击（跨站请求伪造攻击），建议第三方带上该参数，可设置为简单的随机数加session进行校验
+     * style	        否	        提供"black"、"white"可选，默认为黑色文字描述。详见文档底部FAQ
+     * href	            否	        自定义样式链接，第三方可根据实际需求覆盖默认样式。详见文档底部FAQ
+     *
+     *
+     *
+     *
+     * 第二步：通过code获取access_token
+     * 通过code获取access_token
+     * https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code
+     *
+     * 参数说明
+     *
+     * 参数	        是否必须	    说明
+     * appid	    是	        应用唯一标识，在微信开放平台提交应用审核通过后获得
+     * secret	    是	        应用密钥AppSecret，在微信开放平台提交应用审核通过后获得
+     * code	        是	        填写第一步获取的code参数
+     * grant_type	是	        填authorization_code
+     * 返回说明
+     *
+     * 正确的返回：
+     *
+     * {
+     * "access_token":"ACCESS_TOKEN",
+     * "expires_in":7200,
+     * "refresh_token":"REFRESH_TOKEN",
+     * "openid":"OPENID",
+     * "scope":"SCOPE",
+     * "unionid": "o6_bmasdasdsad6_2sgVt7hMZOPfL"
+     * }
+     *
+     * 参数说明
+     * 参数	            说明
+     * access_token	    接口调用凭证
+     * expires_in	    access_token接口调用凭证超时时间，单位（秒）
+     * refresh_token	用户刷新access_token
+     * openid	        授权用户唯一标识
+     * scope	        用户授权的作用域，使用逗号（,）分隔
+     * unionid	        当且仅当该网站应用已获得该用户的userinfo授权时，才会出现该字段。
+     *
+     * 错误返回样例：
+     * {"errcode":40029,"errmsg":"invalid code"}
+     *
+     * 刷新access_token有效期
+     *
+     * access_token是调用授权关系接口的调用凭证，由于access_token有效期（目前为2个小时）较短，当access_token超时后，可以使用refresh_token进行刷新，access_token刷新结果有两种：
+     *
+     * 1. 若access_token已超时，那么进行refresh_token会获取一个新的access_token，新的超时时间；
+     * 2. 若access_token未超时，那么进行refresh_token不会改变access_token，但超时时间会刷新，相当于续期access_token。
+     * refresh_token拥有较长的有效期（30天），当refresh_token失效的后，需要用户重新授权。
+     *
+     * 请求方法
+     * 获取第一步的code后，请求以下链接进行refresh_token：
+     *
+     * https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=APPID&grant_type=refresh_token&refresh_token=REFRESH_TOKEN
+     *
+     * 参数说明
+     * 参数	            是否必须	    说明
+     * appid	        是	        应用唯一标识
+     * grant_type	    是	        填refresh_token
+     * refresh_token	是	        填写通过access_token获取到的refresh_token参数
+     *
+     *
+     * 返回说明
+     * 正确的返回：
+     *
+     * {
+     * "access_token":"ACCESS_TOKEN",
+     * "expires_in":7200,
+     * "refresh_token":"REFRESH_TOKEN",
+     * "openid":"OPENID",
+     * "scope":"SCOPE"
+     * }
+     *
+     * 参数说明
+     * 参数	            说明
+     * access_token	    接口调用凭证
+     * expires_in	    access_token接口调用凭证超时时间，单位（秒）
+     * refresh_token	用户刷新access_token
+     * openid	        授权用户唯一标识
+     * scope	        用户授权的作用域，使用逗号（,）分隔
+     * 错误返回样例：
+     *
+     * {"errcode":40030,"errmsg":"invalid refresh_token"}
+     *
+     * 注意：
+     * 1、Appsecret 是应用接口使用密钥，泄漏后将可能导致应用数据泄漏、应用的用户数据泄漏等高风险后果；存储在客户端，极有可能被恶意窃取（如反编译获取Appsecret）；
+     * 2、access_token 为用户授权第三方应用发起接口调用的凭证（相当于用户登录态），存储在客户端，可能出现恶意获取access_token 后导致的用户数据泄漏、用户微信相关接口功能被恶意发起等行为；
+     * 3、refresh_token 为用户授权第三方应用的长效凭证，仅用于刷新access_token，但泄漏后相当于access_token 泄漏，风险同上。
+     *
+     * 建议将secret、用户数据（如access_token）放在App云端服务器，由云端中转接口调用请求。
+     *
+     *
+     * 第三步：通过access_token调用接口
+     *
+     * 获取access_token后，进行接口调用，有以下前提：
+     *
+     * 1. access_token有效且未超时；
+     * 2. 微信用户已授权给第三方应用帐号相应接口作用域（scope）。
+     * 对于接口作用域（scope），能调用的接口有以下：
+     *
+     * 授权作用域（scope）	    接口	                    接口说明
+     * snsapi_base	            /sns/oauth2/access_token	通过code换取access_token、refresh_token和已授权scope
+     * snsapi_base	            /sns/oauth2/refresh_token	刷新或续期access_token使用
+     * snsapi_base	            /sns/auth	                检查access_token有效性
+     * snsapi_userinfo	        /sns/userinfo	            获取用户个人信息
+     *
+     * 其中snsapi_base属于基础接口，若应用已拥有其它scope权限，则默认拥有snsapi_base的权限。
+     * 使用snsapi_base可以让移动端网页授权绕过跳转授权登录页请求用户授权的动作，直接跳转第三方网页带上授权临时票据（code），
+     * 但会使得用户已授权作用域（scope）仅为snsapi_base，从而导致无法获取到需要用户授权才允许获得的数据和基础功能。
+     */
     public static class WeChat {
+        /** 是否启用 */
+        private boolean enable = true;
+        /** response_type */
+        private String responseType = "code";
+        /** grant_type */
+        private String grantType = "authorization_code";
+        /** 范围 */
+        private String scope = "snsapi_login";
+        /** client_id */
+        private String clientId;
+        /** client_secret */
+        private String clientSecret;
+        /** redirect_uri */
+        private String redirectUri;
+        /** 获取认证页面 */
+        private String authUrl = "https://open.weixin.qq.com/connect/qrconnect";
+        /** 获取CODE数据 */
+        private String tokenUrl = "https://api.weixin.qq.com/sns/oauth2/access_token";
 
+        public boolean isEnable() {
+            return enable;
+        }
+
+        public void setEnable(boolean enable) {
+            this.enable = enable;
+        }
+
+        public String getResponseType() {
+            return responseType;
+        }
+
+        public void setResponseType(String responseType) {
+            this.responseType = responseType;
+        }
+
+        public String getGrantType() {
+            return grantType;
+        }
+
+        public void setGrantType(String grantType) {
+            this.grantType = grantType;
+        }
+
+        public String getScope() {
+            return scope;
+        }
+
+        public void setScope(String scope) {
+            this.scope = scope;
+        }
+
+        public String getClientId() {
+            return clientId;
+        }
+
+        public void setClientId(String clientId) {
+            this.clientId = clientId;
+        }
+
+        public String getClientSecret() {
+            return clientSecret;
+        }
+
+        public void setClientSecret(String clientSecret) {
+            this.clientSecret = clientSecret;
+        }
+
+        public String getRedirectUri() {
+            return redirectUri;
+        }
+
+        public void setRedirectUri(String redirectUri) {
+            this.redirectUri = redirectUri;
+        }
+
+        public String getAuthUrl() {
+            return authUrl;
+        }
+
+        public void setAuthUrl(String authUrl) {
+            this.authUrl = authUrl;
+        }
+
+        public String getTokenUrl() {
+            return tokenUrl;
+        }
+
+        public void setTokenUrl(String tokenUrl) {
+            this.tokenUrl = tokenUrl;
+        }
     }
 
 

@@ -30,9 +30,16 @@ spring:
 p6e:
   oauth2:
     qq:
+      enable: false
       client-id: ${my.oauth2.qq.client.id}
       client-secret: ${my.oauth2.qq.client.secret}
       redirect-uri: ${my.oauth2.qq.redirect}
+    we-chat:
+      enable: false
+      client-id: ${my.oauth2.we_chat.client.id}
+      client-secret: ${my.oauth2.we_chat.client.secret}
+      redirect-uri: ${my.oauth2.we_chat.redirect}
+
 
 # mybatis 的配置
 mybatis:

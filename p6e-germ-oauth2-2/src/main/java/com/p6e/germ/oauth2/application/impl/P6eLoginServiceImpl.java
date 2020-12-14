@@ -200,36 +200,40 @@ public class P6eLoginServiceImpl implements P6eLoginService {
     @Override
     public P6eUrlLoginDto qqInfo(String mark, String display) {
         final P6eUrlLoginDto p6eUrlLoginDto = new P6eUrlLoginDto();
-        try {
-            if (mark == null) {
-                p6eUrlLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
-            } else {
-                // 判断 mark 是否存在
-                new P6eMarkEntity(mark);
-                // 读取配置信息
-                final P6eOauth2Config.QQ qq = p6eConfig.getOauth2().getQq();
-                final P6eStateEntity p6eStateEntity =
-                        new P6eStateEntity(P6eGeneratorUtil.uuid(), mark, P6eStateEntity.QQ_TYPE).cache();
-                // 拼接 QQ 授权的 URL
-                String url = qq.getAuthUrl()
-                        + "?response_type=" + dataFormatting(qq.getResponseType())
-                        + "&client_id=" + dataFormatting(qq.getClientId())
-                        + "&redirect_uri=" + dataFormatting(qq.getRedirectUri())
-                        + "&state=" + dataFormatting(p6eStateEntity.getState())
-                        + "&scope=" + dataFormatting(qq.getScope());
-                // 写入display参数
-                if (display != null) {
-                    url += "&display=" + dataFormatting(display);
+        final P6eOauth2Config.QQ qq = p6eConfig.getOauth2().getQq();
+        if (qq.isEnable()) {
+            try {
+                if (mark == null) {
+                    p6eUrlLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                } else {
+                    // 判断 mark 是否存在
+                    new P6eMarkEntity(mark);
+
+                    final P6eStateEntity p6eStateEntity =
+                            new P6eStateEntity(P6eGeneratorUtil.uuid(), mark, P6eStateEntity.QQ_TYPE).cache();
+                    // 拼接 QQ 授权的 URL
+                    String url = qq.getAuthUrl()
+                            + "?response_type=" + dataFormatting(qq.getResponseType())
+                            + "&client_id=" + dataFormatting(qq.getClientId())
+                            + "&redirect_uri=" + dataFormatting(qq.getRedirectUri())
+                            + "&state=" + dataFormatting(p6eStateEntity.getState())
+                            + "&scope=" + dataFormatting(qq.getScope());
+                    // 写入display参数
+                    if (display != null) {
+                        url += "&display=" + dataFormatting(display);
+                    }
+                    // 写入数据
+                    p6eUrlLoginDto.setUrl(url);
                 }
-                // 写入数据
-                p6eUrlLoginDto.setUrl(url);
+            } catch (RuntimeException e) {
+                LOGGER.error(e.getMessage());
+                p6eUrlLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            } catch (Exception ee) {
+                LOGGER.error(ee.getMessage());
+                p6eUrlLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
             }
-        } catch (RuntimeException e) {
-            LOGGER.error(e.getMessage());
-            p6eUrlLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
-        } catch (Exception ee) {
-            LOGGER.error(ee.getMessage());
-            p6eUrlLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+        } else {
+            p6eUrlLoginDto.setError(P6eModel.Error.SERVICE_NOT_ENABLE);
         }
         return p6eUrlLoginDto;
     }
@@ -237,55 +241,186 @@ public class P6eLoginServiceImpl implements P6eLoginService {
     @Override
     public P6eLoginDto qqLogin(P6eQqLoginDto param) {
         final P6eLoginDto p6eLoginDto = new P6eLoginDto();
-        try {
-            if (param == null || param.getCode() == null || param.getState() == null) {
+        final P6eOauth2Config.QQ qq = p6eConfig.getOauth2().getQq();
+        if (qq.isEnable()) {
+            try {
+                if (param == null || param.getCode() == null || param.getState() == null) {
+                    p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                } else {
+                    // 获取用户在 QQ 的 ACCESS TOKEN
+                    final String tokenUrl = qq.getTokenUrl()
+                            + "?grant_type=" + dataFormatting(qq.getGrantType())
+                            + "&client_id=" + dataFormatting(qq.getClientId())
+                            + "&client_secret=" + dataFormatting(qq.getClientSecret())
+                            + "&code=" + dataFormatting(param.getCode())
+                            + "&redirect_uri=" + dataFormatting(qq.getRedirectUri())
+                            + "&fmt=json";
+                    // 发送请求
+                    final String tokenContent = P6eHttpUtil.doGet(tokenUrl);
+                    if (tokenContent != null) {
+                        final String tokenError = "error";
+                        final String tokenAccessToken = "access_token";
+                        final Map<String, String> tokenMap =
+                                P6eJsonUtil.fromJsonToMap(tokenContent, String.class, String.class);
+                        if (tokenMap != null && tokenMap.get(tokenError) == null) {
+                            final String infoOpenId = "openid";
+                            // 获取用户的信息
+                            final String infoUrl = qq.getInfoUrl()
+                                    + "?access_token=" + tokenMap.get(tokenAccessToken)
+                                    + "&fmt=json";
+                            // 发送请求
+                            final String infoContent = P6eHttpUtil.doGet(infoUrl);
+                            final Map<String, String> infoMap =
+                                    P6eJsonUtil.fromJsonToMap(infoContent, String.class, String.class);
+                            if (infoMap != null && infoMap.get(infoOpenId) != null) {
+                                // QQ 认证回调后执行
+                                P6eMarkEntity p6eMarkEntity = null;
+                                P6eStateEntity p6eStateEntity = null;
+                                try {
+                                    // 读取 mark 信息
+                                    p6eStateEntity = new P6eStateEntity(param.getState(), P6eStateEntity.QQ_TYPE);
+                                    // 读取客户端信息
+                                    p6eMarkEntity = new P6eMarkEntity(p6eStateEntity.getMark());
+                                    // 创建缓存
+                                    final P6eTokenEntity p6eTokenEntity = new P6eUserEntity(
+                                            new P6eUserEntity.Qq(infoMap.get(infoOpenId))).createTokenCache();
+                                    // 写入返回数据 CODE
+                                    p6eLoginDto.setCode(p6eTokenEntity.getKey());
+                                    // 写入用户认证信息
+                                    P6eCopyUtil.run(p6eTokenEntity.getModel(), p6eLoginDto);
+                                    // 写入客户端信息
+                                    P6eCopyUtil.run(p6eMarkEntity.getP6eMarkKeyValue(), p6eLoginDto);
+                                    // 简化模式修改过期时间
+                                    final long simpleDateTime = 120;
+                                    final String simpleType = "TOKEN";
+                                    final String type = p6eMarkEntity.getP6eMarkKeyValue().getResponseType();
+                                    // CID / UID
+                                    int cid = p6eMarkEntity.getP6eMarkKeyValue().getId();
+                                    int uid = Integer.parseInt(p6eTokenEntity.getValue().get("id"));
+                                    if (simpleType.equals(type.toUpperCase())) {
+                                        // 如果为简化模式对返回的数据进行一下修改
+                                        p6eTokenEntity.delRefreshToken();
+                                        p6eTokenEntity.setAccessTokenExpirationTime(simpleDateTime);
+                                        p6eLoginDto.setRefreshToken(null);
+                                        p6eLoginDto.setExpiresIn(simpleDateTime);
+                                        // 写入日志数据
+                                        new P6eLogEntity(new P6eOauth2LogDb()
+                                                .setCid(cid)
+                                                .setUid(uid)
+                                                .setType("UID_TO_CID_QQ_LOGIN_TO_TOKEN_TYPE")
+                                        ).create();
+                                    } else {
+                                        // 写入日志数据
+                                        new P6eLogEntity(new P6eOauth2LogDb()
+                                                .setCid(cid)
+                                                .setUid(uid)
+                                                .setType("UID_TO_CID_QQ_LOGIN_TO_CODE_TYPE")
+                                        ).create();
+                                    }
+                                } catch (Exception e) {
+                                    throw new Exception(e);
+                                } finally {
+                                    if (p6eMarkEntity != null) {
+                                        p6eMarkEntity.clean();
+                                    }
+                                    if (p6eStateEntity != null) {
+                                        p6eStateEntity.clean();
+                                    }
+                                }
+                            } else {
+                                p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+                            }
+                        } else {
+                            p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+                        }
+                    } else {
+                        p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+                    }
+                }
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+                LOGGER.error(e.getMessage());
                 p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
-            } else {
-                // 读取配置信息
-                final P6eOauth2Config.QQ qq = p6eConfig.getOauth2().getQq();
-                // 获取用户在 QQ 的 ACCESS TOKEN
-                final String tokenUrl = qq.getTokenUrl()
-                        + "?grant_type=" + dataFormatting(qq.getGrantType())
-                        + "&client_id=" + dataFormatting(qq.getClientId())
-                        + "&client_secret=" + dataFormatting(qq.getClientSecret())
-                        + "&code=" + dataFormatting(param.getCode())
-                        + "&redirect_uri=" + dataFormatting(qq.getRedirectUri())
-                        + "&fmt=json";
-                // 发送请求
-                final String tokenContent = P6eHttpUtil.doGet(tokenUrl);
-                if (tokenContent != null) {
-                    final String tokenError = "error";
-                    final String tokenAccessToken = "access_token";
-                    final Map<String, String> tokenMap =
-                            P6eJsonUtil.fromJsonToMap(tokenContent, String.class, String.class);
-                    if (tokenMap != null && tokenMap.get(tokenError) == null) {
-                        final String infoOpenId = "openid";
-                        // 获取用户的信息
-                        final String infoUrl = qq.getInfoUrl()
-                                + "?access_token=" + tokenMap.get(tokenAccessToken)
-                                + "&fmt=json";
-                        // 发送请求
-                        final String infoContent = P6eHttpUtil.doGet(infoUrl);
-                        final Map<String, String> infoMap =
-                                P6eJsonUtil.fromJsonToMap(infoContent, String.class, String.class);
-                        if (infoMap != null && infoMap.get(infoOpenId) != null) {
-                            // QQ 认证回调后执行
+            } catch (Exception ee) {
+                LOGGER.error(ee.getMessage());
+                p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+            }
+        } else {
+            p6eLoginDto.setError(P6eModel.Error.SERVICE_NOT_ENABLE);
+        }
+        return p6eLoginDto;
+    }
+
+    @Override
+    public P6eUrlLoginDto weChatInfo(String mark) {
+        final P6eUrlLoginDto p6eUrlLoginDto = new P6eUrlLoginDto();
+        final P6eOauth2Config.WeChat weChat = p6eConfig.getOauth2().getWeChat();
+        if (weChat.isEnable()) {
+            try {
+                if (mark == null) {
+                    p6eUrlLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                } else {
+                    // 判断 mark 是否存在
+                    new P6eMarkEntity(mark);
+                    final P6eStateEntity p6eStateEntity =
+                            new P6eStateEntity(P6eGeneratorUtil.uuid(), mark, P6eStateEntity.WE_CHAT_TYPE).cache();
+                    // 拼接 QQ 授权的 URL
+                    String url = weChat.getAuthUrl()
+                            + "?response_type=" + dataFormatting(weChat.getResponseType())
+                            + "&appid=" + dataFormatting(weChat.getClientId())
+                            + "&redirect_uri=" + dataFormatting(weChat.getRedirectUri())
+                            + "&state=" + dataFormatting(p6eStateEntity.getState())
+                            + "&scope=" + dataFormatting(weChat.getScope())
+                            + "#wechat_redirect";
+                    // 写入数据
+                    p6eUrlLoginDto.setUrl(url);
+                }
+            } catch (RuntimeException e) {
+                LOGGER.error(e.getMessage());
+                p6eUrlLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            } catch (Exception ee) {
+                LOGGER.error(ee.getMessage());
+                p6eUrlLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+            }
+        } else {
+            p6eUrlLoginDto.setError(P6eModel.Error.SERVICE_NOT_ENABLE);
+        }
+        return p6eUrlLoginDto;
+    }
+
+    @Override
+    public P6eLoginDto weChatLogin(P6eWeChatLoginDto param) {
+        final P6eLoginDto p6eLoginDto = new P6eLoginDto();
+        final P6eOauth2Config.WeChat weChat = p6eConfig.getOauth2().getWeChat();
+        if (weChat.isEnable()) {
+            try {
+                if (param == null || param.getCode() == null || param.getState() == null) {
+                    p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                } else {
+                    // 读取配置信息
+                    final String tokenUrl = weChat.getTokenUrl()
+                            + "?grant_type=" + dataFormatting(weChat.getGrantType())
+                            + "&appid=" + dataFormatting(weChat.getClientId())
+                            + "&secret=" + dataFormatting(weChat.getClientSecret())
+                            + "&code=" + dataFormatting(param.getCode());
+                    // 发送请求
+                    final String tokenContent = P6eHttpUtil.doGet(tokenUrl);
+                    if (tokenContent != null) {
+                        final Map<String, String> tokenMap =
+                                P6eJsonUtil.fromJsonToMap(tokenContent, String.class, String.class);
+                        final String tokenError = "errcode";
+                        final String tokenOpenId = "openid";
+                        if (tokenMap != null && tokenMap.get(tokenError) != null) {
                             P6eMarkEntity p6eMarkEntity = null;
                             P6eStateEntity p6eStateEntity = null;
                             try {
                                 // 读取 mark 信息
-                                p6eStateEntity = new P6eStateEntity(param.getState(), P6eStateEntity.QQ_TYPE);
+                                p6eStateEntity = new P6eStateEntity(param.getState(), P6eStateEntity.WE_CHAT_TYPE);
                                 // 读取客户端信息
                                 p6eMarkEntity = new P6eMarkEntity(p6eStateEntity.getMark());
                                 // 创建缓存
                                 final P6eTokenEntity p6eTokenEntity = new P6eUserEntity(
-                                        new P6eUserEntity.Qq(infoMap.get(infoOpenId))).createTokenCache();
-                                // 写入返回数据 CODE
-                                p6eLoginDto.setCode(p6eTokenEntity.getKey());
-                                // 写入用户认证信息
-                                P6eCopyUtil.run(p6eTokenEntity.getModel(), p6eLoginDto);
-                                // 写入客户端信息
-                                P6eCopyUtil.run(p6eMarkEntity.getP6eMarkKeyValue(), p6eLoginDto);
+                                        new P6eUserEntity.WeChat(tokenMap.get(tokenOpenId))).createTokenCache();
                                 // 简化模式修改过期时间
                                 final long simpleDateTime = 120;
                                 final String simpleType = "TOKEN";
@@ -293,6 +428,12 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                                 // CID / UID
                                 int cid = p6eMarkEntity.getP6eMarkKeyValue().getId();
                                 int uid = Integer.parseInt(p6eTokenEntity.getValue().get("id"));
+                                // 写入返回数据 CODE
+                                p6eLoginDto.setCode(p6eTokenEntity.getKey());
+                                // 写入用户认证信息
+                                P6eCopyUtil.run(p6eTokenEntity.getModel(), p6eLoginDto);
+                                // 写入客户端信息
+                                P6eCopyUtil.run(p6eMarkEntity.getP6eMarkKeyValue(), p6eLoginDto);
                                 if (simpleType.equals(type.toUpperCase())) {
                                     // 如果为简化模式对返回的数据进行一下修改
                                     p6eTokenEntity.delRefreshToken();
@@ -303,14 +444,14 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                                     new P6eLogEntity(new P6eOauth2LogDb()
                                             .setCid(cid)
                                             .setUid(uid)
-                                            .setType("UID_TO_CID_QQ_LOGIN_TO_TOKEN_TYPE")
+                                            .setType("UID_TO_CID_WE_CHAT_LOGIN_TO_TOKEN_TYPE")
                                     ).create();
                                 } else {
                                     // 写入日志数据
                                     new P6eLogEntity(new P6eOauth2LogDb()
                                             .setCid(cid)
                                             .setUid(uid)
-                                            .setType("UID_TO_CID_QQ_LOGIN_TO_CODE_TYPE")
+                                            .setType("UID_TO_CID_WE_CHAT_LOGIN_TO_CODE_TYPE")
                                     ).create();
                                 }
                             } catch (Exception e) {
@@ -329,33 +470,18 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                     } else {
                         p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
                     }
-                } else {
-                    p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
                 }
+            } catch (RuntimeException e) {
+                LOGGER.error(e.getMessage());
+                p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            } catch (Exception ee) {
+                LOGGER.error(ee.getMessage());
+                p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
             }
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            LOGGER.error(e.getMessage());
-            p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
-        } catch (Exception ee) {
-            LOGGER.error(ee.getMessage());
-            p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+        } else {
+            p6eLoginDto.setError(P6eModel.Error.SERVICE_NOT_ENABLE);
         }
         return p6eLoginDto;
-    }
-
-    @Override
-    public P6eUrlLoginDto weChatInfo(String mark, String display) {
-        // 同 QQ 登录
-        // 微信授权直接 GG
-        return null;
-    }
-
-    @Override
-    public P6eLoginDto weChatLogin(P6eWeChatLoginDto param) {
-        // 同 QQ 登陆
-        // 微信授权直接 GG
-        return null;
     }
 
     @Override

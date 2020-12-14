@@ -34,7 +34,11 @@ public final class P6eModel {
         /**
          * 方法异常
          */
-        HTTP_METHOD_EXCEPTION(11);
+        HTTP_METHOD_EXCEPTION(11),
+        /**
+         * 服务启动
+         */
+        SERVICE_NOT_ENABLE(20);
 
         private final Integer code;
 

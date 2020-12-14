@@ -12,7 +12,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @P6eOauth2Enable
 @SpringBootApplication
 public class P6eOauth2Application {
-
     public static void main(String[] args) {
         SpringApplication.run(P6eOauth2Application.class, args);
     }
