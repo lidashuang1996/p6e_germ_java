@@ -1,0 +1,64 @@
+{
+  "properties": [
+    {
+      "name": "p6e.database.defaultPage",
+      "type": "java.lang.Integer",
+      "description": "Default page number configuration for queries."
+    },
+    {
+      "name": "p6e.database.defaultSize",
+      "type": "java.lang.Integer",
+      "description": "Default size number configuration for queries."
+    },
+    {
+      "name": "p6e.database.defaultMaxSize",
+      "type": "java.lang.Integer",
+      "description": "Default max size number configuration for queries."
+    },
+    {
+      "name": "p6e.oauth2.qq.responseType",
+      "type": "java.lang.String",
+      "description": "Oauth2 QQ authorized login response type."
+    },
+    {
+      "name": "p6e.oauth2.qq.grantType",
+      "type": "java.lang.String",
+      "description": "Oauth2 QQ authorized login response type."
+    },
+    {
+      "name": "p6e.oauth2.qq.scope",
+      "type": "java.lang.String",
+      "description": "Oauth2 QQ authorized login response type."
+    },
+    {
+      "name": "p6e.oauth2.qq.clientId",
+      "type": "java.lang.String",
+      "description": "Oauth2 QQ authorized login client id."
+    },
+    {
+      "name": "p6e.oauth2.qq.clientSecret",
+      "type": "java.lang.String",
+      "description": "Oauth2 QQ authorized login client secret."
+    },
+    {
+      "name": "p6e.oauth2.qq.redirectUri",
+      "type": "java.lang.String",
+      "description": "Oauth2 QQ authorized login redirect uri."
+    },
+    {
+      "name": "p6e.oauth2.qq.authUrl",
+      "type": "java.lang.String",
+      "description": "Oauth2 QQ authorized login auth url."
+    },
+    {
+      "name": "p6e.oauth2.qq.tokenUrl",
+      "type": "java.lang.String",
+      "description": "Oauth2 QQ authorized login token url."
+    },
+    {
+      "name": "p6e.oauth2.qq.infoUrl",
+      "type": "java.lang.String",
+      "description": "Oauth2 QQ authorized login info url."
+    }
+  ]
+}

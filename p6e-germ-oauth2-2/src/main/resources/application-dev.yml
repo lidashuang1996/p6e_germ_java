@@ -1,3 +1,39 @@
+# 端口配置
+server:
+  port: ${my.server.port}
+
+# spring 配置
+spring:
+  # 名称配置
+  application:
+    name: P6E_GERM_OAUTH2
+  # 数据源配置
+  datasource:
+    url: ${my.db.url}
+    username: ${my.db.username}
+    password: ${my.db.password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    database: ${my.cache.redis.source_1.database}
+    host: ${my.cache.redis.source_1.host}
+    port: ${my.cache.redis.source_1.port}
+    password: ${my.cache.redis.source_1.password}
+    timeout: ${my.cache.redis.source_1.timeout}
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+
+# p6e 的配置
+p6e:
+  oauth2:
+    qq:
+      client-id: ${my.oauth2.qq.client.id}
+      client-secret: ${my.oauth2.qq.client.secret}
+      redirect-uri: ${my.oauth2.qq.redirect}
+
 # mybatis 的配置
 mybatis:
   config-location: classpath:./xml/mybatis-config.xml
@@ -8,27 +44,7 @@ logging:
   level:
     com.p6e.germ.oauth2.infrastructure.repository.mapper: debug
 
-spring:
-  application:
-    name: P6E_GERM_OAUTH2
-  datasource:
-    url: jdbc:mysql://3213123:3306/p6e?autoReconnect=true&useSSL=false&characterEncoding=UTF-8
-    username: root
-    password: 32132131
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  redis:
-    database: 9
-    host: 119.23.25.159
-    port: 6379
-    password: 31231
-    timeout: 10000
-    jedis:
-      pool:
-        max-active: 8
-        max-wait: -1
-        max-idle: 8
-        min-idle: 0
 
 
-server:
-  port: 9900
+
+

@@ -19,6 +19,12 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
         <!-- JSON 对象 -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
