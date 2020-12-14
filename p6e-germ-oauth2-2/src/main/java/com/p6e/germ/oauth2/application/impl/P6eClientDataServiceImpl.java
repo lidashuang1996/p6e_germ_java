@@ -160,7 +160,7 @@ public class P6eClientDataServiceImpl implements P6eClientDataService {
             // 初始化分页数据
             p6eClientDataDto.initPaging(p6eClientEntity.get());
             // 写入查询的数据内容
-            p6eClientDataDto.setList(P6eCopyUtil.run(p6eClientEntity.select(), P6eClientDataDto.class));
+            p6eClientDataDto.setList(P6eCopyUtil.runList(p6eClientEntity.select(), P6eClientDataDto.class));
         } catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());

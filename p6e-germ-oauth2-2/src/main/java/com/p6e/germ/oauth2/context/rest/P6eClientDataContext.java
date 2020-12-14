@@ -72,7 +72,7 @@ public class P6eClientDataContext extends P6eBaseController {
             p6ePagingResult.setPage(p6eClientDataDto.getPage());
             p6ePagingResult.setSize(p6eClientDataDto.getSize());
             p6ePagingResult.setTotal(p6eClientDataDto.getTotal());
-            p6ePagingResult.setList(P6eCopyUtil.run(p6eClientDataDto.getList(), P6eClientDataResult.class));
+            p6ePagingResult.setList(P6eCopyUtil.runList(p6eClientDataDto.getList(), P6eClientDataResult.class));
             return P6eModel.build().setData(p6ePagingResult);
         }  else {
             return P6eModel.build(p6eClientDataDto.getError());

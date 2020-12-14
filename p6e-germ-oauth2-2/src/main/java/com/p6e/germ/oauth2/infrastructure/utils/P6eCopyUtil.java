@@ -1,185 +1,528 @@
 package com.p6e.germ.oauth2.infrastructure.utils;
 
-import java.io.Serializable;
+import java.io.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.*;
 
 /**
  * Copy 的帮助类
  * 作用是的帮助我们 VO <-> DTO <-> DB 互相转换
- * @author LiDaShuang
+ * @author lidashuang
  * @version 1.0
  */
 public final class P6eCopyUtil {
 
+    /** 默认 list 参数 */
+    private static final List<?> DEFAULT_LIST = new ArrayList<>();
+
+    /** 默认 map 参数 */
+    private static final Map<?, ?> DEFAULT_MAP = new HashMap<>();
+
+    /**
+     * 对象转换
+     * @param data 待转换的数据
+     * @param c 转换的类型
+     * @param <T> 转换的类型泛型
+     * @return 执行结果
+     */
     public static <T> T run(Object data, Class<T> c) {
-        if (data == null) {
-            // 判断是否为 null
-            return null;
-        }
+        return run(data, c, null);
+    }
+
+    /**
+     * 对象转换
+     * @param data 待转换的数据
+     * @param c 转换的类型
+     * @param def 默认的参数
+     * @param <T> 转换的类型泛型
+     * @return 执行结果
+     */
+    public static <T> T run(Object data, Class<T> c, T def) {
         try {
-            return run(data, c.newInstance());
+            if (data == null || c == null) {
+                return def;
+            } else {
+                // 创建对象
+                final T t = c.newInstance();
+                // 执行复制操作
+                return run(data, t, def);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return def;
+        }
+    }
+
+    /**
+     * 对象转换
+     * @param data 待转换的数据
+     * @param t 转换的对象
+     * @param <T> 转换的类型泛型
+     * @return 执行结果
+     */
+    public static <T> T run(Object data, T t) {
+        return run(data, t, null);
+    }
+
+    /**
+     * 对象转换
+     * @param data 待转换的数据
+     * @param t 转换的对象
+     * @param def 默认的参数
+     * @param <T> 转换的类型泛型
+     * @return 执行结果
+     */
+    public static <T> T run(Object data, T t, T def) {
+        try {
+            if (data == null || t == null) {
+                return def;
+            } else {
+                final Class<?> a = data.getClass();
+                final Class<?> b = t.getClass();
+                if (!isSerializable(a)) {
+                    throw new RuntimeException(a + " copy no interface java.io.Serializable");
+                }
+                if (!isSerializable(b)) {
+                    throw new RuntimeException(b + " copy no interface java.io.Serializable");
+                }
+                // 获取自类和父类里面的 field
+                final Field[] aFields = getFields(a);
+                // 获取自类和父类里面的 field
+                final Field[] bFields = getFields(b);
+                for (final Field f1 : aFields) {
+                    for (final Field f2 : bFields) {
+                        // 根据名字匹配
+                        if (f1.getName().equals(f2.getName())) {
+                            // 赋予权限访问
+                            f1.setAccessible(true);
+                            f2.setAccessible(true);
+                            // 读取源数据对象
+                            final Object o = f1.get(data);
+                            if (o != null) {
+                                if (f1.getType() == f2.getType()) {
+                                    if (isListType(f1.getType()) && isListType(f2.getType())) {
+                                        final Class<?>[] g1 = getGenericClass(f1.getGenericType());
+                                        final Class<?>[] g2 = getGenericClass(f2.getGenericType());
+                                        if (g1.length == 1 && g2.length == 1) {
+                                            // 执行 list 的复制
+                                            final List<?> ol = (List<?>) o;
+                                            f2.set(t, runList(ol, g2[0], null));
+                                        }
+                                    } else if (isMapType(f1.getType()) && isMapType(f2.getType())) {
+                                        final Class<?>[] g1 = getGenericClass(f1.getGenericType());
+                                        final Class<?>[] g2 = getGenericClass(f2.getGenericType());
+                                        if (g1.length == 2 && g2.length == 2 && g1[0] == g2[0]
+                                                && isSerializable(g1[1]) && isSerializable(g2[1])) {
+                                            // 执行 map 的复制
+                                            final Map<?, ?> om = (Map<?, ?>) o;
+                                            f2.set(t, runMap(om, g2[1], null));
+                                        }
+                                    } else {
+                                        // 对象不为 null 且类型相同且为基础类型，执行赋值操作
+                                        f2.set(t, deepClone(o));
+                                    }
+                                } else {
+                                    if (isSerializable(f1.getType())
+                                            && isSerializable(f2.getType())
+                                            && !isMapType(f1.getType()) && !isMapType(f2.getType())
+                                            && !isListType(f1.getType()) && !isListType(f2.getType())) {
+                                        // 类型不同且接口 serializable 不为 list
+                                        f2.set(t, run(o, f2.getType(), null));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return t;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
+    /**
+     * list 数据复制
+     * @param data 数据
+     * @param cClass 类型
+     * @param <E> 数据类型
+     * @param <T> 结果类型
+     * @return 执行结果
+     */
     @SuppressWarnings("all")
-    public static <T> T run(Object data, T co) {
-        if (data == null || co == null) {
-            return null; // 判断是否为 null
-        }
+    public static <E, T> List<T> runList(List<E> data, Class<T> cClass) {
+        return runList(data, cClass, (List<T>) DEFAULT_LIST);
+    }
+
+    /**
+     * list 数据复制
+     * @param data 数据
+     * @param cClass 类型
+     * @param def 默认
+     * @param <E> 数据类型
+     * @param <T> 结果类型
+     * @return 复制 map 对象
+     */
+    @SuppressWarnings("all")
+    public static <E, T> List<T> runList(List<E> data, Class<T> cClass, List<T> def) {
         try {
-            boolean b1 = true, b2 = true;
-            Class<?> dataClass = data.getClass();
-            Class<?> c = co.getClass();
-            // 判断是否接口于 java.io.Serializable
-            for (Class<?> anInterface : dataClass.getInterfaces()){
-                if (anInterface == Serializable.class) { b1 = false; break; }
-            }
-
-            for (Class<?> anInterface : c.getInterfaces()) {
-                if (anInterface == Serializable.class) { b2 = false; break; }
-            }
-
-            if (b1 || b2) {
-                throw new RuntimeException("copy no interface java.io.Serializable");
-            }
-            Field[] dataFields = obtainFields(dataClass); // 获取自类和父类里面的 Field
-            Field[] cFields = obtainFields(c); // 获取自类和父类里面的 Field
-
-            T t = co; // 创建一个源 class 对象
-
-            for (Field f1 : dataFields) {
-                for (Field f2 : cFields) {
-                    // 根据名字匹配
-                    if (f1.getName().equals(f2.getName())) {
-                        f1.setAccessible(true);
-                        f2.setAccessible(true);
-                        Object o = f1.get(data); // 读取源数据对象
-                        boolean bool = f1.getGenericType().equals(f2.getGenericType()); // 判断类型是否相同
-                        if (bool && o != null) {
-                            f2.set(t, o); // 对象不为 null 且类型相同，执行赋值操作
+            if (data == null || cClass == null) {
+                return def;
+            } else {
+                final List<T> result = new ArrayList<>();
+                for (Object datum : data) {
+                    // 获取当前数据的类型
+                    final Class<?> dClass = datum.getClass();
+                    if (dClass == cClass) {
+                        if (isListType(dClass) || isListType(cClass)
+                                || isMapType(dClass) || isMapType(cClass)) {
+                            throw new RuntimeException("data list copy to " + cClass + ", does not support nested list/map");
+                        } else {
+                            // 写入数据
+                            result.add(deepClone((T) datum));
                         }
-                        else if (!bool && o != null) {
-                            if (f1.getGenericType().getTypeName().startsWith("java.util.List") &&
-                                    f2.getGenericType().getTypeName().startsWith("java.util.List")) {
-                                String genericF1 = "";
-                                String genericF2 = "";
-                                List<Object> list = new ArrayList<>();
-                                switch (genericF2) {
-                                    case "java.lang.String":
-                                        ((List) o).forEach(item -> list.add(String.valueOf(item)));
-                                        f2.set(t, list);
-                                        break;
-                                    case "java.lang.Character":
-                                        ((List) o).forEach(item -> list.add(Character.valueOf(String.valueOf(item).charAt(0))));
-                                        f2.set(t, list);
-                                        break;
-                                    case "java.lang.Short":
-                                        ((List) o).forEach(item -> list.add(Short.valueOf(String.valueOf(item))));
-                                        f2.set(t, list);
-                                        break;
-                                    case "java.lang.Integer":
-                                        ((List) o).forEach(item -> list.add(Integer.valueOf(String.valueOf(item))));
-                                        f2.set(t, list);
-                                        break;
-                                    case "java.lang.Double":
-                                        ((List) o).forEach(item -> list.add(Double.valueOf(String.valueOf(item))));
-                                        f2.set(t, list);
-                                        break;
-                                    case "java.lang.Long":
-                                        ((List) o).forEach(item -> list.add(Long.valueOf(String.valueOf(item))));
-                                        f2.set(t, list);
-                                        break;
-                                    case "java.lang.Float":
-                                        ((List) o).forEach(item -> list.add(Float.valueOf(String.valueOf(item))));
-                                        f2.set(t, list);
-                                        break;
-                                    case "java.lang.Boolean":
-                                        ((List) o).forEach(item -> list.add(Boolean.valueOf(String.valueOf(item))));
-                                        f2.set(t, list);
-                                        break;
-                                    case "java.lang.Byte":
-                                        ((List) o).forEach(item -> list.add(Byte.valueOf(String.valueOf(item))));
-                                        f2.set(t, list);
-                                        break;
-                                    default:
-                                        // 如果类型不同，我们尝试再转换一次
-                                        f2.set(t, run(o, Class.forName(f2.getGenericType().getTypeName())));
-                                        break;
-                                }
-
-                            } else {
-                                f2.set(t, run(o, Class.forName(f2.getGenericType().getTypeName()))); // 如果类型不同，我们尝试再转换一次
-                            }
+                    } else {
+                        if (isSerializable(dClass)
+                                && isSerializable(cClass)
+                                && !isMapType(dClass) && !isMapType(cClass)
+                                && !isListType(dClass) && !isListType(cClass)) {
+                            // 类型不同且接口 serializable 不为 list
+                            result.add(run(datum, cClass, null));
                         }
-                        break;
                     }
                 }
+                return result;
             }
-            return t;
-        } catch (IllegalAccessException | ClassNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return def;
         }
     }
 
     /**
-     * Copy List<W> -> List<T>
-     * @param data 源数据对象
-     * @param c Copy 对象的 class
-     * @param <W> 源数据对象的泛型
-     * @param <T> Copy 数据对象的泛型
-     * @return List<T>
+     * map 数据复制
+     * @param data 数据
+     * @param wClass 类型
+     * @param <K> KEY 的类型
+     * @param <V> VALUE 的类型
+     * @param <W> VALUE 的类型
+     * @return 复制的 map 对象
      */
-    public static <W, T> List<T> run(List<W> data, Class<T> c) {
-        if (data == null) {
-            return null; // 判断是否为 null
-        }
-        List<T> list = new ArrayList<>();
-        // 读取每一个对象， COPY 后返回写入
-        data.forEach(item -> list.add(run(item, c)));
-        return list;
+    @SuppressWarnings("all")
+    public static <K, V, W> Map<K, W>  runMap(Map<K, V> data, Class<W> wClass) {
+        return runMap(data, wClass, (Map<K, W>) DEFAULT_MAP);
     }
 
-    private static Field[] obtainFields(Class<?> cl) {
-        List<Field> fields = new ArrayList<>(Arrays.asList(cl.getDeclaredFields()));
-        Class<?> cls = cl.getSuperclass();
-        while (cls != null && cls != Object.class) {
-            fields.addAll(Arrays.asList(cls.getDeclaredFields()));
-            cls = cls.getSuperclass();
+    /**
+     * map 数据复制
+     * @param data 数据
+     * @param wClass
+     * @param def 默认
+     * @param <K> KEY 的类型
+     * @param <V> VALUE 的类型
+     * @param <W> VALUE 的类型
+     * @return 复制的 map 对象
+     */
+    @SuppressWarnings("all")
+    public static <K, V, W> Map<K, W> runMap(Map<K, V> data, Class<W> wClass, Map<K, W> def) {
+        try {
+            if (data == null || wClass == null) {
+                return def;
+            } else {
+                final Map<K, W> result = new HashMap<>();
+                for (K k : data.keySet()) {
+                    // 获取当前数据的类型
+                    final V v = data.get(k);
+                    final Class<?> dClass = v.getClass();
+                    if (dClass == wClass) {
+                        if (isListType(dClass) || isListType(wClass)
+                                || isMapType(dClass) || isMapType(wClass)) {
+                            throw new RuntimeException("data map copy to " + wClass + ", does not support nested list/map");
+                        } else {
+                            // 写入数据
+                            result.put(k, deepClone((W) v));
+                        }
+                    } else {
+                        if (isSerializable(dClass)
+                                && isSerializable(wClass)
+                                && !isMapType(dClass) && !isMapType(wClass)
+                                && !isListType(dClass) && !isListType(wClass)) {
+                            // 类型不同且接口 serializable 不为 list
+                            result.put(k, run(v, wClass, null));
+                        }
+                    }
+                }
+                return result;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return def;
         }
-        return fields.toArray(new Field[0]);
     }
 
+    /**
+     * 将对象转换为 map 对象
+     * @param o 参数对象
+     * @return 转换的对象
+     */
     public static Map<String, Object> toMap(final Object o) {
+        return toMap(o, null);
+    }
+
+    /**
+     * 将对象转换为 map 对象
+     * @param o 参数对象
+     * @param def 如果异常或者 null 返回的对象
+     * @return 转换的对象
+     */
+    public static Map<String, Object> toMap(final Object o, final Map<String, Object> def) {
         if (o == null) {
-            return new HashMap<>(1);
+            return def;
         } else {
             try {
+                // 读取的参数的类型
                 final Class<?> oClass = o.getClass();
-                // 判断是否接口于 java.io.Serializable
                 for (Class<?> anInterface : oClass.getInterfaces()) {
+                    // 判断是否接口于 java.io.Serializable
                     if (anInterface == Serializable.class) {
-                        final Field[] fields = obtainFields(oClass);
+                        final Field[] fields = getFields(oClass);
+                        // 创建返回对象
                         final Map<String, Object> rMap = new HashMap<>(fields.length);
                         for (Field field : fields) {
                             field.setAccessible(true);
-                            rMap.put(field.getName(), field.get(o));
+                            final Class<?> fieldClass = field.getType();
+                            // 判断是否为基础类型
+                            if (isBaseType(fieldClass)) {
+                                rMap.put(field.getName(), field.get(o));
+                            } else {
+                                // 判断是否为 list 类型
+                                if (isListType(fieldClass)) {
+                                    rMap.put(field.getName(), toList(o, null));
+                                } else {
+                                    rMap.put(field.getName(), toMap(o, null));
+                                }
+                            }
                         }
                         return rMap;
                     }
                 }
-                throw new RuntimeException("copy no interface java.io.Serializable");
-            } catch (IllegalAccessException e) {
+                // 如果参数没有接口 java.io.Serializable 就抛出运行异常
+                throw new RuntimeException(oClass.getName() + " copy no interface java.io.Serializable");
+            } catch (Exception e) {
                 e.printStackTrace();
-                return new HashMap<>(1);
+                return def;
             }
         }
     }
 
+    /**
+     * 将 list<object> 转换为 list<map<string, object> 对象
+     * @param o 待转换对象
+     * @return 转换的对象
+     */
+    public static List<Object> toList(final Object o) {
+        return toList(o, null);
+    }
+
+    /**
+     * 将 list<object> 转换为 list<map<string, object> 对象
+     * @param o 待转换对象
+     * @param def 如果异常或者 null 返回的对象
+     * @return 转换的对象
+     */
+    @SuppressWarnings("all")
+    public static List<Object> toList(final Object o, final List<Object> def) {
+        try {
+            if (o == null || isListType(o.getClass())) {
+                return def;
+            } else {
+                final List<Object> list = (List<Object>) o;
+                // 创建结果返回对象
+                final List<Object> result = new ArrayList<>();
+                for (final Object item : list) {
+                    // 获取当前数据的类型
+                    final Class<?> iClass = item.getClass();
+                    if (isBaseType(iClass)) {
+                        result.add(item);
+                    } else {
+                        if (isListType(iClass)) {
+                            result.add(toList(item, null));
+                        } else {
+                            result.add(toMap(item, null));
+                        }
+                    }
+                }
+                return result;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return def;
+        }
+    }
+
+    /**
+     * 判断是否为基础类型
+     * @param cl class 类型
+     * @return 是否为基础类型
+     */
+    private static boolean isBaseType(Class<?> cl) {
+        final String clName = cl.getTypeName();
+        switch (clName) {
+            case "java.lang.String":
+            case "java.lang.Character":
+            case "char":
+            case "java.lang.Short":
+            case "short":
+            case "java.lang.Integer":
+            case "int":
+            case "java.lang.Double":
+            case "double":
+            case "java.lang.Long":
+            case "long":
+            case "java.lang.Float":
+            case "float":
+            case "java.lang.Boolean":
+            case "boolean":
+            case "java.lang.Byte":
+            case "byte":
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * 判断是否为 list 类型
+     * @param cl class 类型
+     * @return 是否为 list 类型
+     */
+    private static boolean isListType(Class<?> cl) {
+        final String clName = cl.getTypeName();
+        return "java.util.List".equals(clName);
+    }
+
+    /**
+     * 判断是否为 map 类型
+     * @param cl class 类型
+     * @return 是否为 map 类型
+     */
+    private static boolean isMapType(Class<?> cl) {
+        final String clName = cl.getTypeName();
+        return "java.util.Map".equals(clName);
+    }
+
+    /**
+     * 判断是否接口 java.io.Serializable
+     * @param cl class 类型
+     * @return 是否接口 java.io.Serializable
+     */
+    private static boolean isSerializable(Class<?> cl) {
+        final Class<?>[] cls = cl.getInterfaces();
+        if (cls.length > 0) {
+            for (Class<?> clazz : cls) {
+                if (clazz == java.io.Serializable.class) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 深度复制
+     * @return 深度复制的对象
+     */
+    @SuppressWarnings("all")
+    public static <T> T deepClone(final T t) {
+        ObjectInputStream ois = null;
+        ObjectOutputStream oos = null;
+        ByteArrayInputStream bis = null;
+        ByteArrayOutputStream bos = null;
+        try {
+            if (t == null) {
+                return null;
+            } else {
+                bos = new ByteArrayOutputStream();
+                oos = new ObjectOutputStream(bos);
+                oos.writeObject(t);
+                bis = new ByteArrayInputStream(bos.toByteArray());
+                ois = new ObjectInputStream(bis);
+                return (T) ois.readObject();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            close(ois);
+            close(bis);
+            close(oos);
+            close(bos);
+        }
+    }
+
+    /**
+     * 关闭字节流方法
+     * @param closeable 需要关闭的对象
+     */
+    private static void close(final Closeable closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 读取 field 数据
+     * @param cl 读取的 class 对象
+     * @return field 数据
+     */
+    private static Field[] getFields(final Class<?> cl) {
+        // 读取数据
+        Class<?> cls = cl;
+        final List<Field> fields = new ArrayList<>();
+        do {
+            fields.addAll(Arrays.asList(cls.getDeclaredFields()));
+            // 获取父类对象
+            cls = cls.getSuperclass();
+        } while (cls != null && cls != Object.class);
+        // 转换为数组返回
+        // 排除 static 和 transient 修饰符，修饰的 field 的对象
+        return fields.stream().filter(f ->
+                !(Modifier.isStatic(f.getModifiers()) || Modifier.isTransient(f.getModifiers()))
+        ).toArray(Field[]::new);
+    }
+
+    /**
+     * 读取泛型的类型
+     * @param type 类型
+     * @return 泛型的类型
+     */
+    private static Class<?>[] getGenericClass(final Type type) {
+        try {
+            final String typeName = type.getTypeName();
+            final int a = typeName.indexOf("<");
+            final int b = typeName.lastIndexOf(">");
+            if (a != -1 && b != -1 && a < b) {
+                final String[] genericNames = typeName.substring(a + 1, b).split(",");
+                final Class<?>[] genericClass = new Class<?>[genericNames.length];
+                for (int i = 0; i < genericNames.length; i++) {
+                    genericClass[i] = Class.forName(genericNames[i].trim());
+                }
+                return genericClass;
+            } else {
+                return new Class<?>[0];
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Class<?>[0];
+        }
+    }
 }
 
 

@@ -35,7 +35,7 @@ public class P6eLogDataContext extends P6eBaseController {
             p6ePagingResult.setPage(p6eLogDataDto.getPage());
             p6ePagingResult.setSize(p6eLogDataDto.getSize());
             p6ePagingResult.setTotal(p6eLogDataDto.getTotal());
-            p6ePagingResult.setList(P6eCopyUtil.run(p6eLogDataDto.getList(), P6eLogDataResult.class));
+            p6ePagingResult.setList(P6eCopyUtil.runList(p6eLogDataDto.getList(), P6eLogDataResult.class));
             return P6eModel.build().setData(p6ePagingResult);
         } else {
             return P6eModel.build(p6eLogDataDto.getError());

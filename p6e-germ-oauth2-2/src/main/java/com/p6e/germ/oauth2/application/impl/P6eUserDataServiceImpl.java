@@ -76,7 +76,7 @@ public class P6eUserDataServiceImpl implements P6eUserDataService {
             final P6eUserEntity p6eUserEntity = new P6eUserEntity(P6eCopyUtil.run(param, P6eOauth2UserDb.class));
             p6eUserDataDto.setTotal(p6eUserEntity.count());
             p6eUserDataDto.initPaging(p6eUserEntity.get());
-            p6eUserDataDto.setList(P6eCopyUtil.run(p6eUserEntity.select(), P6eUserDataDto.class));
+            p6eUserDataDto.setList(P6eCopyUtil.runList(p6eUserEntity.select(), P6eUserDataDto.class));
         } catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
