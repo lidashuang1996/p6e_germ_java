@@ -516,7 +516,7 @@ public final class P6eCopyUtil {
             fields.addAll(Arrays.asList(cls.getDeclaredFields()));
             // 获取父类对象
             cls = cls.getSuperclass();
-        } while (cls != null && cls != Object.class);
+        } while (cls != null && cls != Object.class && isSerializable(cls));
         // 转换为数组返回
         // 排除 static 和 transient 修饰符，修饰的 field 的对象
         return fields.stream().filter(f ->
