@@ -42,7 +42,7 @@ public final class P6eCopyUtil {
     public static <T> T run(Object data, Class<T> c, T def) {
         try {
             if (data == null || c == null) {
-                return def;
+                return deepClone(def);
             } else {
                 // 创建对象
                 final T t = c.newInstance();
@@ -51,7 +51,7 @@ public final class P6eCopyUtil {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return def;
+            return deepClone(def);
         }
     }
 
@@ -77,7 +77,7 @@ public final class P6eCopyUtil {
     public static <T> T run(Object data, T t, T def) {
         try {
             if (data == null || t == null) {
-                return def;
+                return deepClone(def);
             } else {
                 final Class<?> a = data.getClass();
                 final Class<?> b = t.getClass();
@@ -169,8 +169,8 @@ public final class P6eCopyUtil {
     @SuppressWarnings("all")
     public static <E, T> List<T> runList(List<E> data, Class<T> cClass, List<T> def) {
         try {
-            if (data == null || cClass == null) {
-                return def;
+            if (data == null || cClass == null || !isListType(data.getClass())) {
+                return deepClone(def);
             } else {
                 final List<T> result = new ArrayList<>();
                 for (Object datum : data) {
@@ -198,7 +198,7 @@ public final class P6eCopyUtil {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return def;
+            return deepClone(def);
         }
     }
 
@@ -229,8 +229,8 @@ public final class P6eCopyUtil {
     @SuppressWarnings("all")
     public static <K, V, W> Map<K, W> runMap(Map<K, V> data, Class<W> wClass, Map<K, W> def) {
         try {
-            if (data == null || wClass == null) {
-                return def;
+            if (data == null || wClass == null || !isMapType(data.getClass())) {
+                return deepClone(def);
             } else {
                 final Map<K, W> result = new HashMap<>();
                 for (K k : data.keySet()) {
@@ -259,7 +259,7 @@ public final class P6eCopyUtil {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return def;
+            return deepClone(def);
         }
     }
 
@@ -280,23 +280,48 @@ public final class P6eCopyUtil {
      */
     public static Map<String, Object> toMap(final Object o, final Map<String, Object> def) {
         if (o == null) {
-            return def;
+            return deepClone(def);
         } else {
             try {
                 // 读取的参数的类型
                 final Class<?> oClass = o.getClass();
-                for (Class<?> anInterface : oClass.getInterfaces()) {
-                    // 判断是否接口于 java.io.Serializable
-                    if (anInterface == Serializable.class) {
+                // 判断是否接口于 java.io.Serializable
+                if (isSerializable(oClass)) {
+                    // 创建返回对象
+                    final Map<String, Object> rMap;
+                    if (isMapType(oClass)) {
+                        final Map<?, ?> mo = (Map<?, ?>) o;
+                        final Class<?>[] go = getGenericClass(oClass.getTypeName());
+                        // 只处理 key 为基础变量且不为 object 的 map 数据
+                        if (go.length == 2 && go[0] != java.lang.Object.class && isBaseType(go[0])) {
+                            rMap = new HashMap<>(mo.size());
+                            for (final Object key : mo.keySet()) {
+                                final Object value = mo.get(key);
+                                // 判断是否为基础类型
+                                if (isBaseType(value.getClass())) {
+                                    rMap.put(String.valueOf(key), deepClone(value));
+                                } else {
+                                    // 判断是否为 list 类型
+                                    if (isListType(value.getClass())) {
+                                        rMap.put(String.valueOf(key), toList(value, null));
+                                    } else {
+                                        rMap.put(String.valueOf(key), toMap(value, null));
+                                    }
+                                }
+                            }
+                        } else {
+                            // 错误情况下赋值
+                            rMap = deepClone(def);
+                        }
+                    } else {
                         final Field[] fields = getFields(oClass);
-                        // 创建返回对象
-                        final Map<String, Object> rMap = new HashMap<>(fields.length);
+                        rMap = new HashMap<>(fields.length);
                         for (Field field : fields) {
                             field.setAccessible(true);
                             final Class<?> fieldClass = field.getType();
                             // 判断是否为基础类型
                             if (isBaseType(fieldClass)) {
-                                rMap.put(field.getName(), field.get(o));
+                                rMap.put(field.getName(), deepClone(field.get(o)));
                             } else {
                                 // 判断是否为 list 类型
                                 if (isListType(fieldClass)) {
@@ -306,14 +331,14 @@ public final class P6eCopyUtil {
                                 }
                             }
                         }
-                        return rMap;
                     }
+                    return rMap;
                 }
                 // 如果参数没有接口 java.io.Serializable 就抛出运行异常
                 throw new RuntimeException(oClass.getName() + " copy no interface java.io.Serializable");
             } catch (Exception e) {
                 e.printStackTrace();
-                return def;
+                return deepClone(def);
             }
         }
     }
@@ -337,7 +362,7 @@ public final class P6eCopyUtil {
     public static List<Object> toList(final Object o, final List<Object> def) {
         try {
             if (o == null || isListType(o.getClass())) {
-                return def;
+                return deepClone(def);
             } else {
                 final List<Object> list = (List<Object>) o;
                 // 创建结果返回对象
@@ -346,7 +371,7 @@ public final class P6eCopyUtil {
                     // 获取当前数据的类型
                     final Class<?> iClass = item.getClass();
                     if (isBaseType(iClass)) {
-                        result.add(item);
+                        result.add(deepClone(item));
                     } else {
                         if (isListType(iClass)) {
                             result.add(toList(item, null));
@@ -359,7 +384,7 @@ public final class P6eCopyUtil {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return def;
+            return deepClone(def);
         }
     }
 
@@ -371,6 +396,7 @@ public final class P6eCopyUtil {
     private static boolean isBaseType(Class<?> cl) {
         final String clName = cl.getTypeName();
         switch (clName) {
+            case "java.lang.Object":
             case "java.lang.String":
             case "java.lang.Character":
             case "char":
@@ -504,8 +530,16 @@ public final class P6eCopyUtil {
      * @return 泛型的类型
      */
     private static Class<?>[] getGenericClass(final Type type) {
+        return getGenericClass(type.getTypeName());
+    }
+
+    /**
+     * 读取泛型的类型
+     * @param typeName 类型名称
+     * @return 泛型的类型
+     */
+    private static Class<?>[] getGenericClass(final String typeName) {
         try {
-            final String typeName = type.getTypeName();
             final int a = typeName.indexOf("<");
             final int b = typeName.lastIndexOf(">");
             if (a != -1 && b != -1 && a < b) {
