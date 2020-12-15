@@ -36,7 +36,7 @@ public final class P6eModel {
          */
         HTTP_METHOD_EXCEPTION(11),
         /**
-         * 服务启动
+         * 服务未启动
          */
         SERVICE_NOT_ENABLE(20);
 

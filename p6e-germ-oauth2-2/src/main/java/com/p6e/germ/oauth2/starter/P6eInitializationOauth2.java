@@ -17,16 +17,16 @@ import org.springframework.stereotype.Component;
  * @version 1.0
  */
 @Component
-public class P6eOauth2Initialization implements ApplicationRunner {
+public class P6eInitializationOauth2 implements ApplicationRunner {
 
     /** 注入日志对象 */
-    private static final Logger LOGGER = LoggerFactory.getLogger(P6eOauth2Initialization.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(P6eInitializationOauth2.class);
 
     /** 注入 ApplicationContext 对象 */
     private final ApplicationContext applicationContext;
 
     @Autowired
-    public P6eOauth2Initialization(ApplicationContext applicationContext) {
+    public P6eInitializationOauth2(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 

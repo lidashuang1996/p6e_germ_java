@@ -1,6 +1,6 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.p6e.germ.oauth2.config.P6eConfig,\
-com.p6e.germ.oauth2.starter.P6eOauth2Initialization,\
+com.p6e.germ.oauth2.starter.P6eInitializationOauth2,\
 com.p6e.germ.oauth2.context.controller.P6eAuthController,\
 com.p6e.germ.oauth2.context.controller.P6eInfoController,\
 com.p6e.germ.oauth2.context.controller.P6eLoginController,\

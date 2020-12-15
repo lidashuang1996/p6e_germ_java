@@ -15,5 +15,5 @@ import java.lang.annotation.*;
 @Documented
 @ServletComponentScan
 @MapperScan({ "com.p6e.germ.oauth2.infrastructure.repository.mapper" })
-public @interface P6eOauth2Enable {
+public @interface P6eEnableOauth2 {
 }
