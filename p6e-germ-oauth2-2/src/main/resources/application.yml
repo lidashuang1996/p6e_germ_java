@@ -1,0 +1,27 @@
+my:
+  server:
+    port: 80
+  db:
+    url: jdbc:mysql://119.23.25.159:3306/p6e?autoReconnect=true&useSSL=false&characterEncoding=UTF-8
+    username: root
+    password: Root1234!@#$
+  cache:
+    redis:
+      source_1:
+        database: 10
+        host: 119.23.25.159
+        port: 6379
+        password: lidashuang
+        timeout: 60000
+  oauth2:
+    qq:
+      client:
+        id: 101701115
+        secret: 165716bf22444998e0394d0e244e13d7
+      redirect: http://www.zhimamimi.com/login/qq/callback
+
+# 多环境配置
+spring:
+  profiles:
+    active: dev
+
