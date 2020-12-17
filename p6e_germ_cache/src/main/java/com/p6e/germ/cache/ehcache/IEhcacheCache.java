@@ -1,14 +1,13 @@
 package com.p6e.germ.cache.ehcache;
 
-import com.p6e.germ.cache.ICache;
-import net.sf.ehcache.CacheManager;
+import com.p6e.germ.cache.IP6eCache;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 
 /**
  * @author lidashuang
  * @version 1.0
  */
-public interface IEhcacheCache extends ICache {
+public interface IEhcacheCache extends IP6eCache {
 
     /**
      * 获取 EhCacheCacheManager 对象

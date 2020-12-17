@@ -5,7 +5,7 @@ package com.p6e.germ.cache;
  * @author lidashuang
  * @version 1.0
  */
-public interface ICache {
+public interface IP6eCache {
 
     /**
      * 获取当前的缓存的实现类型

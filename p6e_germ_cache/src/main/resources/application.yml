@@ -4,52 +4,46 @@ server:
 spring:
   # 项目名称
   application:
-    name: CLUB_ACTIVITY_SERVICE
+    name: P6E_GERM_CACHE
   cache:
     ehcache:
       config: ehcache.xml
     type: ehcache
-  # 执行的环境
-  #  profiles:
-  #    active: pro
-  # Redis 数据源的配置
-  redis:
-    data-source:
-      # 数据源1配置
-      source-1:
-        database: 11
-        host: xxx
+
+p6e:
+  cache:
+    redis:
+      type: JEDIS
+      node:
+        host: CCCCC
         port: 6379
-        password: xxx
-        # 连接超时时间（毫秒）
-        timeout: 60000
-        # 线程池配置
-        jedis:
-          pool:
-            # 连接池最大连接数（使用负值表示没有限制）
-            max-active: 20
-            # 连接池最大阻塞等待时间（使用负值表示没有限制）
-            max-wait: -1
-            # 连接池中的最大空闲连接
-            max-idle: 20
-            # 连接池中的最小空闲连接
-            min-idle: 5
-      # 数据源2配置
-      source-2:
-        database: 10
-        host: xxx
-        port: 6379
-        password: xxx
-        # 连接超时时间（毫秒）
-        timeout: 60000
-        # 线程池配置
-        lettuce:
-          pool:
-            # 连接池最大连接数（使用负值表示没有限制）
-            max-active: 20
-            # 连接池最大阻塞等待时间（使用负值表示没有限制）
-            max-wait: -1
-            # 连接池中的最大空闲连接
-            max-idle: 20
-            # 连接池中的最小空闲连接
-            min-idle: 5
+        database: 0
+        password: aaaaa
+        cluster:
+          nodes:
+            - 127.0.0.1:8229
+            - 127.0.0.1:8229
+            - 127.0.0.1:8229
+            - 127.0.0.1:8229
+          maxRedirects: 66
+        sentinel:
+          master: 12334556565
+          password: 123345
+          nodes:
+            - 127.0.0.1:8229
+            - 127.0.0.1:8229
+            - 127.0.0.1:8229
+            - 127.0.0.1:8229
+      source:
+        A:
+          host: CCCCC
+          port: 6379
+          database: 1
+          password: bbbb
+        B:
+          host: CCCCC
+          port: 6379
+          database: 2
+          password: cccc
+
+
