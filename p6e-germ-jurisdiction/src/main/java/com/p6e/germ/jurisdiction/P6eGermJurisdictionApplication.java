@@ -9,10 +9,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @version 1.0
  */
 @SpringBootApplication
-public class P6eJurisdictionApplication {
+public class P6eGermJurisdictionApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(P6eJurisdictionApplication.class, args);
+        SpringApplication.run(P6eGermJurisdictionApplication.class, args);
     }
 
 }

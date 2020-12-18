@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.p6e.germ.jurisdiction.infrastructure.repository.mapper.P6eJurisdictionGroupRelationUserMapper">
+
+    <select id="count" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionGroupRelationUserDb"
+            resultType="long">
+        SELECT COUNT(*) FROM `p6e_jurisdiction_group_relation_user`
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="DB.uid != null">AND `uid` = #{DB.uid}</if>
+            <if test="DB.gid != null">AND `gid` = #{DB.gid}</if>
+        </trim>;
+    </select>
+
+    <select id="select" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionGroupRelationUserDb"
+            resultType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionGroupRelationUserDb">
+        SELECT
+            `uid` AS `uid`,
+            `gid` AS `gid`,
+            `create_date` AS `createDate`,
+            `update_date` AS `updateDate`,
+            `operate` AS `operate`
+        FROM
+            `p6e_jurisdiction_group_relation_user`
+            <trim prefix="WHERE" prefixOverrides="AND |OR">
+                <if test="DB.uid != null">AND `uid` = #{DB.uid}</if>
+                <if test="DB.gid != null">AND `gid` = #{DB.gid}</if>
+            </trim>
+        LIMIT #{DB.page}, #{DB.size};
+    </select>
+
+    <select id="selectOneData" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionGroupRelationUserDb"
+            resultType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionGroupRelationUserDb">
+        SELECT
+            `uid` AS `uid`,
+            `gid` AS `gid`,
+            `create_date` AS `createDate`,
+            `update_date` AS `updateDate`,
+            `operate` AS `operate`
+        FROM
+            `p6e_jurisdiction_group_relation_user`
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="DB.uid != null">AND `uid` = #{DB.uid}</if>
+            <if test="DB.gid != null">AND `gid` = #{DB.gid}</if>
+        </trim>
+        LIMIT 0, 1;
+    </select>
+
+    <delete id="delete" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionGroupRelationUserDb">
+        DELETE FROM `p6e_jurisdiction_group_relation_user`
+        WHERE `uid` = #{DB.uid} <if test="DB.gid != null">AND `gid` = #{DB.gid}</if>;
+    </delete>
+
+    <insert id="create" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionGroupRelationUserDb">
+        INSERT INTO `p6e_jurisdiction_group_relation_user`(`uid`, `gid`) VALUE(#{DB.uid}, #{DB.gid});
+    </insert>
+</mapper>
