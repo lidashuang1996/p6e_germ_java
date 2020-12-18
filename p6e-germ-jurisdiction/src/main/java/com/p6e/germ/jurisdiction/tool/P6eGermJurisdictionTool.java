@@ -1,5 +1,6 @@
 package com.p6e.germ.jurisdiction.tool;
 
+import com.p6e.germ.jurisdiction.utils.P6eJsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author lidashuang
@@ -18,10 +20,16 @@ public final class P6eGermJurisdictionTool {
 
     /** 注入日志对象 */
     private static final Logger LOGGER = LoggerFactory.getLogger(P6eGermJurisdictionTool.class);
-    private static String URL = "jdbc:mysql://119.23.25.159:3306/p6e?autoReconnect=true&useSSL=false&characterEncoding=UTF-8";
-    private static String PASSWORD = "Root1234!@#$";
-    private static String USERNAME = "root";
+    private static String URL = "jdbc:mysql://myIP:3306/myDB?autoReconnect=true&useSSL=false&characterEncoding=UTF-8";
+    private static String PASSWORD = "myPassword";
+    private static String USERNAME = "myUsername";
 
+    /**
+     * 初始化参数
+     * @param url DB URL
+     * @param password DB PASSWORD
+     * @param username DB USERNAME
+     */
     public static void init(String url, String password, String username) {
         URL = url;
         PASSWORD = password;
@@ -43,7 +51,7 @@ public final class P6eGermJurisdictionTool {
      */
     public static void generateJurisdictionFile(final String path,
                                                 final String packagePath) {
-        final File file = new File(path + "/P6eSecurityConfig.java");
+        final File file = new File(path + "/P6eJurisdictionConstant.java");
         FileWriter fileWriter = null;
         try {
             if (file.exists()) {
@@ -66,7 +74,8 @@ public final class P6eGermJurisdictionTool {
             fileWriter.write("public final class P6eJurisdictionConstant implements Serializable {\r\n");
             LOGGER.info("获取的数据为 ==> " + jurisdictionModelList);
             for (final DataModel item : jurisdictionModelList) {
-                final Map<String, Integer> contentMap = item.getContentMap();
+                final Map<String, String> contentMap =
+                        P6eJsonUtil.fromJsonToMap(item.getContent(), String.class, String.class);
                 // 如果为 null 进行下一次循环
                 if (contentMap == null) {
                     continue;
@@ -110,6 +119,10 @@ public final class P6eGermJurisdictionTool {
         }
     }
 
+    /**
+     * 读取数据对象
+     * @return 读取的数据源对象
+     */
     private static List<DataModel> getData() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver") ;
@@ -145,6 +158,9 @@ public final class P6eGermJurisdictionTool {
         }
     }
 
+    /**
+     * 模型
+     */
     public static class DataModel {
         private Integer id;
         private String code;
