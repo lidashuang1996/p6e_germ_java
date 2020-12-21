@@ -3,8 +3,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.p6e.germ.jurisdiction.infrastructure.repository.mapper.P6eJurisdictionWholeDataMapper">
-    <select id="group" parameterType="com.p6e.germ.jurisdiction.model.db.P6eGroupJurisdictionWholeDataDb"
-            resultType="com.p6e.germ.jurisdiction.model.db.P6eGroupJurisdictionWholeDataDb">
+    <select id="group" parameterType="com.p6e.germ.jurisdiction.model.db.P6eWholeJurisdictionGroupDb"
+            resultType="com.p6e.germ.jurisdiction.model.db.P6eWholeJurisdictionGroupDb">
         SELECT
             `A`.`id` AS `groupId`,
             `A`.`name` AS `groupName`,
@@ -23,8 +23,8 @@
         WHERE `A`.`id` = #{DB.groupId};
     </select>
 
-    <select id="user" parameterType="com.p6e.germ.jurisdiction.model.db.P6eUserJurisdictionWholeDataDb"
-            resultType="com.p6e.germ.jurisdiction.model.db.P6eUserJurisdictionWholeDataDb">
+    <select id="user" parameterType="com.p6e.germ.jurisdiction.model.db.P6eWholeJurisdictionUserDb"
+            resultType="com.p6e.germ.jurisdiction.model.db.P6eWholeJurisdictionUserDb">
         SELECT
             `C`.`id` AS `groupId`,
             `C`.`weight` AS `groupWeight`,

@@ -18,7 +18,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
-public class P6eGroupJurisdictionWholeDataDb extends P6eBaseDb implements Serializable {
+public class P6eWholeJurisdictionGroupDb extends P6eBaseDb implements Serializable {
     private Integer groupId;
     private String groupName;
     private String groupDescribe;

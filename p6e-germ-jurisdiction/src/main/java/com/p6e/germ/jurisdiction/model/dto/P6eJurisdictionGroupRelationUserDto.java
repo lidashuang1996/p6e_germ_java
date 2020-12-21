@@ -1,6 +1,7 @@
-package com.p6e.germ.jurisdiction.model.db;
+package com.p6e.germ.jurisdiction.model.dto;
 
 import com.p6e.germ.jurisdiction.model.base.P6eBaseDb;
+import com.p6e.germ.jurisdiction.model.base.P6eResultDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,11 +19,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
-public class P6eJurisdictionGroupDb extends P6eBaseDb implements Serializable {
-    private Integer id;
-    private String name;
-    private String describe;
-    private Integer weight;
+public class P6eJurisdictionGroupRelationUserDto extends P6eResultDto<P6eJurisdictionGroupRelationUserDto> implements Serializable {
+    private Integer uid;
+    private Integer gid;
     private String createDate;
     private String updateDate;
     private String operate;

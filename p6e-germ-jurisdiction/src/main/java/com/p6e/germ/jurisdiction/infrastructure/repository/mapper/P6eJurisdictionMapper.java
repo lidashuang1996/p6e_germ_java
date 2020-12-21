@@ -1,7 +1,6 @@
 package com.p6e.germ.jurisdiction.infrastructure.repository.mapper;
 
 import com.p6e.germ.jurisdiction.model.db.P6eJurisdictionDb;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -31,6 +30,8 @@ public interface P6eJurisdictionMapper {
      * @return 权限结果对象
      */
     public Integer delete(P6eJurisdictionDb param);
+
+    public void clean();
 
     /**
      * 查询权限数据
