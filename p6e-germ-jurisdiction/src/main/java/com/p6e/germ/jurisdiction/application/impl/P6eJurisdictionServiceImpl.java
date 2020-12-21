@@ -15,14 +15,15 @@ import com.p6e.germ.jurisdiction.model.dto.P6eJurisdictionDto;
 import com.p6e.germ.jurisdiction.model.dto.P6eJurisdictionGroupDto;
 import com.p6e.germ.jurisdiction.model.dto.P6eJurisdictionRelationGroupDto;
 import com.p6e.germ.jurisdiction.utils.P6eCopyUtil;
-import com.p6e.germ.jurisdiction.utils.P6eSpringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 /**
  * @author lidashuang
  * @version 1.0
  */
+@Service
 public class P6eJurisdictionServiceImpl implements P6eJurisdictionService {
 
     /** 注入日志系统 */
