@@ -1,6 +1,4 @@
-package com.p6e.germ.jurisdiction.aspect;
-
-import com.p6e.germ.jurisdiction.utils.P6eJsonUtil;
+package com.p6e.germ.jurisdiction.model;
 
 import java.io.Serializable;
 import java.util.*;
@@ -12,7 +10,7 @@ import java.util.stream.Collectors;
  * @author lidashuang
  * @version 1.0
  */
-public class P6eJurisdictionAspectModel implements Serializable {
+public class P6eJurisdictionModel implements Serializable {
 
     /** 权限组和权限的数据 */
     private final List<Group> groupData = new ArrayList<>();
@@ -23,7 +21,7 @@ public class P6eJurisdictionAspectModel implements Serializable {
     /**
      * 构造方法注入参数的数据
      */
-    public P6eJurisdictionAspectModel(List<Group> groupData) {
+    public P6eJurisdictionModel(List<Group> groupData) {
         if (groupData != null) {
             // 添加 groupData 数据
             this.groupData.addAll(groupData);
@@ -97,7 +95,7 @@ public class P6eJurisdictionAspectModel implements Serializable {
         return null;
     }
 
-    public boolean isHave(String content) {
+    public boolean isExist(String content) {
         for (final Jurisdiction jurisdiction : jurisdictionData) {
             if (jurisdiction.isHave(content)) {
                 return true;

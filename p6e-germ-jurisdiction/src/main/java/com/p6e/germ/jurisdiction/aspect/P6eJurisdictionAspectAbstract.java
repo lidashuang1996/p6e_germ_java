@@ -1,8 +1,9 @@
 package com.p6e.germ.jurisdiction.aspect;
 
+import com.p6e.germ.common.http.P6eHttpServlet;
 import com.p6e.germ.jurisdiction.annotation.P6eJurisdiction;
 import com.p6e.germ.jurisdiction.condition.P6eCondition;
-import com.p6e.germ.jurisdiction.http.P6eHttpServlet;
+import com.p6e.germ.jurisdiction.model.P6eJurisdictionModel;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -16,14 +17,34 @@ import java.util.List;
 
 
 /**
+ * 权限验证的抽象类
+ * 泛型 T 为用户继承扩展的权限模型类
+ * 通过继承该抽象类且定义扫描拦截范围来实现权限验证的功能
  * @author lidashuang
  * @version 1.0
  */
 public abstract class P6eJurisdictionAspectAbstract
-        <T extends P6eJurisdictionAspectModel> implements P6eJurisdictionAspectInterface<T> {
+        <T extends P6eJurisdictionModel> implements P6eJurisdictionAspectInterface<T> {
+
+    /** 是否开启 debug */
+    private static boolean IS_DEBUG = false;
 
     /** 注入日志系统 */
     private static final Logger LOGGER = LoggerFactory.getLogger(P6eJurisdictionAspectAbstract.class);
+
+    /**
+     * 打开 debug 模式
+     */
+    public static void openDebug() {
+        IS_DEBUG = true;
+    }
+
+    /**
+     * 关闭 debug 模式
+     */
+    public static void closeDebug() {
+        IS_DEBUG = true;
+    }
 
     /**
      * 读取方法的参数并替换为处理过后的参数
@@ -31,16 +52,36 @@ public abstract class P6eJurisdictionAspectAbstract
      * @param model 参数对象
      * @return 返回的处理过的参数对象
      */
-    private static Object[] injectionData(final JoinPoint jp, final P6eJurisdictionAspectModel model) {
+    private static Object[] injectionData(final JoinPoint jp, final P6eJurisdictionModel model) {
         // 获取参数参数值
         final Object[] args = jp.getArgs();
         // 参数遍历
         for (int i = 0; i < args.length; i++) {
-            if (args[i] instanceof P6eJurisdictionAspectModel) {
+            if (args[i] instanceof P6eJurisdictionModel) {
                 args[i] = model;
             }
         }
         return args;
+    }
+
+    /**
+     * 获取请求的路径
+     * @param jp 代理对象
+     * @return 请求的路径
+     */
+    private static String getPath(JoinPoint jp) {
+        return jp.getThis().getClass().getName().split("\\$\\$")[0] + "." + jp.getSignature().getName() + "()";
+    }
+
+    /**
+     * 获取注解对象
+     * @param jp 代理对象
+     * @return 注解的对象
+     */
+    private static P6eJurisdiction getJurisdiction(JoinPoint jp) {
+        final P6eJurisdiction mJurisdiction = ((MethodSignature) jp.getSignature()).getMethod().getAnnotation(P6eJurisdiction.class);
+        final P6eJurisdiction cJurisdiction = (P6eJurisdiction) jp.getSignature().getDeclaringType().getAnnotation(P6eJurisdiction.class);
+        return mJurisdiction == null ? cJurisdiction : mJurisdiction;
     }
 
     // 声明拦截器范围的注解
@@ -55,11 +96,11 @@ public abstract class P6eJurisdictionAspectAbstract
     /**
      * 前增强
      * 读取 interceptor() 方法上面的注解
-     * @param joinPoint 参数对象
+     * @param jp 参数对象
      */
     @Before("interceptor()")
-    public void beforeInterceptor(final JoinPoint joinPoint) {
-        before(joinPoint);
+    public void beforeInterceptor(final JoinPoint jp) {
+        before(jp);
     }
 
     /**
@@ -106,9 +147,9 @@ public abstract class P6eJurisdictionAspectAbstract
 
     /**
      * spring aop 切面前置增强
-     * @param joinPoint 增强代理对象
+     * @param jp 增强代理对象
      */
-    public void before(final JoinPoint joinPoint) {
+    public void before(final JoinPoint jp) {
     }
 
     /**
@@ -140,58 +181,77 @@ public abstract class P6eJurisdictionAspectAbstract
      */
     public Object around(final ProceedingJoinPoint pjp) throws Throwable {
         // 获取请求的方法路径
-        final String path = pjp.getThis().getClass()
-                .getName().split("\\$\\$")[0] + "." + pjp.getSignature().getName() + "()";
+        final String path = getPath(pjp);
         // 读取注解对象
-        final P6eJurisdiction jurisdiction =
-                ((MethodSignature) pjp.getSignature()).getMethod().getAnnotation(P6eJurisdiction.class);
+        final P6eJurisdiction jurisdiction = getJurisdiction(pjp);
         if (jurisdiction == null) {
-            // 没有开启的权限模式
-            LOGGER.debug("[ NO JURISDICTION MODE ] ==> " + path);
+            // 如果没有权限对象，就表示没有开启的权限模式
+            this.log("[ NO JURISDICTION MODE ] ==> " + path + ", direct access.");
+            // 修改请求的参数，并返回
             return pjp.proceed(injectionData(pjp, null));
         } else {
-            // 判断是否具备权限的状态
-            boolean bool = false;
             // 执行认证方法
-            final P6eJurisdictionAspectModel model =
-                    this.execute(P6eHttpServlet.newInstance(), pjp.getArgs());
-            // 判断是否具备权限
-            final List<String> jurisdictionList = new ArrayList<>();
-            // 添加判断的权限条件
-            if (!"".equals(jurisdiction.value())) {
-                jurisdictionList.add(jurisdiction.value());
+            P6eJurisdictionModel p6eJurisdictionModel;
+            try {
+                p6eJurisdictionModel = this.authentication(P6eHttpServlet.newInstance(), pjp.getArgs());
+            } catch (Exception e) {
+                p6eJurisdictionModel = null;
             }
-            jurisdictionList.addAll(Arrays.asList(jurisdiction.values()));
-            // 读取条件
-            final P6eCondition condition = jurisdiction.condition();
-            switch (condition) {
-                case AND:
-                    bool = true;
-                    for (final String item : jurisdictionList) {
-                        if (!model.isHave(item)) {
-                            bool = false;
-                            break;
-                        }
-                    }
-                    break;
-                case OR:
-                default:
-                    for (final String item : jurisdictionList) {
-                        // 其中一个符合条件，就通过
-                        if (model.isHave(item)) {
-                            bool = true;
-                            break;
-                        }
-                    }
-                    break;
-            }
-            if (bool) {
-                LOGGER.debug("[ TRUE JURISDICTION ] ==> " + path);
-                return pjp.proceed(injectionData(pjp, model));
+            if (p6eJurisdictionModel == null) {
+                // 认证没通过
+                this.log("[ JURISDICTION MODE ( NO PASSED ) ] ==> " + path);
+                return this.error(P6eHttpServlet.newInstance(), ERROR_NO_JURISDICTION);
             } else {
-                LOGGER.debug("[ FALSE JURISDICTION ] ==> " + path);
-                return this.error(P6eHttpServlet.newInstance());
+                // 状态
+                boolean bool = false;
+                // 判断是否具备权限
+                final List<String> jurisdictionList = new ArrayList<>();
+                // 添加判断的权限条件
+                if (!jurisdiction.value().isEmpty()) {
+                    jurisdictionList.add(jurisdiction.value());
+                }
+                jurisdictionList.addAll(Arrays.asList(jurisdiction.values()));
+                // 读取条件
+                final P6eCondition condition = jurisdiction.condition();
+                switch (condition) {
+                    case AND:
+                        bool = true;
+                        for (final String item : jurisdictionList) {
+                            if (!p6eJurisdictionModel.isExist(item)) {
+                                bool = false;
+                                break;
+                            }
+                        }
+                        break;
+                    case OR:
+                    default:
+                        for (final String item : jurisdictionList) {
+                            // 其中一个符合条件，就通过
+                            if (p6eJurisdictionModel.isExist(item)) {
+                                bool = true;
+                                break;
+                            }
+                        }
+                        break;
+                }
+                if (bool) {
+                    this.log("[ JURISDICTION MODE ( PASSED ) ] ==> " + path);
+                    return pjp.proceed(injectionData(pjp, p6eJurisdictionModel));
+                } else {
+                    this.log("[ JURISDICTION MODE ( NO PASSED ) ] ==> " + path);
+                    return this.error(P6eHttpServlet.newInstance(), ERROR_NO_JURISDICTION);
+                }
             }
+        }
+    }
+
+    /**
+     * 打印日志信息
+     * @param content 日志内容
+     */
+    private void log(String content) {
+        if (IS_DEBUG) {
+            LOGGER.info(content);
         }
     }
 }

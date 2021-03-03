@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.p6e.germ.jurisdiction.infrastructure.repository.mapper.P6eJurisdictionGroupRelationUserMapper">
+<mapper namespace="com.p6e.germ.jurisdiction.infrastructure.mapper.P6eJurisdictionGroupRelationUserMapper">
 
     <select id="count" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionGroupRelationUserDb"
             resultType="long">

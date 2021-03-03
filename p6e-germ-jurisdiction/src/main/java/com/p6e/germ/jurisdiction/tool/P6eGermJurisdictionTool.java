@@ -1,6 +1,6 @@
 package com.p6e.germ.jurisdiction.tool;
 
-import com.p6e.germ.jurisdiction.utils.P6eJsonUtil;
+import com.p6e.germ.common.utils.P6eJsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

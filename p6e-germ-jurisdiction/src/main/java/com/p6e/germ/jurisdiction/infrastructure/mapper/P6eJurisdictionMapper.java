@@ -1,4 +1,4 @@
-package com.p6e.germ.jurisdiction.infrastructure.repository.mapper;
+package com.p6e.germ.jurisdiction.infrastructure.mapper;
 
 import com.p6e.germ.jurisdiction.model.db.P6eJurisdictionDb;
 

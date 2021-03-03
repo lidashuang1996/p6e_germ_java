@@ -1,6 +1,6 @@
 package com.p6e.germ.jurisdiction.domain.entity;
 
-import com.p6e.germ.jurisdiction.infrastructure.repository.mapper.P6eJurisdictionGroupMapper;
+import com.p6e.germ.jurisdiction.infrastructure.mapper.P6eJurisdictionGroupMapper;
 import com.p6e.germ.jurisdiction.model.db.P6eJurisdictionGroupDb;
 import com.p6e.germ.jurisdiction.utils.P6eSpringUtil;
 

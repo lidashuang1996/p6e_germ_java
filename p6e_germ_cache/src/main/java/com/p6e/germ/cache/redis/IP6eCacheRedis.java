@@ -4,6 +4,7 @@ import com.p6e.germ.cache.IP6eCache;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 /**
+ * Redis 缓存的接口
  * @author lidashuang
  * @version 1.0
  */

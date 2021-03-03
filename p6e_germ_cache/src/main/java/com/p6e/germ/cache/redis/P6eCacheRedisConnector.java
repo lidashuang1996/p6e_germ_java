@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
+ * Redis 缓存的连接器抽象类
  * @author lidashuang
  * @version 1.0
  */

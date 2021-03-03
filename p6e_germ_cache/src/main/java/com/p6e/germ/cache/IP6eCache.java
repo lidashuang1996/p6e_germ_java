@@ -1,7 +1,7 @@
 package com.p6e.germ.cache;
 
 /**
- * 缓存的接口类
+ * 缓存的接口
  * @author lidashuang
  * @version 1.0
  */

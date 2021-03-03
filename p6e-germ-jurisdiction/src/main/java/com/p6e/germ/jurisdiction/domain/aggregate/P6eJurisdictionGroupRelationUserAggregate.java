@@ -2,8 +2,8 @@ package com.p6e.germ.jurisdiction.domain.aggregate;
 
 import com.p6e.germ.jurisdiction.domain.entity.P6eJurisdictionGroupEntity;
 import com.p6e.germ.jurisdiction.domain.entity.P6eUserEntity;
-import com.p6e.germ.jurisdiction.infrastructure.repository.mapper.P6eJurisdictionGroupRelationUserMapper;
-import com.p6e.germ.jurisdiction.infrastructure.repository.mapper.P6eJurisdictionWholeDataMapper;
+import com.p6e.germ.jurisdiction.infrastructure.mapper.P6eJurisdictionGroupRelationUserMapper;
+import com.p6e.germ.jurisdiction.infrastructure.mapper.P6eJurisdictionWholeDataMapper;
 import com.p6e.germ.jurisdiction.model.db.P6eJurisdictionGroupRelationUserDb;
 import com.p6e.germ.jurisdiction.model.db.P6eWholeJurisdictionUserDb;
 import com.p6e.germ.jurisdiction.utils.P6eSpringUtil;

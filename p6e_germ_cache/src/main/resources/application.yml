@@ -1,42 +1,42 @@
-server:
-  port: 6100
-
-spring:
-  # 项目名称
-  application:
-    name: P6E_GERM_CACHE
-  cache:
-    ehcache:
-      config: ehcache.xml
-    type: ehcache
-
-p6e:
-  cache:
-    redis:
-#      type: JEDIS
-#      node:
-#        host: CCCCC
-#        port: 6379
-#        database: 0
-#        password: aaaaa
-#        cluster:
-#          nodes:
-#            - 127.0.0.1:8229
-#            - 127.0.0.1:8229
-#            - 127.0.0.1:8229
-#            - 127.0.0.1:8229
-#          maxRedirects: 66
-#        sentinel:
-#          master: 12334556565
-#          password: 123345
-#          nodes:
-#            - 127.0.0.1:8229
-#            - 127.0.0.1:8229
-#            - 127.0.0.1:8229
-#            - 127.0.0.1:8229
-      source:
-        A:
-          host: 119.23.25.159
-          port: 6379
-          database: 10
-          password: lidashuang
+#server:
+#  port: 6100
+#
+#spring:
+#  # 项目名称
+#  application:
+#    name: P6E_GERM_CACHE
+#  cache:
+#    ehcache:
+#      config: ehcache.xml
+#    type: ehcache
+#
+#p6e:
+#  cache:
+#    redis:
+##      type: JEDIS
+##      node:
+##        host: CCCCC
+##        port: 6379
+##        database: 0
+##        password: aaaaa
+##        cluster:
+##          nodes:
+##            - 127.0.0.1:8229
+##            - 127.0.0.1:8229
+##            - 127.0.0.1:8229
+##            - 127.0.0.1:8229
+##          maxRedirects: 66
+##        sentinel:
+##          master: 12334556565
+##          password: 123345
+##          nodes:
+##            - 127.0.0.1:8229
+##            - 127.0.0.1:8229
+##            - 127.0.0.1:8229
+##            - 127.0.0.1:8229
+#      source:
+#        A:
+#          host: 119.23.25.159
+#          port: 6379
+#          database: 10
+#          password: lidashuang

@@ -1,6 +1,7 @@
 package com.p6e.germ.common.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -13,6 +14,22 @@ import java.io.Serializable;
 @Component
 @ConfigurationProperties(prefix = "p6e")
 public class P6eConfig implements Serializable {
+
+    private static boolean IS_INIT = false;
+    private static P6eConfig CONFIG = null;
+
+    public static P6eConfig get() {
+        return CONFIG;
+    }
+
+    public static void init(ApplicationContext application) {
+        IS_INIT = true;
+        CONFIG = application.getBean(P6eConfig.class);
+    }
+
+    public static boolean isInit() {
+        return IS_INIT;
+    }
 
     /** 数据库的配置文件 */
     private P6eDatabaseConfig database = new P6eDatabaseConfig();

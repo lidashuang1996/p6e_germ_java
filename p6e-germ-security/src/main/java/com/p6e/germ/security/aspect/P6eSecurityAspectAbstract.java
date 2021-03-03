@@ -257,16 +257,16 @@ public abstract class P6eSecurityAspectAbstract
                 }
                 // 判断是否为白名单
                 if (isWhiteList(path)) {
-                    LOGGER.debug("[ WHITE LIST ] ==> " + path + ", direct access.");
+                    this.log("[ WHITE LIST ] ==> " + path + ", direct access.");
                     return pjp.proceed(injectionData(pjp, p6eSecurityModel));
                 } else {
                     if (p6eSecurityModel == null) {
                         // 认证没通过
-                        LOGGER.debug("[ AUTH MODE ( NO PASSED ) ] ==> " + path);
+                        this.log("[ AUTH MODE ( NO PASSED ) ] ==> " + path);
                         return this.error(P6eHttpServlet.newInstance(), ERROR_AUTH_INFO);
                     } else {
                         // 认证通过
-                        LOGGER.debug("[ AUTH MODE ( PASSED ) ] ==> " + path);
+                        this.log("[ AUTH MODE ( PASSED ) ] ==> " + path);
                         return pjp.proceed(injectionData(pjp, p6eSecurityModel));
                     }
                 }

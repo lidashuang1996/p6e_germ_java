@@ -1,12 +1,14 @@
 package com.p6e.germ.cache.redis;
 
 import com.p6e.germ.common.config.P6eCacheRedisConfig;
+import com.p6e.germ.common.config.P6eConfig;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.util.Assert;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Redis 缓存的实现抽象类
  * @author lidashuang
  * @version 1.0
  */
@@ -16,13 +18,16 @@ public abstract class P6eCacheRedisAbstract implements IP6eCacheRedis {
     private static final int MAX_RETRY = 3;
     /** 默认的名称 */
     private static final String DEFAULT_NAME = "$DEFAULT";
-    /** 保存链接对象的 map 集合 */
+    /** 保存连接器对象的集合 */
     private static final Map<String, StringRedisTemplate> REDIS_TEMPLATE_CACHE_MAP = new HashMap<>();
+
     /** 配置文件 */
-    private static P6eCacheRedisConfig CONFIG = new P6eCacheRedisConfig();
-    /** Jedis */
+    private static P6eCacheRedisConfig CONFIG =
+            P6eConfig.isInit() ? P6eConfig.get().getCache().getRedis() : new P6eCacheRedisConfig();
+
+    /** Jedis 连接器 */
     private static P6eCacheRedisConnector P6E_JEDIS_CONNECTOR = new P6eCacheRedisJedisConnector(CONFIG);
-    /** Lettuce */
+    /** Lettuce 连接器 */
     private static P6eCacheRedisConnector P6E_LETTUCE_CONNECTOR = new P6eCacheRedisLettuceConnector(CONFIG);
 
     /**
@@ -39,7 +44,7 @@ public abstract class P6eCacheRedisAbstract implements IP6eCacheRedis {
      * 写入数据对象 JedisConnector
      * @param connector 连接器对象
      */
-    public static void setP6eJedisConnector(P6eCacheRedisConnector connector) {
+    public static void setJedisConnector(P6eCacheRedisConnector connector) {
         P6E_JEDIS_CONNECTOR = connector;
     }
 
@@ -47,7 +52,7 @@ public abstract class P6eCacheRedisAbstract implements IP6eCacheRedis {
      * 写入数据对象 LettuceConnector
      * @param connector 连接器对象
      */
-    public static void setP6eLettuceConnector(P6eCacheRedisConnector connector) {
+    public static void setLettuceConnector(P6eCacheRedisConnector connector) {
         P6E_LETTUCE_CONNECTOR = connector;
     }
 
@@ -59,7 +64,7 @@ public abstract class P6eCacheRedisAbstract implements IP6eCacheRedis {
      */
     public static Map<String, StringRedisTemplate> getStringRedisTemplate(String source, int count) {
         // 判断不能为空
-        Assert.notNull(source, P6eCacheRedisAbstract.class + " ==> source is null.");
+        Assert.notNull(source, P6eCacheRedisAbstract.class + " ==> get redis source is null.");
         source = source.toUpperCase();
         final Map<String, StringRedisTemplate> map = new HashMap<>(3);
         for (final String key : REDIS_TEMPLATE_CACHE_MAP.keySet()) {
@@ -82,9 +87,9 @@ public abstract class P6eCacheRedisAbstract implements IP6eCacheRedis {
      */
     private static synchronized void createStringRedisTemplate(String source) {
         // 判断不能为空
-        Assert.notNull(source, P6eCacheRedisAbstract.class + " ==> source is null.");
+        Assert.notNull(source, P6eCacheRedisAbstract.class + " ==> create redis source is null.");
         source = source.toUpperCase();
-        // 检查是否存在这样的链接配置
+        // 检查是否存在这样的连接配置
         if (DEFAULT_NAME.equals(source) || CONFIG.getSource().get(source) != null) {
             // 再次检查一遍对象是否创建
             for (final String key : REDIS_TEMPLATE_CACHE_MAP.keySet()) {
@@ -101,7 +106,7 @@ public abstract class P6eCacheRedisAbstract implements IP6eCacheRedis {
                     REDIS_TEMPLATE_CACHE_MAP.putAll(P6E_LETTUCE_CONNECTOR.connect(DEFAULT_NAME.equals(source) ? null : source));
                     break;
                 default:
-                    throw new RuntimeException(P6eCacheRedisAbstract.class + " ==> type is null.");
+                    throw new RuntimeException(P6eCacheRedisAbstract.class + " ==> create redis source type is null.");
             }
         }
     }
@@ -122,7 +127,7 @@ public abstract class P6eCacheRedisAbstract implements IP6eCacheRedis {
     @Override
     public StringRedisTemplate getStringRedisTemplate(String source) {
         // 判断不能为空
-        Assert.notNull(source, this.getClass() + " ==> source is null.");
+        Assert.notNull(source, this.getClass() + " ==> get redis source is null.");
         final Map<String, StringRedisTemplate> map = getStringRedisTemplate(source, 0);
         if (map.size() == 0) {
             throw new RuntimeException(this.getClass() + " the corresponding data source cannot be queried.");
