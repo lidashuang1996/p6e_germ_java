@@ -1,10 +1,10 @@
 package com.p6e.germ.oauth2.context.controller;
 
+import com.p6e.germ.common.utils.P6eCopyUtil;
+import com.p6e.germ.common.utils.P6eJsonUtil;
 import com.p6e.germ.oauth2.application.P6eApplication;
 import com.p6e.germ.oauth2.context.support.P6eBaseController;
 import com.p6e.germ.oauth2.context.support.model.*;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eJsonUtil;
 import com.p6e.germ.oauth2.model.P6eModel;
 import com.p6e.germ.oauth2.model.dto.*;
 import org.springframework.web.bind.annotation.*;
@@ -116,7 +116,7 @@ public class P6eLoginController extends P6eBaseController {
         }
     }
 
-    @RequestMapping("/we_chat/qq")
+    @RequestMapping("/login/we_chat")
     public void weChatLogin(HttpServletResponse response, P6eWeChatLoginParam param) throws Exception {
         final P6eUrlLoginDto p6eUrlLoginDto = P6eApplication.login.weChatInfo(param.getMark());
         if (p6eUrlLoginDto.getError() == null) {
@@ -130,7 +130,7 @@ public class P6eLoginController extends P6eBaseController {
         }
     }
 
-    @RequestMapping("/we_chat/qq/callback")
+    @RequestMapping("/login/we_chat/callback")
     public void weChatLoginCallback(P6eQqCallbackLoginParam param, HttpServletResponse response) throws Exception {
         final String dataType = "data";
         if (dataType.equals(param.getType())) {

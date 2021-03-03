@@ -13,37 +13,30 @@ spring:
 p6e:
   cache:
     redis:
-      type: JEDIS
-      node:
-        host: CCCCC
-        port: 6379
-        database: 0
-        password: aaaaa
-        cluster:
-          nodes:
-            - 127.0.0.1:8229
-            - 127.0.0.1:8229
-            - 127.0.0.1:8229
-            - 127.0.0.1:8229
-          maxRedirects: 66
-        sentinel:
-          master: 12334556565
-          password: 123345
-          nodes:
-            - 127.0.0.1:8229
-            - 127.0.0.1:8229
-            - 127.0.0.1:8229
-            - 127.0.0.1:8229
+#      type: JEDIS
+#      node:
+#        host: CCCCC
+#        port: 6379
+#        database: 0
+#        password: aaaaa
+#        cluster:
+#          nodes:
+#            - 127.0.0.1:8229
+#            - 127.0.0.1:8229
+#            - 127.0.0.1:8229
+#            - 127.0.0.1:8229
+#          maxRedirects: 66
+#        sentinel:
+#          master: 12334556565
+#          password: 123345
+#          nodes:
+#            - 127.0.0.1:8229
+#            - 127.0.0.1:8229
+#            - 127.0.0.1:8229
+#            - 127.0.0.1:8229
       source:
         A:
-          host: CCCCC
+          host: 119.23.25.159
           port: 6379
-          database: 1
-          password: bbbb
-        B:
-          host: CCCCC
-          port: 6379
-          database: 2
-          password: cccc
-
-
+          database: 10
+          password: lidashuang

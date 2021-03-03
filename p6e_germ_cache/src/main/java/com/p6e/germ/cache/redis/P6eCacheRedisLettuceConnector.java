@@ -1,6 +1,6 @@
 package com.p6e.germ.cache.redis;
 
-import com.p6e.germ.cache.config.P6eCacheRedisConfig;
+import com.p6e.germ.common.config.P6eCacheRedisConfig;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
@@ -16,7 +16,7 @@ import java.util.Map;
  * @author lidashuang
  * @version 1.0
  */
-public class P6eCacheRedisLettuceConnector extends P6eBaseCacheRedisConnector {
+public class P6eCacheRedisLettuceConnector extends P6eCacheRedisConnector {
 
     /** 客户端线程池配置对象 */
     private final LettucePoolingClientConfiguration lettucePoolingClientConfiguration;

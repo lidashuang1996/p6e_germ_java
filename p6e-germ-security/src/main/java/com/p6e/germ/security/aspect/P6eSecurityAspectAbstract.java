@@ -1,10 +1,9 @@
 package com.p6e.germ.security.aspect;
 
-import com.p6e.germ.security.config.P6eConfig;
-import com.p6e.germ.security.config.P6eConfigSecurity;
+import com.p6e.germ.common.config.P6eSecurityConfig;
+import com.p6e.germ.common.http.P6eHttpServlet;
 import com.p6e.germ.security.model.P6eSecurityModel;
 import com.p6e.germ.security.annotation.P6eSecurity;
-import com.p6e.germ.security.http.P6eHttpServlet;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -16,14 +15,37 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * 安全验证的抽象类
+ * 泛型 T 为用户继承扩展的安全模型类
+ * 通过继承该抽象类且定义扫描拦截范围来实现安全验证的功能
  * @author lidashuang
  * @version 1.0
  */
 public abstract class P6eSecurityAspectAbstract
         <T extends P6eSecurityModel> implements P6eSecurityAspectInterface<T> {
 
+    /** 是否开启 debug */
+    private static boolean IS_DEBUG = false;
+
     /** 注入日志系统 */
     private static final Logger LOGGER = LoggerFactory.getLogger(P6eSecurityAspectAbstract.class);
+
+    /** 配置文件 */
+    private final P6eSecurityConfig p6eSecurityConfig;
+
+    /**
+     * 打开 debug 模式
+     */
+    public static void openDebug() {
+        IS_DEBUG = true;
+    }
+
+    /**
+     * 关闭 debug 模式
+     */
+    public static void closeDebug() {
+        IS_DEBUG = true;
+    }
 
     /**
      * 判断路径是否属于这个名单中
@@ -73,32 +95,50 @@ public abstract class P6eSecurityAspectAbstract
         return args;
     }
 
-    /** 配置文件 */
-    private final P6eConfig p6eConfig;
+    /**
+     * 获取请求的路径
+     * @param jp 代理对象
+     * @return 请求的路径
+     */
+    private static String getPath(JoinPoint jp) {
+        return jp.getThis().getClass().getName().split("\\$\\$")[0] + "." + jp.getSignature().getName() + "()";
+    }
+
+    /**
+     * 获取注解对象
+     * @param jp 代理对象
+     * @return 注解的对象
+     */
+    private static P6eSecurity getSecurity(JoinPoint jp) {
+        final P6eSecurity mSecurity = ((MethodSignature) jp.getSignature()).getMethod().getAnnotation(P6eSecurity.class);
+        final P6eSecurity cSecurity = (P6eSecurity) jp.getSignature().getDeclaringType().getAnnotation(P6eSecurity.class);
+        return mSecurity == null ? cSecurity : mSecurity;
+    }
 
     /**
      * 构造方法
      * 读取的配置文件的数据
-     * @param p6eConfig 配置文件对象
+     * @param p6eSecurityConfig 配置文件对象
      */
-    public P6eSecurityAspectAbstract(P6eConfig p6eConfig) {
-        this.p6eConfig = p6eConfig;
-        final P6eConfigSecurity p6eConfigSecurity = this.p6eConfig.getSecurity();
+    public P6eSecurityAspectAbstract(P6eSecurityConfig p6eSecurityConfig) {
+        this.p6eSecurityConfig = p6eSecurityConfig;
         LOGGER.info("========= SECURITY BLOCK LIST (START) =========");
-        for (final String black : p6eConfigSecurity.getBlackList()) {
+        for (final String black : p6eSecurityConfig.getBlackList()) {
             LOGGER.info("SECURITY BLOCK ==> " + black);
         }
         LOGGER.info("========= SECURITY BLOCK LIST ( END ) =========");
         LOGGER.info("========= SECURITY WHITE LIST (START) =========");
-        for (final String white : p6eConfigSecurity.getWhiteList()) {
+        for (final String white : p6eSecurityConfig.getWhiteList()) {
             LOGGER.info("SECURITY WHITE ==> " + white);
         }
         LOGGER.info("========= SECURITY WHITE LIST ( END ) =========");
     }
 
-    // 声明拦截器范围的注解
-    // @Pointcut("")
-    // private void interceptor(){}
+    /*
+     *  // 声明拦截器范围的注解
+     *  @Pointcut("")
+     *  private void interceptor(){}
+     */
 
     /**
      * 获取拦截的包的路径方法
@@ -108,11 +148,11 @@ public abstract class P6eSecurityAspectAbstract
     /**
      * 前增强
      * 读取 interceptor() 方法上面的注解
-     * @param joinPoint 参数对象
+     * @param jp 参数对象
      */
     @Before("interceptor()")
-    public void beforeInterceptor(final JoinPoint joinPoint) {
-        before(joinPoint);
+    public void beforeInterceptor(final JoinPoint jp) {
+        before(jp);
     }
 
     /**
@@ -159,9 +199,9 @@ public abstract class P6eSecurityAspectAbstract
 
     /**
      * spring aop 切面前置增强
-     * @param joinPoint 增强代理对象
+     * @param jp 增强代理对象
      */
-    public void before(final JoinPoint joinPoint) {
+    public void before(final JoinPoint jp) {
     }
 
     /**
@@ -186,42 +226,47 @@ public abstract class P6eSecurityAspectAbstract
     }
 
     /**
-     * spring aop 切面环绕增强
+     * 通过 Spring Aop 切面环绕增强
      * @param pjp 切面对象
      * @return 动态代理后续执行的内容
      * @throws Throwable 后续执行过程中可能出现的问题
      */
     public Object around(final ProceedingJoinPoint pjp) throws Throwable {
         // 获取请求的方法路径
-        final String path = pjp.getThis().getClass()
-                .getName().split("\\$\\$")[0] + "." + pjp.getSignature().getName() + "()";
-        if (isBlockList(path)) {
-            // 是黑名单
-            // 认证没通过
-            LOGGER.debug("[ BLOCK LIST ] ==> " + path + ", no auth.");
-            return this.unauthorized(P6eHttpServlet.newInstance());
+        final String path = getPath(pjp);
+        // 判断是否为黑名单
+        if (this.isBlockList(path)) {
+            // 如果为黑名单，直接拦截，不允许访问
+            this.log("[ BLOCK LIST ] ==> " + path + ", cannot access.");
+            return this.error(P6eHttpServlet.newInstance(), ERROR_BLACK_LIST_PATH);
         } else {
-            final P6eSecurity security =
-                    ((MethodSignature) pjp.getSignature()).getMethod().getAnnotation(P6eSecurity.class);
+            // 获取注解对象
+            final P6eSecurity security = getSecurity(pjp);
             if (security == null) {
-                // 没有开启的认证模式
-                LOGGER.debug("[ NO AUTH MODE ] ==> " + path);
+                // 如果没有安全对象，就表示没有开启的认证模式
+                this.log("[ NO AUTH MODE ] ==> " + path + ", direct access.");
+                // 修改请求的参数，并返回
                 return pjp.proceed(injectionData(pjp, null));
             } else {
                 // 执行认证方法
-                final P6eSecurityModel p6eSecurityModel =
-                        this.authentication(P6eHttpServlet.newInstance(), pjp.getArgs());
+                P6eSecurityModel p6eSecurityModel;
+                try {
+                    p6eSecurityModel = this.authentication(P6eHttpServlet.newInstance(), pjp.getArgs());
+                } catch (Exception e) {
+                    p6eSecurityModel = null;
+                }
+                // 判断是否为白名单
                 if (isWhiteList(path)) {
-                    LOGGER.debug("[ ENABLE AUTH MODE ] ==> " + path);
+                    LOGGER.debug("[ WHITE LIST ] ==> " + path + ", direct access.");
                     return pjp.proceed(injectionData(pjp, p6eSecurityModel));
                 } else {
                     if (p6eSecurityModel == null) {
                         // 认证没通过
-                        LOGGER.debug("[ NO AUTH PASSED ] ==> " + path);
-                        return this.unauthorized(P6eHttpServlet.newInstance());
+                        LOGGER.debug("[ AUTH MODE ( NO PASSED ) ] ==> " + path);
+                        return this.error(P6eHttpServlet.newInstance(), ERROR_AUTH_INFO);
                     } else {
                         // 认证通过
-                        LOGGER.debug("[ AUTH PASSED ] ==> " + path);
+                        LOGGER.debug("[ AUTH MODE ( PASSED ) ] ==> " + path);
                         return pjp.proceed(injectionData(pjp, p6eSecurityModel));
                     }
                 }
@@ -235,7 +280,7 @@ public abstract class P6eSecurityAspectAbstract
      * @return 判断的结果
      */
     private boolean isBlockList(final String path) {
-        return isList(path, Arrays.asList(p6eConfig.getSecurity().getBlackList()));
+        return isList(path, Arrays.asList(this.p6eSecurityConfig.getBlackList()));
     }
 
     /**
@@ -244,7 +289,17 @@ public abstract class P6eSecurityAspectAbstract
      * @return 判断的结果
      */
     private boolean isWhiteList(final String path) {
-        return isList(path, Arrays.asList(p6eConfig.getSecurity().getWhiteList()));
+        return isList(path, Arrays.asList(this.p6eSecurityConfig.getWhiteList()));
+    }
+
+    /**
+     * 打印日志信息
+     * @param content 日志内容
+     */
+    private void log(String content) {
+        if (IS_DEBUG) {
+            LOGGER.info(content);
+        }
     }
 
 }

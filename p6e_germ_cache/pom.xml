@@ -19,6 +19,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.p6e.germ</groupId>
+            <artifactId>p6e-germ-common</artifactId>
+            <version>0.0.1</version>
+        </dependency>
         <!-- Spring Boot 读取自定义的配置文件 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

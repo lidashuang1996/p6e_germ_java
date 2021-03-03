@@ -1,6 +1,6 @@
 package com.p6e.germ.oauth2.infrastructure.repository.plugin;
 
-import com.p6e.germ.oauth2.config.P6eConfig;
+import com.p6e.germ.common.config.P6eConfig;
 import com.p6e.germ.oauth2.model.base.P6eBaseDb;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.MappedStatement;

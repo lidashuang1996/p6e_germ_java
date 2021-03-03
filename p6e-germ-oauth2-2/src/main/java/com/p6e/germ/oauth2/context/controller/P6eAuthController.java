@@ -1,19 +1,17 @@
 package com.p6e.germ.oauth2.context.controller;
 
+import com.p6e.germ.common.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.application.P6eApplication;
 import com.p6e.germ.oauth2.context.support.P6eBaseController;
 import com.p6e.germ.oauth2.context.support.model.P6eAuthParam;
 import com.p6e.germ.oauth2.context.support.model.P6eAuthResult;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.model.P6eModel;
 import com.p6e.germ.oauth2.model.dto.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * Oauth2 接口

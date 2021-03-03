@@ -1,12 +1,12 @@
 package com.p6e.germ.oauth2.application.impl;
 
+import com.p6e.germ.common.config.P6eConfig;
+import com.p6e.germ.common.config.P6eOauth2Config;
+import com.p6e.germ.common.utils.*;
 import com.p6e.germ.oauth2.application.P6eLoginService;
-import com.p6e.germ.oauth2.config.P6eConfig;
-import com.p6e.germ.oauth2.config.P6eOauth2Config;
 import com.p6e.germ.oauth2.domain.entity.*;
 import com.p6e.germ.oauth2.domain.keyvalue.P6eCodeKeyValue;
 import com.p6e.germ.oauth2.domain.keyvalue.P6eMarkKeyValue;
-import com.p6e.germ.oauth2.infrastructure.utils.*;
 import com.p6e.germ.oauth2.model.P6eModel;
 import com.p6e.germ.oauth2.model.db.P6eOauth2LogDb;
 import com.p6e.germ.oauth2.model.dto.*;
@@ -184,6 +184,191 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                     }
                 } else {
                     p6eLoginDto.setError(P6eModel.Error.ACCOUNT_OR_PASSWORD);
+                }
+            }
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+        } catch (Exception ee) {
+            LOGGER.error(ee.getMessage());
+            p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+        }
+        return p6eLoginDto;
+    }
+
+    @Override
+    public String smsInfo(P6eSmsInfoDto param) {
+        // 创建登录信息返回对象
+        final P6eLoginDto p6eLoginDto = new P6eLoginDto();
+        try {
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+        } catch (Exception ee) {
+            LOGGER.error(ee.getMessage());
+            p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+        }
+        return p6eLoginDto;
+    }
+
+    @Override
+    public P6eLoginDto smsCodeLogin(P6eSmsCodeLoginDto param) {
+        // 创建登录信息返回对象
+        final P6eLoginDto p6eLoginDto = new P6eLoginDto();
+        try {
+            if (param == null
+                    || param.getVoucher() == null
+                    || param.getCode() == null
+                    || param.getMark() == null) {
+                p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            } else {
+                final P6ePushEntity p6ePushEntity = new P6ePushEntity().getCache(param.getVoucher());
+                boolean bool = p6ePushEntity.verification(param.getCode(), P6ePushEntity.SMS_LOGIN_TYPE);
+                if (bool) {
+                    // 获取标记信息
+                    final P6eMarkEntity p6eMarkEntity = new P6eMarkEntity(param.getMark());
+                    final P6eUserEntity p6eUserEntity = new P6eUserEntity(p6ePushEntity.getUid());
+                    try {
+                        // 创建用户认证信息并缓存
+                        final P6eTokenEntity p6eTokenEntity = p6eUserEntity.createTokenCache().cache();
+                        // 读取 MARK 信息
+                        final P6eMarkKeyValue p6eMarkKeyValue = p6eMarkEntity.getP6eMarkKeyValue();
+                        // 写入返回数据 CODE
+                        p6eLoginDto.setCode(p6eTokenEntity.getKey());
+                        // 写入客户端信息
+                        P6eCopyUtil.run(p6eMarkKeyValue, p6eLoginDto);
+                        // 写入用户认证信息
+                        P6eCopyUtil.run(p6eTokenEntity.getModel(), p6eLoginDto);
+                        // CID / UID
+                        int cid = p6eMarkKeyValue.getId();
+                        int uid = Integer.parseInt(p6eTokenEntity.getValue().get("id"));
+                        // 简化模式修改过期时间
+                        final long simpleDateTime = 120;
+                        final String simpleType = "TOKEN";
+                        final String type = p6eMarkEntity.getP6eMarkKeyValue().getResponseType();
+                        if (simpleType.equals(type.toUpperCase())) {
+                            // 如果为简化模式对返回的数据进行一下修改
+                            p6eTokenEntity.delRefreshToken();
+                            p6eTokenEntity.setAccessTokenExpirationTime(simpleDateTime);
+                            p6eLoginDto.setRefreshToken(null);
+                            p6eLoginDto.setExpiresIn(simpleDateTime);
+                            // 写入日志数据
+                            new P6eLogEntity(new P6eOauth2LogDb()
+                                    .setCid(cid)
+                                    .setUid(uid)
+                                    .setType("UID_TO_CID_SMS_CODE_LOGIN_TO_TOKEN_TYPE")
+                            ).create();
+                        } else {
+                            // 写入日志数据
+                            new P6eLogEntity(new P6eOauth2LogDb()
+                                    .setCid(cid)
+                                    .setUid(uid)
+                                    .setType("UID_TO_CID_SMS_CODE_LOGIN_TO_CODE_TYPE")
+                            ).create();
+                        }
+                    } catch (Exception e) {
+                        throw new Exception(e);
+                    } finally {
+                        p6eMarkEntity.clean();
+                        p6ePushEntity.clean();
+                    }
+                } else {
+                    p6eLoginDto.setError(P6eModel.Error.VERIFICATION_CODE_EXCEPTION);
+                }
+            }
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+        } catch (Exception ee) {
+            LOGGER.error(ee.getMessage());
+            p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+        }
+        return p6eLoginDto;
+    }
+
+    @Override
+    public String emailInfo(P6eEmailInfoDto param) {
+        // 创建登录信息返回对象
+        final P6eLoginDto p6eLoginDto = new P6eLoginDto();
+        try {
+
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+        } catch (Exception ee) {
+            LOGGER.error(ee.getMessage());
+            p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+        }
+        return p6eLoginDto;
+    }
+
+    @Override
+    public P6eLoginDto emailCodeLogin(P6eEmailCodeLoginDto param) {
+        // 创建登录信息返回对象
+        final P6eLoginDto p6eLoginDto = new P6eLoginDto();
+        try {
+            if (param == null
+                    || param.getVoucher() == null
+                    || param.getCode() == null
+                    || param.getMark() == null) {
+                p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            } else {
+                final P6ePushEntity p6ePushEntity = new P6ePushEntity().getCache(param.getVoucher());
+                boolean bool = p6ePushEntity.verification(param.getCode(), P6ePushEntity.EMAIL_LOGIN_TYPE);
+                if (bool) {
+                    // 获取标记信息
+                    final P6eMarkEntity p6eMarkEntity = new P6eMarkEntity(param.getMark());
+                    final P6eUserEntity p6eUserEntity = new P6eUserEntity(p6ePushEntity.getUid());
+                    try {
+                        // 创建用户认证信息并缓存
+                        final P6eTokenEntity p6eTokenEntity = p6eUserEntity.createTokenCache().cache();
+                        // 读取 MARK 信息
+                        final P6eMarkKeyValue p6eMarkKeyValue = p6eMarkEntity.getP6eMarkKeyValue();
+                        // 写入返回数据 CODE
+                        p6eLoginDto.setCode(p6eTokenEntity.getKey());
+                        // 写入客户端信息
+                        P6eCopyUtil.run(p6eMarkKeyValue, p6eLoginDto);
+                        // 写入用户认证信息
+                        P6eCopyUtil.run(p6eTokenEntity.getModel(), p6eLoginDto);
+                        // CID / UID
+                        int cid = p6eMarkKeyValue.getId();
+                        int uid = Integer.parseInt(p6eTokenEntity.getValue().get("id"));
+                        // 简化模式修改过期时间
+                        final long simpleDateTime = 120;
+                        final String simpleType = "TOKEN";
+                        final String type = p6eMarkEntity.getP6eMarkKeyValue().getResponseType();
+                        if (simpleType.equals(type.toUpperCase())) {
+                            // 如果为简化模式对返回的数据进行一下修改
+                            p6eTokenEntity.delRefreshToken();
+                            p6eTokenEntity.setAccessTokenExpirationTime(simpleDateTime);
+                            p6eLoginDto.setRefreshToken(null);
+                            p6eLoginDto.setExpiresIn(simpleDateTime);
+                            // 写入日志数据
+                            new P6eLogEntity(new P6eOauth2LogDb()
+                                    .setCid(cid)
+                                    .setUid(uid)
+                                    .setType("UID_TO_CID_EMAIL_CODE_LOGIN_TO_TOKEN_TYPE")
+                            ).create();
+                        } else {
+                            // 写入日志数据
+                            new P6eLogEntity(new P6eOauth2LogDb()
+                                    .setCid(cid)
+                                    .setUid(uid)
+                                    .setType("UID_TO_CID_EMAIL_CODE_LOGIN_TO_CODE_TYPE")
+                            ).create();
+                        }
+                    } catch (Exception e) {
+                        throw new Exception(e);
+                    } finally {
+                        p6eMarkEntity.clean();
+                        p6ePushEntity.clean();
+                    }
+                } else {
+                    p6eLoginDto.setError(P6eModel.Error.VERIFICATION_CODE_EXCEPTION);
                 }
             }
         } catch (RuntimeException e) {

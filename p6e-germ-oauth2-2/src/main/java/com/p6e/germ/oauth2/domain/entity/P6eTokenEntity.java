@@ -1,9 +1,9 @@
 package com.p6e.germ.oauth2.domain.entity;
 
+import com.p6e.germ.common.utils.P6eGeneratorUtil;
+import com.p6e.germ.common.utils.P6eJsonUtil;
 import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheToken;
 import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eGeneratorUtil;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eJsonUtil;
 
 import java.io.Serializable;
 import java.util.Map;

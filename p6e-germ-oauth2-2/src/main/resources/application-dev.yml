@@ -30,7 +30,7 @@ spring:
 p6e:
   oauth2:
     qq:
-      enable: false
+      enable: true
       client-id: ${my.oauth2.qq.client.id}
       client-secret: ${my.oauth2.qq.client.secret}
       redirect-uri: ${my.oauth2.qq.redirect}
@@ -39,6 +39,17 @@ p6e:
       client-id: ${my.oauth2.we_chat.client.id}
       client-secret: ${my.oauth2.we_chat.client.secret}
       redirect-uri: ${my.oauth2.we_chat.redirect}
+  cache:
+    redis:
+      timeout: ${my.cache.redis.source_1.timeout}
+      source:
+        A:
+          host: ${my.cache.redis.source_1.host}
+          port: ${my.cache.redis.source_1.port}
+          database: ${my.cache.redis.source_1.database}
+          password: ${my.cache.redis.source_1.password}
+
+
 
 
 # mybatis 的配置

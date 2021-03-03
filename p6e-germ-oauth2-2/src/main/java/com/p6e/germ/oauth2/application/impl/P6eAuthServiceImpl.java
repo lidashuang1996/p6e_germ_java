@@ -1,9 +1,9 @@
 package com.p6e.germ.oauth2.application.impl;
 
+import com.p6e.germ.common.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.application.P6eAuthService;
 import com.p6e.germ.oauth2.domain.entity.*;
 import com.p6e.germ.oauth2.domain.keyvalue.P6eMarkKeyValue;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.model.P6eModel;
 import com.p6e.germ.oauth2.model.db.P6eOauth2ClientDb;
 import com.p6e.germ.oauth2.model.db.P6eOauth2LogDb;

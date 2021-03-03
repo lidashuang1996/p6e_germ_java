@@ -4,7 +4,7 @@ import com.p6e.germ.oauth2.application.P6eLogDataService;
 import com.p6e.germ.oauth2.application.P6eLoginService;
 import com.p6e.germ.oauth2.domain.entity.P6eLogEntity;
 import com.p6e.germ.oauth2.model.db.P6eOauth2LogDb;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
+import com.p6e.germ.common.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.model.P6eModel;
 import com.p6e.germ.oauth2.model.dto.P6eLogDataDto;
 import org.slf4j.Logger;

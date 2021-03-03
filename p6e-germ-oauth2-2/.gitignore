@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+### 私有的配置文件信息 ###
+!**/resources/application.yml

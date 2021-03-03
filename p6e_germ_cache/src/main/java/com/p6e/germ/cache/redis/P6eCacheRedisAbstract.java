@@ -1,6 +1,6 @@
 package com.p6e.germ.cache.redis;
 
-import com.p6e.germ.cache.config.P6eCacheRedisConfig;
+import com.p6e.germ.common.config.P6eCacheRedisConfig;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.util.Assert;
 import java.util.HashMap;
@@ -16,44 +16,94 @@ public abstract class P6eCacheRedisAbstract implements IP6eCacheRedis {
     private static final int MAX_RETRY = 3;
     /** 默认的名称 */
     private static final String DEFAULT_NAME = "$DEFAULT";
-
+    /** 保存链接对象的 map 集合 */
+    private static final Map<String, StringRedisTemplate> REDIS_TEMPLATE_CACHE_MAP = new HashMap<>();
     /** 配置文件 */
-    private final P6eCacheRedisConfig config;
+    private static P6eCacheRedisConfig CONFIG = new P6eCacheRedisConfig();
     /** Jedis */
-    private P6eBaseCacheRedisConnector p6eJedisConnector;
+    private static P6eCacheRedisConnector P6E_JEDIS_CONNECTOR = new P6eCacheRedisJedisConnector(CONFIG);
     /** Lettuce */
-    private P6eBaseCacheRedisConnector p6eLettuceConnector;
+    private static P6eCacheRedisConnector P6E_LETTUCE_CONNECTOR = new P6eCacheRedisLettuceConnector(CONFIG);
 
     /**
-     * 保存链接对象的 map 集合
-     */
-    private final Map<String, StringRedisTemplate> stringRedisTemplateMap = new HashMap<>();
-
-    /**
-     * 构造方法
-     * 写入配置文件，初始化连接器
+     * 写入配置文件对象
      * @param config 配置文件对象
      */
-    public P6eCacheRedisAbstract(P6eCacheRedisConfig config) {
-        this.config = config;
-        this.p6eJedisConnector = new P6eCacheRedisLettuceConnector(config);
-        this.p6eLettuceConnector = new P6eCacheRedisLettuceConnector(config);
+    public static void setConfig(P6eCacheRedisConfig config) {
+        CONFIG = config;
+        P6E_JEDIS_CONNECTOR = new P6eCacheRedisJedisConnector(CONFIG);
+        P6E_LETTUCE_CONNECTOR = new P6eCacheRedisLettuceConnector(CONFIG);
     }
 
     /**
      * 写入数据对象 JedisConnector
      * @param connector 连接器对象
      */
-    public void setP6eJedisConnector(P6eBaseCacheRedisConnector connector) {
-        p6eJedisConnector = connector;
+    public static void setP6eJedisConnector(P6eCacheRedisConnector connector) {
+        P6E_JEDIS_CONNECTOR = connector;
     }
 
     /**
      * 写入数据对象 LettuceConnector
      * @param connector 连接器对象
      */
-    public void setP6eLettuceConnector(P6eBaseCacheRedisConnector connector) {
-        p6eLettuceConnector = connector;
+    public static void setP6eLettuceConnector(P6eCacheRedisConnector connector) {
+        P6E_LETTUCE_CONNECTOR = connector;
+    }
+
+    /**
+     * 获取 redis 数据对象
+     * @param source 数据源名称
+     * @param count 重试次数
+     * @return redis 数据对象列表
+     */
+    public static Map<String, StringRedisTemplate> getStringRedisTemplate(String source, int count) {
+        // 判断不能为空
+        Assert.notNull(source, P6eCacheRedisAbstract.class + " ==> source is null.");
+        source = source.toUpperCase();
+        final Map<String, StringRedisTemplate> map = new HashMap<>(3);
+        for (final String key : REDIS_TEMPLATE_CACHE_MAP.keySet()) {
+            if (key.equals(source) || key.startsWith(source.toUpperCase() + ".")) {
+                map.put(key, REDIS_TEMPLATE_CACHE_MAP.get(key));
+            }
+        }
+        // 查找不到对应的数据源
+        if (map.size() == 0 && count < MAX_RETRY) {
+            createStringRedisTemplate(source);
+            return getStringRedisTemplate(source, ++count);
+        } else {
+            return map;
+        }
+    }
+
+    /**
+     * 创建 redis 数据连接
+     * @param source 数据源名称
+     */
+    private static synchronized void createStringRedisTemplate(String source) {
+        // 判断不能为空
+        Assert.notNull(source, P6eCacheRedisAbstract.class + " ==> source is null.");
+        source = source.toUpperCase();
+        // 检查是否存在这样的链接配置
+        if (DEFAULT_NAME.equals(source) || CONFIG.getSource().get(source) != null) {
+            // 再次检查一遍对象是否创建
+            for (final String key : REDIS_TEMPLATE_CACHE_MAP.keySet()) {
+                if (key.equals(source) || key.startsWith(source + ".")) {
+                    return;
+                }
+            }
+            // 连接并写入数据
+            switch (CONFIG.getType()) {
+                case JEDIS:
+                    REDIS_TEMPLATE_CACHE_MAP.putAll(P6E_JEDIS_CONNECTOR.connect(DEFAULT_NAME.equals(source) ? null : source));
+                    break;
+                case LETTUCE:
+                    REDIS_TEMPLATE_CACHE_MAP.putAll(P6E_LETTUCE_CONNECTOR.connect(DEFAULT_NAME.equals(source) ? null : source));
+                    break;
+                default:
+                    throw new RuntimeException(P6eCacheRedisAbstract.class + " ==> type is null.");
+            }
+        }
     }
 
     /**
@@ -83,61 +133,6 @@ public abstract class P6eCacheRedisAbstract implements IP6eCacheRedis {
                     + "\n ============================"
                     + map.keySet()
                     + "\n ============================");
-        }
-    }
-
-    /**
-     * 获取 redis 数据对象
-     * @param source 数据源名称
-     * @param count 重试次数
-     * @return redis 数据对象列表
-     */
-    private Map<String, StringRedisTemplate> getStringRedisTemplate(String source, int count) {
-        // 判断不能为空
-        Assert.notNull(source, this.getClass() + " ==> source is null.");
-        source = source.toUpperCase();
-        final Map<String, StringRedisTemplate> map = new HashMap<>(3);
-        for (String key : stringRedisTemplateMap.keySet()) {
-            if (key.equals(source) || key.startsWith(source.toUpperCase() + ".")) {
-                map.put(key, stringRedisTemplateMap.get(key));
-            }
-        }
-        // 查找不到对应的数据源
-        if (map.size() == 0 && count < MAX_RETRY) {
-            this.createStringRedisTemplate(source);
-            return this.getStringRedisTemplate(source, ++count);
-        } else {
-            return map;
-        }
-    }
-
-    /**
-     * 创建 redis 数据连接
-     * @param source 数据源名称
-     */
-    private synchronized void createStringRedisTemplate(String source) {
-        // 判断不能为空
-        Assert.notNull(source, this.getClass() + " ==> source is null.");
-        source = source.toUpperCase();
-        // 检查是否存在这样的链接配置
-        if (DEFAULT_NAME.equals(source) || config.getSource().get(source) != null) {
-            // 再次检查一遍对象是否创建
-            for (String key : stringRedisTemplateMap.keySet()) {
-                if (key.equals(source) || key.startsWith(source + ".")) {
-                    return;
-                }
-            }
-            // 连接并写入数据
-            switch (config.getType()) {
-                case JEDIS:
-                    stringRedisTemplateMap.putAll(p6eJedisConnector.connect(DEFAULT_NAME.equals(source) ? null : source));
-                    break;
-                case LETTUCE:
-                    stringRedisTemplateMap.putAll(p6eLettuceConnector.connect(DEFAULT_NAME.equals(source) ? null : source));
-                    break;
-                default:
-                    throw new RuntimeException(this.getClass() + " ==> type is null.");
-            }
         }
     }
 }

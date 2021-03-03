@@ -1,11 +1,11 @@
 package com.p6e.germ.oauth2.context.rest;
 
+import com.p6e.germ.common.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.application.P6eApplication;
 import com.p6e.germ.oauth2.context.support.P6eBaseController;
 import com.p6e.germ.oauth2.context.support.model.P6eClientDataParam;
 import com.p6e.germ.oauth2.context.support.model.P6eClientDataResult;
 import com.p6e.germ.oauth2.context.support.model.P6ePagingResult;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.model.P6eModel;
 import com.p6e.germ.oauth2.model.dto.P6eClientDataDto;
 import org.springframework.web.bind.annotation.RequestMapping;

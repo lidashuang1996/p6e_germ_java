@@ -33,7 +33,7 @@
             background-color: rgb(60 129 228);
         }
         .p6e-main-login-top .p6e-main-login-top-title {
-            width: 960px;
+            width: 100%;
             height: 80%;
             margin: 0 auto;
             color: #ffffff;
@@ -793,9 +793,11 @@ http://XXXX/?client_id=1234567890&redirect_uri=http://127.0.0.1:10000&response_t
         }
     }
 
-
-
     $(function () {
+        if (window.performance.navigation.type === 2) {
+            location.reload();
+            return;
+        }
         // 读取 URL 参数
         init();
         // 判断是否是回调数据

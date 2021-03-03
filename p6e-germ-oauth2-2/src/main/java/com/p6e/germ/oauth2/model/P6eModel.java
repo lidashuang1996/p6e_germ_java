@@ -36,9 +36,14 @@ public final class P6eModel {
          */
         HTTP_METHOD_EXCEPTION(11),
         /**
+         * 验证码错误
+         */
+        VERIFICATION_CODE_EXCEPTION(12),
+        /**
          * 服务未启动
          */
         SERVICE_NOT_ENABLE(20);
+
 
         private final Integer code;
 

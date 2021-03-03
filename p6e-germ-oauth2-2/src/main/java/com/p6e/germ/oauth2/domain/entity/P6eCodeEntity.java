@@ -2,8 +2,8 @@ package com.p6e.germ.oauth2.domain.entity;
 
 import com.p6e.germ.oauth2.domain.keyvalue.P6eCodeKeyValue;
 import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eGeneratorUtil;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eJsonUtil;
+import com.p6e.germ.common.utils.P6eGeneratorUtil;
+import com.p6e.germ.common.utils.P6eJsonUtil;
 
 /**
  * 扫描登录

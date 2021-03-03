@@ -1,12 +1,10 @@
 package com.p6e.germ.oauth2.context.rest;
 
+import com.p6e.germ.common.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.application.P6eApplication;
-import com.p6e.germ.oauth2.context.support.model.P6eLogDataParam;
 import com.p6e.germ.oauth2.context.support.model.P6eLogDataResult;
 import com.p6e.germ.oauth2.context.support.model.P6eUserDataParam;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.model.P6eModel;
-import com.p6e.germ.oauth2.model.dto.P6eLogDataDto;
 import com.p6e.germ.oauth2.model.dto.P6eUserDataDto;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

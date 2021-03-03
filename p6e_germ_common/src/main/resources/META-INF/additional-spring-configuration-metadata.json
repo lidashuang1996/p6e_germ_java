@@ -1,0 +1,252 @@
+{
+  "properties": [
+    {
+      "name": "p6e.database.defaultPage",
+      "type": "java.lang.Integer",
+      "description": "Default page number configuration for queries.",
+      "defaultValue": 1
+    },
+    {
+      "name": "p6e.database.defaultSize",
+      "type": "java.lang.Integer",
+      "description": "Default size number configuration for queries.",
+      "defaultValue": 16
+    },
+    {
+      "name": "p6e.database.defaultMaxSize",
+      "type": "java.lang.Integer",
+      "description": "Default max size number configuration for queries.",
+      "defaultValue": 300
+    },
+    {
+      "name": "p6e.oauth2.qq.enable",
+      "type": "java.lang.Boolean",
+      "description": "Oauth2 QQ authorized login is enable.",
+      "defaultValue": false
+    },
+    {
+      "name": "p6e.oauth2.qq.responseType",
+      "type": "java.lang.String",
+      "description": "Oauth2 QQ authorized login response type.",
+      "defaultValue": "code"
+    },
+    {
+      "name": "p6e.oauth2.qq.grantType",
+      "type": "java.lang.String",
+      "description": "Oauth2 QQ authorized login response type.",
+      "defaultValue": "authorization_code"
+    },
+    {
+      "name": "p6e.oauth2.qq.scope",
+      "type": "java.lang.String",
+      "description": "Oauth2 QQ authorized login response type.",
+      "defaultValue": "get_user_info"
+    },
+    {
+      "name": "p6e.oauth2.qq.clientId",
+      "type": "java.lang.String",
+      "description": "Oauth2 QQ authorized login client id."
+    },
+    {
+      "name": "p6e.oauth2.qq.clientSecret",
+      "type": "java.lang.String",
+      "description": "Oauth2 QQ authorized login client secret."
+    },
+    {
+      "name": "p6e.oauth2.qq.redirectUri",
+      "type": "java.lang.String",
+      "description": "Oauth2 QQ authorized login redirect uri."
+    },
+    {
+      "name": "p6e.oauth2.qq.authUrl",
+      "type": "java.lang.String",
+      "description": "Oauth2 QQ authorized login auth url.",
+      "defaultValue": "https://graph.qq.com/oauth2.0/authorize"
+    },
+    {
+      "name": "p6e.oauth2.qq.tokenUrl",
+      "type": "java.lang.String",
+      "description": "Oauth2 QQ authorized login token url.",
+      "defaultValue": "https://graph.qq.com/oauth2.0/token"
+    },
+    {
+      "name": "p6e.oauth2.qq.infoUrl",
+      "type": "java.lang.String",
+      "description": "Oauth2 QQ authorized login info url.",
+      "defaultValue": "https://graph.qq.com/oauth2.0/me"
+    },
+    {
+      "name": "p6e.oauth2.weChat.enable",
+      "type": "java.lang.String",
+      "description": "Oauth2 we chat authorized login is enable.",
+      "defaultValue": true
+    },
+    {
+      "name": "p6e.oauth2.weChat.responseType",
+      "type": "java.lang.String",
+      "description": "Oauth2 we chat authorized login response type.",
+      "defaultValue": "code"
+    },
+    {
+      "name": "p6e.oauth2.weChat.grantType",
+      "type": "java.lang.String",
+      "description": "Oauth2 we chat authorized login grant type.",
+      "defaultValue": "authorization_code"
+    },
+    {
+      "name": "p6e.oauth2.weChat.scope",
+      "type": "java.lang.String",
+      "description": "Oauth2 we chat authorized login scope.",
+      "defaultValue": "snsapi_login"
+    },
+    {
+      "name": "p6e.oauth2.weChat.clientId",
+      "type": "java.lang.String",
+      "description": "Oauth2 we chat authorized login client id."
+    },
+    {
+      "name": "p6e.oauth2.weChat.clientSecret",
+      "type": "java.lang.String",
+      "description": "Oauth2 we chat authorized login client secret."
+    },
+    {
+      "name": "p6e.oauth2.weChat.redirectUri",
+      "type": "java.lang.String",
+      "description": "Oauth2 we chat authorized login redirect uri."
+    },
+    {
+      "name": "p6e.oauth2.weChat.authUrl",
+      "type": "java.lang.String",
+      "description": "Oauth2 we chat authorized login auth url.",
+      "defaultValue": "https://open.weixin.qq.com/connect/qrconnect"
+    },
+    {
+      "name": "p6e.oauth2.weChat.tokenUrl",
+      "type": "java.lang.String",
+      "description": "Oauth2 we chat authorized login token url.",
+      "defaultValue": "https://api.weixin.qq.com/sns/oauth2/access_token"
+    },
+    {
+      "name": "p6e.cache.redis.node.database",
+      "type": "java.lang.Integer",
+      "description": "Cache redis node database.",
+      "defaultValue": 0
+    },
+    {
+      "name": "p6e.cache.redis.node.port",
+      "type": "java.lang.Integer",
+      "description": "Cache redis node port.",
+      "defaultValue": 6379
+    },
+    {
+      "name": "p6e.cache.redis.node.password",
+      "type": "java.lang.String",
+      "description": "Cache redis node password."
+    },
+    {
+      "name": "p6e.cache.redis.node.host",
+      "type": "java.lang.String",
+      "description": "Cache redis node host.",
+      "defaultValue": "localhost"
+    },
+    {
+      "name": "p6e.cache.redis.node.cluster.nodes",
+      "type": "java.util.List",
+      "description": "Cache redis node cluster nodes."
+    },
+    {
+      "name": "p6e.cache.redis.node.cluster.maxRedirects",
+      "type": "java.lang.Integer",
+      "description": "Cache redis node cluster max redirects.",
+      "defaultValue": 5
+    },
+    {
+      "name": "p6e.cache.redis.node.sentinel.master",
+      "type": "java.lang.String",
+      "description": "Cache redis node sentinel master."
+    },
+    {
+      "name": "p6e.cache.redis.node.sentinel.password",
+      "type": "java.lang.String",
+      "description": "Cache redis node sentinel password."
+    },
+    {
+      "name": "p6e.cache.redis.node.sentinel.nodes",
+      "type": "java.util.List",
+      "description": "Cache redis node sentinel nodes."
+    },
+    {
+      "name": "p6e.cache.redis.ssl",
+      "type": "java.lang.Boolean",
+      "description": "Cache redis ssl.",
+      "defaultValue": false
+    },
+    {
+      "name": "p6e.cache.redis.clientName",
+      "type": "java.lang.String",
+      "description": "Cache redis client name.",
+      "defaultValue": "P6E_REDIS_CLIENT"
+    },
+    {
+      "name": "p6e.cache.redis.timeout",
+      "type": "java.time.Duration",
+      "description": "Cache redis client timeout.",
+      "defaultValue": "5S"
+    },
+    {
+      "name": "p6e.cache.redis.shutdownTimeout",
+      "type": "java.time.Duration",
+      "description": "Cache redis client shutdown timeout.",
+      "defaultValue": "100S"
+    },
+    {
+      "name": "p6e.cache.redis.type",
+      "type": "java.lang.String",
+      "description": "Cache redis client type.",
+      "defaultValue": "LETTUCE"
+    },
+    {
+      "name": "p6e.cache.redis.pool.maxIdle",
+      "type": "java.lang.Integer",
+      "description": "Cache redis pool max idle.",
+      "defaultValue": 8
+    },
+    {
+      "name": "p6e.cache.redis.pool.minIdle",
+      "type": "java.lang.Integer",
+      "description": "Cache redis pool min idle.",
+      "defaultValue": 0
+    },
+    {
+      "name": "p6e.cache.redis.pool.maxActive",
+      "type": "java.lang.Integer",
+      "description": "Cache redis pool max active.",
+      "defaultValue": 8
+    },
+    {
+      "name": "p6e.cache.redis.pool.maxWait",
+      "type": "java.lang.Integer",
+      "description": "Cache redis pool max wait.",
+      "defaultValue": "-1"
+    },
+    {
+      "name": "p6e.cache.redis.source",
+      "type": "java.util.Map",
+      "description": "Cache redis source."
+    },
+    {
+      "name": "p6e.security.whiteList",
+      "type": "java.lang.String[]",
+      "description": "Security white list.",
+      "defaultValue": []
+    },
+    {
+      "name": "p6e.security.blackList",
+      "type": "java.lang.String[]",
+      "description": "Security black list.",
+      "defaultValue": []
+    }
+  ]
+}
+
+

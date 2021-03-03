@@ -1,7 +1,6 @@
 package com.p6e.germ.oauth2.domain.entity;
 
 import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eGeneratorUtil;
 
 /**
  * @author lidashuang

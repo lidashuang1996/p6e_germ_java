@@ -1,7 +1,7 @@
 package com.p6e.germ.oauth2.application;
 
+import com.p6e.germ.common.utils.P6eSpringUtil;
 import com.p6e.germ.oauth2.application.impl.*;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
 
 /**
  * 应用服务的管理中心

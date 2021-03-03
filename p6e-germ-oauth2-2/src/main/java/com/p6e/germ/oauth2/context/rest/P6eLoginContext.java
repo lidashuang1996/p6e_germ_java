@@ -1,10 +1,10 @@
 package com.p6e.germ.oauth2.context.rest;
 
+import com.p6e.germ.common.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.application.P6eApplication;
 import com.p6e.germ.oauth2.context.support.model.P6eAuthResult;
 import com.p6e.germ.oauth2.context.support.model.P6eCodeLoginParam;
 import com.p6e.germ.oauth2.context.support.model.P6eDefaultLoginResult;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.model.P6eModel;
 import com.p6e.germ.oauth2.model.dto.P6eAuthDto;
 import com.p6e.germ.oauth2.model.dto.P6eCodeLoginDto;

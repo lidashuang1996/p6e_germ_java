@@ -31,6 +31,34 @@ public interface P6eLoginService {
     public P6eLoginDto defaultLogin(P6eDefaultLoginDto param);
 
     /**
+     * 短信验证码信息
+     * @param param 账号密码登录对象
+     * @return 登录结果对象
+     */
+    public String smsInfo(P6eSmsInfoDto param);
+
+    /**
+     * 短信验证码登录
+     * @param param 账号密码登录对象
+     * @return 登录结果对象
+     */
+    public P6eLoginDto smsCodeLogin(P6eSmsCodeLoginDto param);
+
+    /**
+     * 邮箱验证码信息
+     * @param param 账号密码登录对象
+     * @return 登录结果对象
+     */
+    public String emailInfo(P6eEmailInfoDto param);
+
+    /**
+     * 邮箱验证码登录
+     * @param param 账号密码登录对象
+     * @return 登录结果对象
+     */
+    public P6eLoginDto emailCodeLogin(P6eEmailCodeLoginDto param);
+
+    /**
      * 获取 QQ 登录的信息
      * @param mark 记号
      * @param display 显示参数

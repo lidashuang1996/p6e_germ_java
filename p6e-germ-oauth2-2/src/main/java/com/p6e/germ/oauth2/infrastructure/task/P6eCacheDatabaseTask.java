@@ -1,9 +1,9 @@
 package com.p6e.germ.oauth2.infrastructure.task;
 
+import com.p6e.germ.common.utils.P6eJsonUtil;
 import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
 import com.p6e.germ.oauth2.model.db.P6eOauth2ClientDb;
 import com.p6e.germ.oauth2.infrastructure.repository.mapper.P6eOauth2ClientMapper;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eJsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -60,11 +60,11 @@ public class P6eCacheDatabaseTask {
                 LOGGER.info("operation db to cache ==> [ "
                         + p6eClientDb.getStart() + " ~ " + (p6eClientDb.getEnd()) + " ]");
                 // 查询到的数据写入到缓存中
-                for (P6eOauth2ClientDb db : p6eClientDbList) {
+                for (final P6eOauth2ClientDb db : p6eClientDbList) {
                     try {
                         final String content = P6eJsonUtil.toJson(db);
-                        P6eCache.client.setDbId(String.valueOf(db.getId()), content);
                         P6eCache.client.setDbKey(db.getKey(), content);
+                        P6eCache.client.setDbId(String.valueOf(db.getId()), content);
                         LOGGER.info("operation db to cache ==> [ id: " + db.getId() + " - key: " + db.getKey() + " ] success.");
                     } catch (Exception e) {
                         LOGGER.info("operation db to cache ==> [ id: " + db.getId() + " - key: " + db.getKey() + " ] error.");
@@ -73,7 +73,7 @@ public class P6eCacheDatabaseTask {
                 }
             } catch (Exception e) {
                 LOGGER.error("operation db to cache error ==> " + e.getMessage());
-                p6eClientDbList = new ArrayList<>();
+                break;
             }
         } while (p6eClientDbList.size() >= DB_SIZE);
         LOGGER.info("end operation db to cache.");

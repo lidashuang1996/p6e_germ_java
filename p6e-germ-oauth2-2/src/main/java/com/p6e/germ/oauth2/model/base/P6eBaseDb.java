@@ -17,4 +17,5 @@ public class P6eBaseDb implements Serializable {
     private Integer start;
     private Integer end;
     private String search;
+    private Integer offset;
 }

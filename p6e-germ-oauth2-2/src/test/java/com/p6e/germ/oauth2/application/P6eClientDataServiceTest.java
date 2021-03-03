@@ -1,7 +1,7 @@
 package com.p6e.germ.oauth2.application;
 
-import com.p6e.germ.oauth2.infrastructure.utils.P6eJsonUtil;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
+import com.p6e.germ.common.utils.P6eJsonUtil;
+import com.p6e.germ.common.utils.P6eSpringUtil;
 import com.p6e.germ.oauth2.model.dto.P6eClientDataDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

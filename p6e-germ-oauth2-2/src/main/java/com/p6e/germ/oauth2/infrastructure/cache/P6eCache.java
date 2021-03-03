@@ -1,6 +1,6 @@
 package com.p6e.germ.oauth2.infrastructure.cache;
 
-import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
+import com.p6e.germ.common.utils.P6eSpringUtil;
 
 /**
  * @author lidashuang
@@ -22,6 +22,7 @@ public final class P6eCache {
     /** 凭证缓存 */
     public static IP6eCacheVoucher voucher;
 
+    public static IP6eCachePush push;
 
     /**
      * 初始化操作
@@ -41,6 +42,6 @@ public final class P6eCache {
         client = P6eSpringUtil.getBean(IP6eCacheClient.class, new P6eCacheRedisClient());
         // 凭证缓存
         voucher = P6eSpringUtil.getBean(IP6eCacheVoucher.class, new P6eCacheRedisVoucher());
-
+        push = P6eSpringUtil.getBean(IP6eCachePush.class, new P6eCacheRedisPush());
     }
 }

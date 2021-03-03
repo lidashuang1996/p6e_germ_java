@@ -1,8 +1,8 @@
 package com.p6e.germ.oauth2.application;
 
+import com.p6e.germ.common.utils.P6eJsonUtil;
+import com.p6e.germ.common.utils.P6eSpringUtil;
 import com.p6e.germ.oauth2.domain.entity.P6eLogEntity;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eJsonUtil;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
 import com.p6e.germ.oauth2.model.db.P6eOauth2LogDb;
 import com.p6e.germ.oauth2.model.dto.P6eLogDataDto;
 import org.junit.jupiter.api.Test;

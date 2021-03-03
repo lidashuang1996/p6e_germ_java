@@ -1,8 +1,10 @@
 package com.p6e.germ.oauth2.starter;
 
-import com.p6e.germ.oauth2.config.P6eConfig;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eJsonUtil;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
+import com.p6e.germ.common.config.P6eConfig;
+import com.p6e.germ.common.utils.P6eJsonUtil;
+import com.p6e.germ.common.utils.P6eSpringUtil;
+import com.p6e.germ.oauth2.application.P6eApplication;
+import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,8 @@ public class P6eInitializationOauth2 implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         LOGGER.info("P6e oauth2 init start.");
         P6eSpringUtil.init(applicationContext);
+        P6eCache.init();
+        P6eApplication.init();
         LOGGER.info("P6e oauth2 config ==> " + P6eJsonUtil.toJson(applicationContext.getBean(P6eConfig.class)));
         LOGGER.info("P6e oauth2 init end.");
     }

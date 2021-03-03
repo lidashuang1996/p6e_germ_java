@@ -8,35 +8,35 @@ import java.util.concurrent.TimeUnit;
  */
 public class P6eCacheRedisState extends P6eCacheRedis implements IP6eCacheState {
 
-    private static final String SOURCE_NAME = "";
+    private static final String SOURCE_NAME = "A";
 
     @Override
     public void setQq(String key, String value) {
-        this.getRedisTemplate(SOURCE_NAME).opsForValue().set(QQ_STATE_NAME + key, value, STATE_TIME, TimeUnit.SECONDS);
+        getStringRedisTemplate(SOURCE_NAME).opsForValue().set(QQ_STATE_NAME + key, value, STATE_TIME, TimeUnit.SECONDS);
     }
 
     @Override
     public String getQq(String key) {
-        return this.getRedisTemplate(SOURCE_NAME).opsForValue().get(QQ_STATE_NAME + key);
+        return getStringRedisTemplate(SOURCE_NAME).opsForValue().get(QQ_STATE_NAME + key);
     }
 
     @Override
     public void delQq(String key) {
-        this.getRedisTemplate(SOURCE_NAME).delete(QQ_STATE_NAME + key);
+        getStringRedisTemplate(SOURCE_NAME).delete(QQ_STATE_NAME + key);
     }
 
     @Override
     public void setWeChat(String key, String value) {
-        this.getRedisTemplate(SOURCE_NAME).opsForValue().set(WE_CHAT_STATE_NAME + key, value, STATE_TIME, TimeUnit.SECONDS);
+        getStringRedisTemplate(SOURCE_NAME).opsForValue().set(WE_CHAT_STATE_NAME + key, value, STATE_TIME, TimeUnit.SECONDS);
     }
 
     @Override
     public String getWeChat(String key) {
-        return this.getRedisTemplate(SOURCE_NAME).opsForValue().get(WE_CHAT_STATE_NAME + key);
+        return getStringRedisTemplate(SOURCE_NAME).opsForValue().get(WE_CHAT_STATE_NAME + key);
     }
 
     @Override
     public void delWeChat(String key) {
-        this.getRedisTemplate(SOURCE_NAME).delete(WE_CHAT_STATE_NAME + key);
+        getStringRedisTemplate(SOURCE_NAME).delete(WE_CHAT_STATE_NAME + key);
     }
 }

@@ -1,10 +1,9 @@
 package com.p6e.germ.oauth2.domain.entity;
 
-import com.p6e.germ.oauth2.infrastructure.utils.P6eCopyUtil;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eGeneratorUtil;
+import com.p6e.germ.common.utils.P6eGeneratorUtil;
+import com.p6e.germ.common.utils.P6eSpringUtil;
 import com.p6e.germ.oauth2.model.db.P6eOauth2UserDb;
 import com.p6e.germ.oauth2.infrastructure.repository.mapper.P6eOauth2UserMapper;
-import com.p6e.germ.oauth2.infrastructure.utils.P6eSpringUtil;
 import org.springframework.util.DigestUtils;
 
 import java.io.Serializable;
