@@ -52,7 +52,7 @@ public interface P6eSecurityAspectInterface<T extends P6eSecurityModel> {
                         printWriter.write("{\"code\":401,\"message\":\"ERROR_AUTH_EXCEPTION\"}");
                         break;
                     case ERROR_BLACK_LIST_PATH:
-                        printWriter.write("{\"code\":401,\"message\":\"ERROR_AUTH_BLACK_LIST_PATH\"}");
+                        printWriter.write("{\"code\":402,\"message\":\"ERROR_AUTH_BLACK_LIST_PATH\"}");
                         break;
                     default:
                         printWriter.write("{\"code\":500,\"message\":\"SERVICE_INTERNAL_EXCEPTION\"}");

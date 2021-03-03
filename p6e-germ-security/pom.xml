@@ -11,7 +11,7 @@
 
     <groupId>com.p6e.germ</groupId>
     <artifactId>p6e-germ-security</artifactId>
-    <version>${p6e.version}</version>
+    <version>0.0.1</version>
     <name>p6e-germ-security</name>
     <description>P6e germ spring boot security.</description>
 
