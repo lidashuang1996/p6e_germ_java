@@ -2,9 +2,9 @@ package com.p6e.germ.oauth2.context.controller;
 
 import com.p6e.germ.common.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.application.P6eApplication;
-import com.p6e.germ.oauth2.context.support.P6eBaseController;
-import com.p6e.germ.oauth2.context.support.model.P6eTokenParam;
-import com.p6e.germ.oauth2.context.support.model.P6eTokenResult;
+import com.p6e.germ.oauth2.context.controller.support.P6eBaseController;
+import com.p6e.germ.oauth2.context.controller.support.model.P6eTokenParam;
+import com.p6e.germ.oauth2.context.controller.support.model.P6eTokenResult;
 import com.p6e.germ.oauth2.model.P6eModel;
 import com.p6e.germ.oauth2.model.dto.*;
 import org.springframework.http.HttpMethod;

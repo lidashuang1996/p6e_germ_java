@@ -41,6 +41,16 @@ public class P6eConfig implements Serializable {
 
     private P6eSecurityConfig security = new P6eSecurityConfig();
 
+    private P6eJurisdictionConfig jurisdiction = new P6eJurisdictionConfig();
+
+    public P6eJurisdictionConfig getJurisdiction() {
+        return jurisdiction;
+    }
+
+    public void setJurisdiction(P6eJurisdictionConfig jurisdiction) {
+        this.jurisdiction = jurisdiction;
+    }
+
     public P6eCacheConfig getCache() {
         return cache;
     }

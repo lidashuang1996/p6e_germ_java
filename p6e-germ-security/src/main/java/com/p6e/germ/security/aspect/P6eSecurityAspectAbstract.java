@@ -2,7 +2,6 @@ package com.p6e.germ.security.aspect;
 
 import com.p6e.germ.common.config.P6eSecurityConfig;
 import com.p6e.germ.common.http.P6eHttpServlet;
-import com.p6e.germ.security.model.P6eSecurityModel;
 import com.p6e.germ.security.annotation.P6eSecurity;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -22,7 +21,7 @@ import java.util.List;
  * @version 1.0
  */
 public abstract class P6eSecurityAspectAbstract
-        <T extends P6eSecurityModel> implements P6eSecurityAspectInterface<T> {
+        <T extends P6eSecurityAspectModel> implements P6eSecurityAspectInterface<T> {
 
     /** 是否开启 debug */
     private static boolean IS_DEBUG = false;
@@ -83,12 +82,12 @@ public abstract class P6eSecurityAspectAbstract
      * @param model 参数对象
      * @return 返回的处理过的参数对象
      */
-    private static Object[] injectionData(final JoinPoint jp, final P6eSecurityModel model) {
+    private static Object[] injectionData(final JoinPoint jp, final P6eSecurityAspectModel model) {
         // 获取参数参数值
         final Object[] args = jp.getArgs();
         // 参数遍历
         for (int i = 0; i < args.length; i++) {
-            if (args[i] instanceof P6eSecurityModel) {
+            if (args[i] instanceof P6eSecurityAspectModel) {
                 args[i] = model;
             }
         }
@@ -249,7 +248,7 @@ public abstract class P6eSecurityAspectAbstract
                 return pjp.proceed(injectionData(pjp, null));
             } else {
                 // 执行认证方法
-                P6eSecurityModel p6eSecurityModel;
+                P6eSecurityAspectModel p6eSecurityModel;
                 try {
                     p6eSecurityModel = this.authentication(P6eHttpServlet.newInstance(), pjp.getArgs());
                 } catch (Exception e) {

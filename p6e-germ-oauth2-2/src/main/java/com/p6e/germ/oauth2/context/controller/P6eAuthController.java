@@ -2,9 +2,9 @@ package com.p6e.germ.oauth2.context.controller;
 
 import com.p6e.germ.common.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.application.P6eApplication;
-import com.p6e.germ.oauth2.context.support.P6eBaseController;
-import com.p6e.germ.oauth2.context.support.model.P6eAuthParam;
-import com.p6e.germ.oauth2.context.support.model.P6eAuthResult;
+import com.p6e.germ.oauth2.context.controller.support.P6eBaseController;
+import com.p6e.germ.oauth2.context.controller.support.model.P6eAuthParam;
+import com.p6e.germ.oauth2.context.controller.support.model.P6eAuthResult;
 import com.p6e.germ.oauth2.model.P6eModel;
 import com.p6e.germ.oauth2.model.dto.*;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,46 +23,57 @@ import javax.servlet.http.HttpServletResponse;
 public class P6eAuthController extends P6eBaseController {
 
     /**
-     * 请求转发到首页
+     * 登录页面并写入 voucher 数据
      */
     @RequestMapping
-    public void def(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        request.getRequestDispatcher("/index.html").forward(request, response);
-    }
-
-    /**
-     * 验证的参数数据，返回客户端信息
-     */
-    @RequestMapping("/verification")
-    public P6eModel verification(HttpServletRequest request, P6eAuthParam param) {
-        // 写入数据
-        param.setClientId(request.getParameter(CLIENT_ID_PARAM));
-        param.setRedirectUri(request.getParameter(REDIRECT_URI_PARAM));
-        param.setResponseType(request.getParameter(RESPONSE_TYPE_PARAM));
-        if (param.getScope() == null
-                || param.getClientId() == null
-                || param.getRedirectUri() == null
-                || param.getResponseType() == null) {
-            // 参数异常
-            return P6eModel.build(P6eModel.Error.PARAMETER_EXCEPTION);
-        } else {
-            final P6eAuthDto p6eAuthDto;
-            final String responseType = param.getResponseType();
-            switch (responseType.toUpperCase()) {
-                case CODE_TYPE:
-                case TOKEN_TYPE:
-                    // CODE 模式
-                    // 简化模式
-                    p6eAuthDto = P6eApplication.auth.verification(P6eCopyUtil.run(param, P6eVerificationAuthDto.class));
-                    break;
-                default:
-                    return P6eModel.build(P6eModel.Error.PARAMETER_EXCEPTION);
-            }
-            if (p6eAuthDto.getError() == null) {
-                return P6eModel.build().setData(P6eCopyUtil.run(p6eAuthDto, P6eAuthResult.class));
-            } else {
-                return P6eModel.build(p6eAuthDto.getError());
-            }
+    public void def(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            // 读取参数 // 写入数据
+            // 写入登录页面的 HTML
+            response.setContentType(HTML_CONTENT_TYPE);
+            response.getWriter().write(INDEX_HTML);
+            response.getWriter().flush();
+            response.getWriter().close();
+            request.getRequestDispatcher("/index.html").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
     }
+
+//    /**
+//     * 验证的参数数据，返回客户端信息
+//     */
+//    @RequestMapping("/verification")
+//    public P6eModel verification(HttpServletRequest request, P6eAuthParam param) {
+//        // 写入数据
+//        param.setClientId(request.getParameter(CLIENT_ID_PARAM));
+//        param.setRedirectUri(request.getParameter(REDIRECT_URI_PARAM));
+//        param.setResponseType(request.getParameter(RESPONSE_TYPE_PARAM));
+//        if (param.getScope() == null
+//                || param.getClientId() == null
+//                || param.getRedirectUri() == null
+//                || param.getResponseType() == null) {
+//            // 参数异常
+//            return P6eModel.build(P6eModel.Error.PARAMETER_EXCEPTION);
+//        } else {
+//            final P6eAuthDto p6eAuthDto;
+//            final String responseType = param.getResponseType();
+//            switch (responseType.toUpperCase()) {
+//                case CODE_TYPE:
+//                case TOKEN_TYPE:
+//                    // CODE 模式
+//                    // 简化模式
+//                    p6eAuthDto = P6eApplication.auth.verification(P6eCopyUtil.run(param, P6eVerificationAuthDto.class));
+//                    break;
+//                default:
+//                    return P6eModel.build(P6eModel.Error.PARAMETER_EXCEPTION);
+//            }
+//            if (p6eAuthDto.getError() == null) {
+//                return P6eModel.build().setData(P6eCopyUtil.run(p6eAuthDto, P6eAuthResult.class));
+//            } else {
+//                return P6eModel.build(p6eAuthDto.getError());
+//            }
+//        }
+//    }
 }

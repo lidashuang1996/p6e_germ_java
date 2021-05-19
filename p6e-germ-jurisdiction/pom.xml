@@ -24,6 +24,12 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>com.p6e.germ</groupId>
+            <artifactId>p6e-germ-cache</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+
         <!-- P6E GERM -->
         <dependency>
             <groupId>com.p6e.germ</groupId>

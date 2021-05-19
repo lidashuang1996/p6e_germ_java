@@ -3,7 +3,6 @@ package com.p6e.germ.jurisdiction.aspect;
 import com.p6e.germ.common.http.P6eHttpServlet;
 import com.p6e.germ.jurisdiction.annotation.P6eJurisdiction;
 import com.p6e.germ.jurisdiction.condition.P6eCondition;
-import com.p6e.germ.jurisdiction.model.P6eJurisdictionModel;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -24,7 +23,7 @@ import java.util.List;
  * @version 1.0
  */
 public abstract class P6eJurisdictionAspectAbstract
-        <T extends P6eJurisdictionModel> implements P6eJurisdictionAspectInterface<T> {
+        <T extends P6eJurisdictionAspectModel> implements P6eJurisdictionAspectInterface<T> {
 
     /** 是否开启 debug */
     private static boolean IS_DEBUG = false;
@@ -52,12 +51,12 @@ public abstract class P6eJurisdictionAspectAbstract
      * @param model 参数对象
      * @return 返回的处理过的参数对象
      */
-    private static Object[] injectionData(final JoinPoint jp, final P6eJurisdictionModel model) {
+    private static Object[] injectionData(final JoinPoint jp, final P6eJurisdictionAspectModel model) {
         // 获取参数参数值
         final Object[] args = jp.getArgs();
         // 参数遍历
         for (int i = 0; i < args.length; i++) {
-            if (args[i] instanceof P6eJurisdictionModel) {
+            if (args[i] instanceof P6eJurisdictionAspectModel) {
                 args[i] = model;
             }
         }
@@ -191,7 +190,7 @@ public abstract class P6eJurisdictionAspectAbstract
             return pjp.proceed(injectionData(pjp, null));
         } else {
             // 执行认证方法
-            P6eJurisdictionModel p6eJurisdictionModel;
+            P6eJurisdictionAspectModel p6eJurisdictionModel;
             try {
                 p6eJurisdictionModel = this.authentication(P6eHttpServlet.newInstance(), pjp.getArgs());
             } catch (Exception e) {

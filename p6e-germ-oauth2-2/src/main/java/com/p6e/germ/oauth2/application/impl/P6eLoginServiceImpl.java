@@ -202,6 +202,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
         // 创建登录信息返回对象
         final P6eLoginDto p6eLoginDto = new P6eLoginDto();
         try {
+            return "";
         } catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
@@ -210,7 +211,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
             LOGGER.error(ee.getMessage());
             p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
         }
-        return p6eLoginDto;
+        return "p6eLoginDto";
     }
 
     @Override
@@ -294,7 +295,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
         // 创建登录信息返回对象
         final P6eLoginDto p6eLoginDto = new P6eLoginDto();
         try {
-
+            return "";
         } catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
@@ -303,7 +304,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
             LOGGER.error(ee.getMessage());
             p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
         }
-        return p6eLoginDto;
+        return "p6eLoginDto";
     }
 
     @Override
@@ -441,7 +442,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                             + "&redirect_uri=" + dataFormatting(qq.getRedirectUri())
                             + "&fmt=json";
                     // 发送请求
-                    final String tokenContent = P6eHttpUtil.doGet(tokenUrl);
+                    final String tokenContent = "P6eHttpUtil.doGet(tokenUrl)";
                     if (tokenContent != null) {
                         final String tokenError = "error";
                         final String tokenAccessToken = "access_token";
@@ -454,7 +455,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                                     + "?access_token=" + tokenMap.get(tokenAccessToken)
                                     + "&fmt=json";
                             // 发送请求
-                            final String infoContent = P6eHttpUtil.doGet(infoUrl);
+                            final String infoContent = "P6eHttpUtil.doGet(infoUrl)";
                             final Map<String, String> infoMap =
                                     P6eJsonUtil.fromJsonToMap(infoContent, String.class, String.class);
                             if (infoMap != null && infoMap.get(infoOpenId) != null) {
@@ -589,7 +590,8 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                             + "&secret=" + dataFormatting(weChat.getClientSecret())
                             + "&code=" + dataFormatting(param.getCode());
                     // 发送请求
-                    final String tokenContent = P6eHttpUtil.doGet(tokenUrl);
+//                    final String tokenContent = P6eHttpUtil.doGet(tokenUrl);
+                    final String tokenContent = "P6eHttpUtil.doGet(tokenUrl)";
                     if (tokenContent != null) {
                         final Map<String, String> tokenMap =
                                 P6eJsonUtil.fromJsonToMap(tokenContent, String.class, String.class);

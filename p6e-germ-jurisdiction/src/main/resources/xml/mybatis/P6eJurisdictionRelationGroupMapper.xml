@@ -51,12 +51,12 @@
         LIMIT 0, 1;
     </select>
 
-    <delete id="delete" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionRelationGroupDb">
+    <delete id="deleteOneData" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionRelationGroupDb">
         DELETE FROM `p6e_jurisdiction_relation_group`
         WHERE `gid` = #{DB.gid} <if test="DB.jurisdictionId != null">AND `jurisdiction_id` = #{DB.jurisdictionId}</if>;
     </delete>
 
-    <insert id="create" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionRelationGroupDb">
+    <insert id="createOneData" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionRelationGroupDb">
         INSERT INTO `p6e_jurisdiction_relation_group`(`gid`, `jurisdiction_id`, `jurisdiction_param`)
         VALUE (#{DB.gid}, #{DB.jurisdictionId}, #{DB.jurisdictionParam});
     </insert>

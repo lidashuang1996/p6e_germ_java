@@ -2,7 +2,7 @@ package com.p6e.germ.oauth2.context.rpc;
 
 /**
  * 边界上下文
- * 这个地方是暴露给其它服务通过 RPC 连接
+ * 保留内部服务通过 RPC 连接的方式处理数据的入口
  * @author lidashuang
  * @version 1.0
  */

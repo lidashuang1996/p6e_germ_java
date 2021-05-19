@@ -427,6 +427,14 @@ public final class P6eCopyUtil {
      */
     private static boolean isListType(Class<?> cl) {
         final String clName = cl.getTypeName();
+        final Class<?>[] cls = cl.getInterfaces();
+        if (cls.length > 0) {
+            for (Class<?> clazz : cls) {
+                if (clazz == List.class) {
+                    return true;
+                }
+            }
+        }
         return "java.util.List".equals(clName);
     }
 

@@ -3,8 +3,8 @@ package com.p6e.germ.oauth2.context.controller;
 import com.p6e.germ.common.utils.P6eCopyUtil;
 import com.p6e.germ.common.utils.P6eJsonUtil;
 import com.p6e.germ.oauth2.application.P6eApplication;
-import com.p6e.germ.oauth2.context.support.P6eBaseController;
-import com.p6e.germ.oauth2.context.support.model.*;
+import com.p6e.germ.oauth2.context.controller.support.P6eBaseController;
+import com.p6e.germ.oauth2.context.controller.support.model.*;
 import com.p6e.germ.oauth2.model.P6eModel;
 import com.p6e.germ.oauth2.model.dto.*;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 登陆服务的接口
+ * 登录服务的接口
  * @author lidashuang
  * @version 1.0
  */

@@ -1,7 +1,6 @@
 package com.p6e.germ.jurisdiction.aspect;
 
 import com.p6e.germ.common.http.P6eHttpServlet;
-import com.p6e.germ.jurisdiction.model.P6eJurisdictionModel;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
@@ -12,7 +11,7 @@ import java.io.PrintWriter;
  * @author lidashuang
  * @version 1.0
  */
-public interface P6eJurisdictionAspectInterface<T extends P6eJurisdictionModel> {
+public interface P6eJurisdictionAspectInterface<T extends P6eJurisdictionAspectModel> {
 
     /**
      * 不具备权限

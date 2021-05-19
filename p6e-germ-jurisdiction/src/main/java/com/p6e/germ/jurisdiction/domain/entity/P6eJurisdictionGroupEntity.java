@@ -1,68 +1,84 @@
 package com.p6e.germ.jurisdiction.domain.entity;
 
+import com.p6e.germ.common.utils.P6eSpringUtil;
 import com.p6e.germ.jurisdiction.infrastructure.mapper.P6eJurisdictionGroupMapper;
 import com.p6e.germ.jurisdiction.model.db.P6eJurisdictionGroupDb;
-import com.p6e.germ.jurisdiction.utils.P6eSpringUtil;
-
-import java.util.List;
 
 /**
+ * 权限组实体操作的对象
  * @author lidashuang
  * @version 1.0
  */
 public class P6eJurisdictionGroupEntity {
 
-    /** DB 数据对象 */
-    private final P6eJurisdictionGroupDb p6eJurisdictionGroupDb;
-
     /** 注入数据操作对象 */
-    private final P6eJurisdictionGroupMapper
-            p6eJurisdictionGroupMapper = P6eSpringUtil.getBean(P6eJurisdictionGroupMapper.class);
+    private static final P6eJurisdictionGroupMapper
+            JURISDICTION_GROUP_MAPPER = P6eSpringUtil.getBean(P6eJurisdictionGroupMapper.class);
 
-    public P6eJurisdictionGroupEntity(Integer id) {
-        this.p6eJurisdictionGroupDb =
-                p6eJurisdictionGroupMapper.selectOneData(new P6eJurisdictionGroupDb().setId(id));
-        if (this.p6eJurisdictionGroupDb == null) {
-            throw new RuntimeException();
+    /** DB 数据对象 */
+    private final P6eJurisdictionGroupDb data;
+
+    /**
+     * 创建的方法创建
+     * @param param DB 对象
+     * @return 实体对象
+     */
+    public static P6eJurisdictionGroupEntity create(P6eJurisdictionGroupDb param) {
+        if (JURISDICTION_GROUP_MAPPER.createOneData(param) > 1) {
+            return select(param);
+        } else {
+            throw new RuntimeException(P6eJurisdictionGroupEntity.class + " create fail.");
         }
     }
 
-    public P6eJurisdictionGroupEntity(P6eJurisdictionGroupDb p6eJurisdictionGroupDb) {
-        this.p6eJurisdictionGroupDb = p6eJurisdictionGroupDb;
-    }
-
-    public P6eJurisdictionGroupDb get() {
-        return p6eJurisdictionGroupDb;
-    }
-
-    public Long count() {
-        return p6eJurisdictionGroupMapper.count(p6eJurisdictionGroupDb);
-    }
-
-    public List<P6eJurisdictionGroupDb> select() {
-        return p6eJurisdictionGroupMapper.select(p6eJurisdictionGroupDb);
-    }
-
-    public P6eJurisdictionGroupDb create() {
-        if (p6eJurisdictionGroupMapper.create(p6eJurisdictionGroupDb) > 0) {
-            return new P6eJurisdictionGroupEntity(p6eJurisdictionGroupDb.getId()).get();
+    /**
+     * 查询的方法创建
+     * @param param DB 对象
+     * @return 实体对象
+     */
+    public static P6eJurisdictionGroupEntity select(P6eJurisdictionGroupDb param) {
+        final P6eJurisdictionGroupDb result = JURISDICTION_GROUP_MAPPER.selectOneData(param);
+        if (result == null) {
+            throw new RuntimeException(P6eJurisdictionGroupEntity.class + " select fail.");
+        } else {
+            return new P6eJurisdictionGroupEntity(result);
         }
-        return null;
     }
 
-    public P6eJurisdictionGroupDb update() {
-        if (p6eJurisdictionGroupMapper.update(p6eJurisdictionGroupDb) > 0) {
-            return new P6eJurisdictionGroupEntity(p6eJurisdictionGroupDb.getId()).get();
-        }
-        return null;
+    /**
+     * 私有的构造方法
+     */
+    private P6eJurisdictionGroupEntity(P6eJurisdictionGroupDb data) {
+        this.data = data;
     }
 
-    public P6eJurisdictionGroupDb delete() {
-        final P6eJurisdictionGroupDb result = p6eJurisdictionGroupMapper.selectOneData(p6eJurisdictionGroupDb);
-        if (result != null && p6eJurisdictionGroupMapper.delete(p6eJurisdictionGroupDb) > 0) {
-            return result;
+    /**
+     * 更新数据
+     * @param data DB 对象
+     * @return 实体对象
+     */
+    public P6eJurisdictionGroupEntity update(P6eJurisdictionGroupDb data) {
+        if (JURISDICTION_GROUP_MAPPER.updateOneData(data.setId(data.getId())) > 0) {
+            return select(JURISDICTION_GROUP_MAPPER.selectOneData(data));
+        } else {
+            throw new RuntimeException(this.getClass() + " update fail.");
         }
-        return null;
+    }
+
+    /**
+     * 删除数据
+     * @return 实体对象
+     */
+    public P6eJurisdictionGroupEntity delete() {
+        if (JURISDICTION_GROUP_MAPPER.deleteOneData(data) > 0) {
+            return this;
+        } else {
+            throw new RuntimeException(this.getClass() + " delete fail.");
+        }
+    }
+
+    public P6eJurisdictionGroupDb getData() {
+        return data;
     }
 }
 

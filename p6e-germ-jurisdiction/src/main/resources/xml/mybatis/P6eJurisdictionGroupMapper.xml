@@ -12,13 +12,13 @@
         </trim>;
     </select>
 
-    <insert id="create" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionGroupDb"
+    <insert id="createOneData" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionGroupDb"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         INSERT INTO `p6e_germ_security_group`(`name`, `describe`, `weight`)
         VALUE (#{name}, #{describe}, #{weight});
     </insert>
 
-    <update id="update" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionGroupDb">
+    <update id="updateOneData" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionGroupDb">
         UPDATE `p6e_germ_security_group`
         <trim prefix="SET" suffixOverrides=",">
             <if test="name != null">`name` = #{name},</if>
@@ -28,7 +28,7 @@
         WHERE `id` = #{id};
     </update>
 
-    <delete id="delete" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionGroupDb">
+    <delete id="deleteOneData" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionGroupDb">
         DELETE FROM `p6e_germ_security_group` WHERE `id` = #{id};
     </delete>
 

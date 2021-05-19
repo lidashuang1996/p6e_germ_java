@@ -1,7 +1,7 @@
 package com.p6e.germ.oauth2.domain.entity;
 
 import com.p6e.germ.oauth2.model.db.P6eOauth2LogDb;
-import com.p6e.germ.oauth2.infrastructure.repository.mapper.P6eOauth2LogMapper;
+import com.p6e.germ.oauth2.infrastructure.mapper.P6eOauth2LogMapper;
 import com.p6e.germ.common.utils.P6eSpringUtil;
 
 import java.util.List;

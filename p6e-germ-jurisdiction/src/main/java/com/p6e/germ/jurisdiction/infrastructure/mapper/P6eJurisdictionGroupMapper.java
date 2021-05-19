@@ -21,21 +21,21 @@ public interface P6eJurisdictionGroupMapper {
      * @param db 安全组参数
      * @return 安全组的结果
      */
-    public Integer create(P6eJurisdictionGroupDb db);
+    public Integer createOneData(P6eJurisdictionGroupDb db);
 
     /**
      * 修改一条安全组的数据
      * @param db 安全组参数
      * @return 安全组的结果
      */
-    public Integer update(P6eJurisdictionGroupDb db);
+    public Integer updateOneData(P6eJurisdictionGroupDb db);
 
     /**
      * 删除一条安全组的数据
      * @param db 安全组参数
      * @return 安全组的结果
      */
-    public Integer delete(P6eJurisdictionGroupDb db);
+    public Integer deleteOneData(P6eJurisdictionGroupDb db);
 
     /**
      * 条件查询安全组的数据

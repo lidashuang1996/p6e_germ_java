@@ -13,13 +13,13 @@
         </trim>;
     </select>
 
-    <insert id="create" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionDb"
+    <insert id="createOneData" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionDb"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         INSERT INTO `p6e_jurisdiction`(`code`, `name`, `describe`, `content`)
         VALUE (#{DB.code}, #{DB.name}, #{DB.describe}, #{DB.content});
     </insert>
 
-    <update id="update" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionDb">
+    <update id="updateOneData" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionDb">
         UPDATE `p6e_jurisdiction`
         <trim prefix="SET" suffixOverrides=",">
             <if test="DB.code != null">`code` = #{DB.code},</if>
@@ -30,12 +30,8 @@
         WHERE `id` = #{DB.id};
     </update>
 
-    <delete id="delete" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionDb">
+    <delete id="deleteOneData" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionDb">
         DELETE FROM `p6e_jurisdiction` WHERE `id` = #{DB.id};
-    </delete>
-
-    <delete id="clean" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionDb">
-        DELETE FROM `p6e_jurisdiction`;
     </delete>
 
     <select id="select" parameterType="com.p6e.germ.jurisdiction.model.db.P6eJurisdictionDb"

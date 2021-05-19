@@ -26,6 +26,7 @@
             <artifactId>p6e-germ-common</artifactId>
             <version>0.0.1</version>
         </dependency>
+
         <dependency>
             <groupId>com.p6e.germ</groupId>
             <artifactId>p6e-germ-cache</artifactId>

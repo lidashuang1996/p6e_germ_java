@@ -1,7 +1,6 @@
 package com.p6e.germ.security.aspect;
 
 import com.p6e.germ.common.http.P6eHttpServlet;
-import com.p6e.germ.security.model.P6eSecurityModel;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
@@ -12,7 +11,7 @@ import java.io.PrintWriter;
  * @author lidashuang
  * @version 1.0
  */
-public interface P6eSecurityAspectInterface<T extends P6eSecurityModel> {
+public interface P6eSecurityAspectInterface<T extends P6eSecurityAspectModel> {
 
     /**
      * 认证信息错误

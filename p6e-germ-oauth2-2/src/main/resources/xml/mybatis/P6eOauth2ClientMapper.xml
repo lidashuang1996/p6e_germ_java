@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.p6e.germ.oauth2.infrastructure.repository.mapper.P6eOauth2ClientMapper">
+<mapper namespace="com.p6e.germ.oauth2.infrastructure.mapper.P6eOauth2ClientMapper">
 
     <select id="count" parameterType="com.p6e.germ.oauth2.model.db.P6eOauth2ClientDb" resultType="int">
         SELECT COUNT(`id`) FROM `p6e_oauth2_client`

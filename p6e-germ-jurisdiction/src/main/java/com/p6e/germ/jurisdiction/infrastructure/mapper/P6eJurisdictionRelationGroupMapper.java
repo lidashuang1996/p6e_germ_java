@@ -21,14 +21,14 @@ public interface P6eJurisdictionRelationGroupMapper {
      * @param db 安全组关系用户的参数
      * @return 安全组关系用户的结果
      */
-    public Integer create(P6eJurisdictionRelationGroupDb db);
+    public Integer createOneData(P6eJurisdictionRelationGroupDb db);
 
     /**
      * 条件删除安全组关系用户的数据
      * @param db 安全组关系用户的参数
      * @return 安全组关系用户的结果
      */
-    public Integer delete(P6eJurisdictionRelationGroupDb db);
+    public Integer deleteOneData(P6eJurisdictionRelationGroupDb db);
 
     /**
      * 条件查询安全组关系用户的数据

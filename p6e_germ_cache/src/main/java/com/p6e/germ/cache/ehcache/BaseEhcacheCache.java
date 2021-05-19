@@ -3,6 +3,7 @@ package com.p6e.germ.cache.ehcache;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 
 /**
+ * 以后更新
  * @author lidashuang
  * @version 1.0
  */
