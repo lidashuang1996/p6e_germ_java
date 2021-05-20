@@ -1,5 +1,6 @@
 package com.p6e.germ.oauth2.application;
 
+import com.p6e.germ.oauth2.model.P6eAuthModel;
 import com.p6e.germ.oauth2.model.dto.*;
 
 /**
@@ -21,7 +22,7 @@ public interface P6eAuthService {
      * @param param 客户端数据
      * @return 验证后的客户端数据
      */
-    public P6eAuthDto verification(P6eVerificationAuthDto param) ;
+    public P6eAuthModel.DtoResult verification(P6eAuthModel.DtoParam param) ;
 
     /**
      * code 回调验证方式

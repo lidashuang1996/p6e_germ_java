@@ -2,7 +2,7 @@ package com.p6e.germ.oauth2.context.controller;
 
 import com.p6e.germ.oauth2.application.P6eApplication;
 import com.p6e.germ.oauth2.context.controller.support.P6eBaseController;
-import com.p6e.germ.oauth2.model.P6eModel;
+import com.p6e.germ.oauth2.model.P6eResultModel;
 import com.p6e.germ.oauth2.model.dto.P6eInfoDto;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 public class P6eInfoController extends P6eBaseController {
 
     @RequestMapping
-    public P6eModel def(HttpServletRequest request) {
+    public P6eResultModel def(HttpServletRequest request) {
         // 请求参数中读取 token 参数
         String token = request.getParameter(AUTH_PARAM_NAME);
         if (token == null) {
@@ -33,12 +33,12 @@ public class P6eInfoController extends P6eBaseController {
         if (token != null) {
             final P6eInfoDto p6eInfoDto = P6eApplication.auth.info(token);
             if (p6eInfoDto.getError() == null) {
-                return P6eModel.build().setData(p6eInfoDto.getData());
+                return P6eResultModel.build().setData(p6eInfoDto.getData());
             } else {
-                return P6eModel.build(p6eInfoDto.getError());
+                return P6eResultModel.build(p6eInfoDto.getError());
             }
         }
-        return P6eModel.build(P6eModel.Error.PARAMETER_EXCEPTION);
+        return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
     }
 
 }

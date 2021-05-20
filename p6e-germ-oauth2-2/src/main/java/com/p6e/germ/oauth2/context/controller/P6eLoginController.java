@@ -4,8 +4,8 @@ import com.p6e.germ.common.utils.P6eCopyUtil;
 import com.p6e.germ.common.utils.P6eJsonUtil;
 import com.p6e.germ.oauth2.application.P6eApplication;
 import com.p6e.germ.oauth2.context.controller.support.P6eBaseController;
-import com.p6e.germ.oauth2.context.controller.support.model.*;
-import com.p6e.germ.oauth2.model.P6eModel;
+import com.p6e.germ.oauth2.model.*;
+import com.p6e.germ.oauth2.model.P6eResultModel;
 import com.p6e.germ.oauth2.model.dto.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,70 +20,165 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 public class P6eLoginController extends P6eBaseController {
 
-    @PostMapping("/login/")
-    public P6eModel def(@RequestBody P6eDefaultLoginParam param) {
-        final P6eLoginDto p6eLoginDto =
-                P6eApplication.login.defaultLogin(P6eCopyUtil.run(param, P6eDefaultLoginDto.class));
-        if (p6eLoginDto.getError() == null) {
-            return P6eModel.build().setData(P6eCopyUtil.run(p6eLoginDto, P6eDefaultLoginResult.class));
-        } else {
-            return P6eModel.build(p6eLoginDto.getError());
-        }
-    }
-
-    @GetMapping("/login/code/generate")
-    public P6eModel generateCode(P6eCodeLoginParam param) {
-        final P6eGenerateCodeLoginDto p6eGenerateCodeLoginDto = P6eApplication.login.generateCode(param.getMark());
-        if (p6eGenerateCodeLoginDto.getError() == null) {
-            return P6eModel.build().setData(P6eCopyUtil.run(p6eGenerateCodeLoginDto, P6eCodeLoginResult.class));
-        } else {
-            return P6eModel.build(p6eGenerateCodeLoginDto.getError());
-        }
-    }
-
-    @GetMapping("/login/code/get")
-    public P6eModel getCode(P6eCodeLoginParam param) {
-        final P6eLoginDto p6eLoginDto = P6eApplication.login.getCodeLogin(param.getCode());
-        if (p6eLoginDto.getError() == null) {
-            if (p6eLoginDto.getAccessToken() == null) {
-                return P6eModel.build();
+    @GetMapping("/login/voucher")
+    public P6eResultModel voucher() {
+        try {
+            final P6eVoucherModel.DtoResult result = P6eApplication.login.defaultVoucher();
+            if (result == null) {
+                return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
+            } else if (result.getError() != null) {
+                return P6eResultModel.build(result.getError());
             } else {
-                return P6eModel.build().setData(P6eCopyUtil.run(p6eLoginDto, P6eDefaultLoginResult.class));
+                return P6eResultModel.build().setData(P6eCopyUtil.run(result, P6eVoucherResult.class));
             }
-        } else {
-            return P6eModel.build(p6eLoginDto.getError());
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
     }
 
-    @RequestMapping("/voucher")
-    public P6eModel voucher() {
-        final P6eVoucherDto p6eVoucherDto = P6eApplication.login.defaultVoucher();
-        if (p6eVoucherDto.getError() == null) {
-            return P6eModel.build().setData(P6eCopyUtil.run(p6eVoucherDto, P6eVoucherResult.class));
-        } else {
-            return P6eModel.build(p6eVoucherDto.getError());
+    @GetMapping("/login/verification")
+    public P6eResultModel verification(HttpServletRequest request, P6eVerificationLoginModel.VoParam param) {
+        try {
+            // 读取 ACCESS TOKEN 数据
+            if (param.getAccessToken() == null) {
+                String token = request.getParameter(AUTH_PARAM_NAME);
+                if (token == null) {
+                    final String content = request.getHeader(AUTH_HEADER_NAME);
+                    if (content != null
+                            && content.startsWith(AUTH_HEADER_BEARER)
+                            && content.length() > AUTH_HEADER_BEARER_LENGTH) {
+                        token = content.substring(AUTH_HEADER_BEARER_LENGTH);
+                    }
+                }
+                param.setAccessToken(token);
+            }
+            if (param.getAccessToken() == null) {
+                return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
+            } else {
+                // 执行登录验证服务
+                final P6eVerificationLoginModel.DtoResult result =
+                        P6eApplication.login.verification(P6eCopyUtil.run(param, P6eVerificationLoginModel.DtoParam.class));
+                if (result == null) {
+                    return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
+                } else if (result.getError() != null) {
+                    return P6eResultModel.build(result.getError());
+                } else {
+                    return P6eResultModel.build(P6eCopyUtil.run(result, P6eVerificationLoginModel.VoResult.class));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
     }
 
-    @RequestMapping("/login/verification")
-    public P6eModel verification(HttpServletRequest request, P6eVerificationLoginParam param) {
-        // 读取 ACCESS TOKEN 数据
-        String token = request.getParameter(AUTH_PARAM_NAME);
-        if (token == null) {
-            final String content = request.getHeader(AUTH_HEADER_NAME);
-            if (content != null && content.startsWith(AUTH_HEADER_BEARER)) {
-                token = content.substring(7);
+    @PostMapping("/login/account_password")
+    public P6eResultModel accountPassword(@RequestBody P6eLoginModel.AccountPasswordVoParam param) {
+        try {
+            if (param == null
+                    || param.getAccount() == null
+                    || param.getPassword() == null
+                    || param.getMark() == null
+                    || param.getVoucher() == null) {
+                return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
+            } else {
+                // 执行登录服务
+                final P6eLoginModel.AccountPasswordDtoResult result = P6eApplication.login.accountPassword(
+                        P6eCopyUtil.run(param, P6eLoginModel.AccountPasswordDtoParam.class));
+                if (result == null) {
+                    return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
+                } else if (result.getError() != null) {
+                    return P6eResultModel.build(result.getError());
+                } else {
+                    return P6eResultModel.build().setData(P6eCopyUtil.run(result, P6eLoginModel.VoResult.class));
+                }
             }
-        }
-        // 执行登录验证服务
-        final P6eLoginDto p6eLoginDto = P6eApplication.login.verification(
-                P6eCopyUtil.run(param, P6eVerificationLoginDto.class).setAccessToken(token));
-        if (p6eLoginDto.getError() == null) {
-            return P6eModel.build().setData(P6eCopyUtil.run(p6eLoginDto, P6eVerificationLoginResult.class));
-        } else {
-            return P6eModel.build(p6eLoginDto.getError());
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
     }
+
+
+    @GetMapping("/login/nr_code")
+    public P6eResultModel nrCode() {
+        try {
+            return P6eResultModel.build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+    }
+
+    @PostMapping("/login/nr_code/data")
+    public P6eResultModel nrCodeData() {
+        try {
+            return P6eResultModel.build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+    }
+
+    @GetMapping("/login/qr_code")
+    public P6eResultModel qrCode() {
+        try {
+            return P6eResultModel.build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+    }
+
+    @GetMapping("/login/qr_code/data")
+    public P6eResultModel qrCodeData() {
+        try {
+            return P6eResultModel.build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+    }
+
+
+
+//
+//
+//    @GetMapping("/login/code/generate")
+//    public P6eResultModel generateCode(P6eCodeLoginParam param) {
+//        final P6eGenerateCodeLoginDto p6eGenerateCodeLoginDto = P6eApplication.login.generateCode(param.getMark());
+//        if (p6eGenerateCodeLoginDto.getError() == null) {
+//            return P6eResultModel.build().setData(P6eCopyUtil.run(p6eGenerateCodeLoginDto, P6eCodeLoginResult.class));
+//        } else {
+//            return P6eResultModel.build(p6eGenerateCodeLoginDto.getError());
+//        }
+//    }
+
+//    @GetMapping("/login/code/get")
+//    public P6eResultModel getCode(P6eCodeLoginParam param) {
+//        final P6eLoginDto p6eLoginDto = P6eApplication.login.getCodeLogin(param.getCode());
+//        if (p6eLoginDto.getError() == null) {
+//            if (p6eLoginDto.getAccessToken() == null) {
+//                return P6eResultModel.build();
+//            } else {
+//                return P6eResultModel.build().setData(P6eCopyUtil.run(p6eLoginDto, P6eDefaultLoginResult.class));
+//            }
+//        } else {
+//            return P6eResultModel.build(p6eLoginDto.getError());
+//        }
+//    }
+
+
+
+
 
     @RequestMapping("/login/qq")
     public void qqLogin(HttpServletResponse response, P6eQqLoginParam param) throws Exception {
@@ -93,7 +188,7 @@ public class P6eLoginController extends P6eBaseController {
             response.sendRedirect(p6eUrlLoginDto.getUrl());
         } else {
             // 写入返回的数据
-            response.getWriter().write(P6eJsonUtil.toJson(P6eModel.build(p6eUrlLoginDto.getError())));
+            response.getWriter().write(P6eJsonUtil.toJson(P6eResultModel.build(p6eUrlLoginDto.getError())));
             response.getWriter().flush();
             response.getWriter().close();
         }
@@ -104,7 +199,7 @@ public class P6eLoginController extends P6eBaseController {
         final String dataType = "data";
         if (dataType.equals(param.getType())) {
             // 通过首页发送请求，然后跳转
-            final P6eModel p6eModel;
+            final P6eResultModel p6eModel;
             final P6eLoginDto p6eLoginDto =
                     P6eApplication.login.qqLogin(P6eCopyUtil.run(param, P6eQqLoginDto.class));
             response.getWriter().write(P6eJsonUtil.toJson(loginResult(p6eLoginDto)));
@@ -124,7 +219,7 @@ public class P6eLoginController extends P6eBaseController {
             response.sendRedirect(p6eUrlLoginDto.getUrl());
         } else {
             // 写入返回的数据
-            response.getWriter().write(P6eJsonUtil.toJson(P6eModel.build(p6eUrlLoginDto.getError())));
+            response.getWriter().write(P6eJsonUtil.toJson(P6eResultModel.build(p6eUrlLoginDto.getError())));
             response.getWriter().flush();
             response.getWriter().close();
         }
@@ -135,7 +230,7 @@ public class P6eLoginController extends P6eBaseController {
         final String dataType = "data";
         if (dataType.equals(param.getType())) {
             // 通过首页发送请求，然后跳转
-            final P6eModel p6eModel;
+            final P6eResultModel p6eModel;
             final P6eLoginDto p6eLoginDto =
                     P6eApplication.login.weChatLogin(P6eCopyUtil.run(param, P6eWeChatLoginDto.class));
             response.getWriter().write(P6eJsonUtil.toJson(loginResult(p6eLoginDto)));
@@ -147,17 +242,18 @@ public class P6eLoginController extends P6eBaseController {
         }
     }
 
+
     /**
      * 登录返回
      * @param p6eLoginDto 登录的服务
      * @return 返回的类型
      */
-    private P6eModel loginResult(P6eLoginDto p6eLoginDto) {
-        final P6eModel p6eModel;
+    private P6eResultModel loginResult(P6eLoginDto p6eLoginDto) {
+        final P6eResultModel p6eModel;
         if (p6eLoginDto.getError() == null) {
-            p6eModel = P6eModel.build().setData(P6eCopyUtil.run(p6eLoginDto, P6eVerificationLoginResult.class));
+            p6eModel = P6eResultModel.build().setData(P6eCopyUtil.run(p6eLoginDto, P6eVerificationLoginResult.class));
         } else {
-            p6eModel = P6eModel.build(p6eLoginDto.getError());
+            p6eModel = P6eResultModel.build(p6eLoginDto.getError());
         }
         return p6eModel;
     }

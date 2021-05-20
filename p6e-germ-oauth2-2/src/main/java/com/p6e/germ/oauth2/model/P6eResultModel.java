@@ -4,7 +4,7 @@ package com.p6e.germ.oauth2.model;
  * @author lidashuang
  * @version 1.0
  */
-public final class P6eModel {
+public final class P6eResultModel {
 
     public enum Error {
         /**
@@ -69,22 +69,32 @@ public final class P6eModel {
      */
     private Object data;
 
-    public static P6eModel build() {
-        return new P6eModel();
+    public static P6eResultModel build() {
+        return new P6eResultModel();
     }
 
-    public static P6eModel build(Error error) {
-        return new P6eModel(error);
+    public static P6eResultModel build(Error error) {
+        return new P6eResultModel(error);
     }
 
-    private P6eModel() {
+    public static P6eResultModel build(Object data) {
+        return new P6eResultModel(data);
+    }
+
+    private P6eResultModel() {
         this.code = 0;
         this.message = "SUCCESS";
     }
 
-    private P6eModel(Error error) {
+    private P6eResultModel(Error error) {
         this.code = error.code;
         this.message = error.name();
+    }
+
+    private P6eResultModel(Object data) {
+        this.code = 0;
+        this.message = "SUCCESS";
+        this.data = data;
     }
 
     public Integer getCode() {
@@ -107,7 +117,7 @@ public final class P6eModel {
         return data;
     }
 
-    public P6eModel setData(Object data) {
+    public P6eResultModel setData(Object data) {
         this.data = data;
         return this;
     }

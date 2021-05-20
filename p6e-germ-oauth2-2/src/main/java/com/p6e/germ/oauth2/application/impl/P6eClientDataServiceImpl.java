@@ -5,7 +5,7 @@ import com.p6e.germ.oauth2.application.P6eClientDataService;
 import com.p6e.germ.oauth2.domain.entity.P6eClientEntity;
 import com.p6e.germ.oauth2.model.db.P6eOauth2ClientDb;
 import com.p6e.germ.common.utils.P6eCopyUtil;
-import com.p6e.germ.oauth2.model.P6eModel;
+import com.p6e.germ.oauth2.model.P6eResultModel;
 import com.p6e.germ.oauth2.model.dto.P6eClientDataDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +31,7 @@ public class P6eClientDataServiceImpl implements P6eClientDataService {
                     || param.getScope() == null
                     || param.getRedirectUri() == null
                     || param.getLimitingRule() == null) {
-                p6eClientDataDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                p6eClientDataDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
                 // 创建的 ID 自动生成，重置写入的 ID 参数
                 param.setId(null);
@@ -40,7 +40,7 @@ public class P6eClientDataServiceImpl implements P6eClientDataService {
                         new P6eClientEntity(P6eCopyUtil.run(param, P6eOauth2ClientDb.class)).create();
                 if (p6eOauth2ClientDb == null) {
                     // 创建失败
-                    p6eClientDataDto.setError(P6eModel.Error.DATABASE_EXCEPTION);
+                    p6eClientDataDto.setError(P6eResultModel.Error.DATABASE_EXCEPTION);
                 } else {
                     // 创建成功
                     P6eCopyUtil.run(p6eOauth2ClientDb, p6eClientDataDto);
@@ -49,10 +49,10 @@ public class P6eClientDataServiceImpl implements P6eClientDataService {
         } catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
-            p6eClientDataDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            p6eClientDataDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
         } catch (Exception ee) {
             LOGGER.error(ee.getMessage());
-            p6eClientDataDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+            p6eClientDataDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
         return p6eClientDataDto;
     }
@@ -63,13 +63,13 @@ public class P6eClientDataServiceImpl implements P6eClientDataService {
         try {
             // 验证参数
             if (param == null || param.getId() == null) {
-                p6eClientDataDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                p6eClientDataDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
                 // 删除数据
                 final P6eOauth2ClientDb p6eOauth2ClientDb = new P6eClientEntity(param.getId()).delete();
                 if (p6eOauth2ClientDb == null) {
                     // 删除失败
-                    p6eClientDataDto.setError(P6eModel.Error.DATABASE_EXCEPTION);
+                    p6eClientDataDto.setError(P6eResultModel.Error.DATABASE_EXCEPTION);
                 } else {
                     // 删除成功
                     P6eCopyUtil.run(p6eOauth2ClientDb, p6eClientDataDto);
@@ -78,10 +78,10 @@ public class P6eClientDataServiceImpl implements P6eClientDataService {
         } catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
-            p6eClientDataDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            p6eClientDataDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
         } catch (Exception ee) {
             LOGGER.error(ee.getMessage());
-            p6eClientDataDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+            p6eClientDataDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
         return p6eClientDataDto;
     }
@@ -92,14 +92,14 @@ public class P6eClientDataServiceImpl implements P6eClientDataService {
         try {
             // 验证参数
             if (param == null || param.getId() == null) {
-                p6eClientDataDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                p6eClientDataDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
                 // 更新数据
                 final P6eOauth2ClientDb p6eOauth2ClientDb =
                         new P6eClientEntity(P6eCopyUtil.run(param, P6eOauth2ClientDb.class)).update();
                 if (p6eOauth2ClientDb == null) {
                     // 根系失败
-                    p6eClientDataDto.setError(P6eModel.Error.DATABASE_EXCEPTION);
+                    p6eClientDataDto.setError(P6eResultModel.Error.DATABASE_EXCEPTION);
                 } else {
                     // 更新成功
                     P6eCopyUtil.run(p6eOauth2ClientDb, p6eClientDataDto);
@@ -108,10 +108,10 @@ public class P6eClientDataServiceImpl implements P6eClientDataService {
         } catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
-            p6eClientDataDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            p6eClientDataDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
         } catch (Exception ee) {
             LOGGER.error(ee.getMessage());
-            p6eClientDataDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+            p6eClientDataDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
         return p6eClientDataDto;
     }
@@ -122,7 +122,7 @@ public class P6eClientDataServiceImpl implements P6eClientDataService {
         try {
             // 验证参数
             if (param == null) {
-                p6eClientDataDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                p6eClientDataDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
                 final P6eOauth2ClientDb p6eOauth2ClientDb;
                 if (param.getId() != null) {
@@ -135,16 +135,16 @@ public class P6eClientDataServiceImpl implements P6eClientDataService {
                     P6eCopyUtil.run(p6eOauth2ClientDb, p6eClientDataDto);
                 } else {
                     // 没有上述条件查询失败
-                    p6eClientDataDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                    p6eClientDataDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
                 }
             }
         } catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
-            p6eClientDataDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            p6eClientDataDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
         } catch (Exception ee) {
             LOGGER.error(ee.getMessage());
-            p6eClientDataDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+            p6eClientDataDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
         return p6eClientDataDto;
     }
@@ -164,10 +164,10 @@ public class P6eClientDataServiceImpl implements P6eClientDataService {
         } catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
-            p6eClientDataDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            p6eClientDataDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
         } catch (Exception ee) {
             LOGGER.error(ee.getMessage());
-            p6eClientDataDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+            p6eClientDataDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
         return p6eClientDataDto;
     }

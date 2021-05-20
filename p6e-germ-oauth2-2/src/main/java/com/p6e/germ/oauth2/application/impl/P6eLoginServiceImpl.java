@@ -7,7 +7,10 @@ import com.p6e.germ.oauth2.application.P6eLoginService;
 import com.p6e.germ.oauth2.domain.entity.*;
 import com.p6e.germ.oauth2.domain.keyvalue.P6eCodeKeyValue;
 import com.p6e.germ.oauth2.domain.keyvalue.P6eMarkKeyValue;
-import com.p6e.germ.oauth2.model.P6eModel;
+import com.p6e.germ.oauth2.model.P6eLoginModel;
+import com.p6e.germ.oauth2.model.P6eResultModel;
+import com.p6e.germ.oauth2.model.P6eVerificationLoginModel;
+import com.p6e.germ.oauth2.model.P6eVoucherModel;
 import com.p6e.germ.oauth2.model.db.P6eOauth2LogDb;
 import com.p6e.germ.oauth2.model.dto.*;
 import org.slf4j.Logger;
@@ -17,6 +20,7 @@ import java.net.URLEncoder;
 import java.util.Map;
 
 /**
+ * 登录服务
  * @author lidashuang
  * @version 1.0
  */
@@ -29,13 +33,13 @@ public class P6eLoginServiceImpl implements P6eLoginService {
     private final P6eConfig p6eConfig = P6eSpringUtil.getBean(P6eConfig.class);
 
     @Override
-    public P6eLoginDto verification(P6eVerificationLoginDto param) {
+    public P6eVerificationLoginModel.DtoResult verification(P6eVerificationLoginModel.DtoParam param) {
         // 创建登录信息返回对象
-        final P6eLoginDto p6eLoginDto = new P6eLoginDto();
+        final P6eVerificationLoginModel.DtoResult result = new P6eVerificationLoginModel.DtoResult();
         try {
             // 校验参数
             if (param == null || param.getMark() == null || param.getAccessToken() == null) {
-                p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                result.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
                 // 查询 mark 信息
                 final P6eMarkEntity p6eMarkEntity = new P6eMarkEntity(param.getMark());
@@ -45,11 +49,11 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                 final P6eTokenEntity p6eTokenEntity =
                         new P6eTokenEntity(param.getAccessToken(), P6eTokenEntity.ACCESS_TOKEN).resetModel();
                 // 写入客户端信息
-                P6eCopyUtil.run(p6eMarkKeyValue, p6eLoginDto);
+                P6eCopyUtil.run(p6eMarkKeyValue, result);
                 // 写入用户认证信息
-                P6eCopyUtil.run(p6eTokenEntity.getModel(), p6eLoginDto);
+                P6eCopyUtil.run(p6eTokenEntity.getModel(), result);
                 // 写入返回数据 CODE
-                p6eLoginDto.setCode(p6eTokenEntity.getKey());
+                result.setCode(p6eTokenEntity.getKey());
                 // CID / UID
                 int cid = p6eMarkKeyValue.getId();
                 int uid = Integer.parseInt(p6eTokenEntity.getValue().get("id"));
@@ -61,8 +65,8 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                     // 如果为简化模式对返回的数据进行一下修改
                     p6eTokenEntity.delRefreshToken();
                     p6eTokenEntity.setAccessTokenExpirationTime(simpleDateTime);
-                    p6eLoginDto.setRefreshToken(null);
-                    p6eLoginDto.setExpiresIn(simpleDateTime);
+                    result.setRefreshToken(null);
+                    result.setExpiresIn(simpleDateTime);
                     // 写入日志数据
                     new P6eLogEntity(new P6eOauth2LogDb()
                             .setCid(cid)
@@ -81,39 +85,39 @@ public class P6eLoginServiceImpl implements P6eLoginService {
         } catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
-            p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            result.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
         } catch (Exception ee) {
             LOGGER.error(ee.getMessage());
-            p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
-        return p6eLoginDto;
+        return result;
     }
 
     @Override
-    public P6eVoucherDto defaultVoucher() {
+    public P6eVoucherModel.DtoResult defaultVoucher() {
         // 创建凭证对象
-        final P6eVoucherDto p6eVoucherDto = new P6eVoucherDto();
+        final P6eVoucherModel.DtoResult result = new P6eVoucherModel.DtoResult();
         try {
             // 创建凭证并缓存
             final P6eVoucherEntity p6eVoucherEntity = new P6eVoucherEntity().create().cache();
             // 写入数据
-            p6eVoucherDto.setVoucher(p6eVoucherEntity.getVoucher());
-            p6eVoucherDto.setPublicKey(p6eVoucherEntity.getPublicSecretKey());
+            result.setVoucher(p6eVoucherEntity.getVoucher());
+            result.setPublicKey(p6eVoucherEntity.getPublicSecretKey());
         } catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
-            p6eVoucherDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            result.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
         } catch (Exception ee) {
             LOGGER.error(ee.getMessage());
-            p6eVoucherDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
-        return p6eVoucherDto;
+        return result;
     }
 
     @Override
-    public P6eLoginDto defaultLogin(P6eDefaultLoginDto param) {
+    public P6eLoginModel.AccountPasswordDtoResult accountPassword(P6eLoginModel.AccountPasswordDtoParam param) {
         // 创建登录信息返回对象
-        final P6eLoginDto p6eLoginDto = new P6eLoginDto();
+        final P6eLoginModel.AccountPasswordDtoResult result = new P6eLoginModel.AccountPasswordDtoResult();
         try {
             // 校验参数
             if (param == null
@@ -121,7 +125,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                     || param.getPassword() == null
                     || param.getMark() == null
                     || param.getVoucher() == null) {
-                p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                result.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
                 // 获取标记信息
                 final P6eMarkEntity p6eMarkEntity = new P6eMarkEntity(param.getMark());
@@ -133,8 +137,8 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                     // 出现异常就是账号密码错误
                     p6eUserEntity = new P6eUserEntity(new P6eUserEntity.Account(param.getAccount()));
                 } catch (Exception e){
-                    p6eLoginDto.setError(P6eModel.Error.ACCOUNT_OR_PASSWORD);
-                    return p6eLoginDto;
+                    result.setError(P6eResultModel.Error.ACCOUNT_OR_PASSWORD);
+                    return result;
                 }
                 // 解密验证账号密码
                 if (p6eUserEntity.defaultVerification(p6eVoucherEntity.execute(param.getPassword()))) {
@@ -144,11 +148,11 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                         // 读取 MARK 信息
                         final P6eMarkKeyValue p6eMarkKeyValue = p6eMarkEntity.getP6eMarkKeyValue();
                         // 写入返回数据 CODE
-                        p6eLoginDto.setCode(p6eTokenEntity.getKey());
+                        result.setCode(p6eTokenEntity.getKey());
                         // 写入客户端信息
-                        P6eCopyUtil.run(p6eMarkKeyValue, p6eLoginDto);
+                        P6eCopyUtil.run(p6eMarkKeyValue, result);
                         // 写入用户认证信息
-                        P6eCopyUtil.run(p6eTokenEntity.getModel(), p6eLoginDto);
+                        P6eCopyUtil.run(p6eTokenEntity.getModel(), result);
                         // CID / UID
                         int cid = p6eMarkKeyValue.getId();
                         int uid = Integer.parseInt(p6eTokenEntity.getValue().get("id"));
@@ -160,8 +164,8 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                             // 如果为简化模式对返回的数据进行一下修改
                             p6eTokenEntity.delRefreshToken();
                             p6eTokenEntity.setAccessTokenExpirationTime(simpleDateTime);
-                            p6eLoginDto.setRefreshToken(null);
-                            p6eLoginDto.setExpiresIn(simpleDateTime);
+                            result.setRefreshToken(null);
+                            result.setExpiresIn(simpleDateTime);
                             // 写入日志数据
                             new P6eLogEntity(new P6eOauth2LogDb()
                                     .setCid(cid)
@@ -183,18 +187,18 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                         p6eVoucherEntity.clean();
                     }
                 } else {
-                    p6eLoginDto.setError(P6eModel.Error.ACCOUNT_OR_PASSWORD);
+                    result.setError(P6eResultModel.Error.ACCOUNT_OR_PASSWORD);
                 }
             }
         } catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
-            p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            result.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
         } catch (Exception ee) {
             LOGGER.error(ee.getMessage());
-            p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
-        return p6eLoginDto;
+        return result;
     }
 
     @Override
@@ -206,10 +210,10 @@ public class P6eLoginServiceImpl implements P6eLoginService {
         } catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
-            p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            p6eLoginDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
         } catch (Exception ee) {
             LOGGER.error(ee.getMessage());
-            p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+            p6eLoginDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
         return "p6eLoginDto";
     }
@@ -223,7 +227,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                     || param.getVoucher() == null
                     || param.getCode() == null
                     || param.getMark() == null) {
-                p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                p6eLoginDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
                 final P6ePushEntity p6ePushEntity = new P6ePushEntity().getCache(param.getVoucher());
                 boolean bool = p6ePushEntity.verification(param.getCode(), P6ePushEntity.SMS_LOGIN_TYPE);
@@ -276,16 +280,16 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                         p6ePushEntity.clean();
                     }
                 } else {
-                    p6eLoginDto.setError(P6eModel.Error.VERIFICATION_CODE_EXCEPTION);
+                    p6eLoginDto.setError(P6eResultModel.Error.VERIFICATION_CODE_EXCEPTION);
                 }
             }
         } catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
-            p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            p6eLoginDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
         } catch (Exception ee) {
             LOGGER.error(ee.getMessage());
-            p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+            p6eLoginDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
         return p6eLoginDto;
     }
@@ -299,10 +303,10 @@ public class P6eLoginServiceImpl implements P6eLoginService {
         } catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
-            p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            p6eLoginDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
         } catch (Exception ee) {
             LOGGER.error(ee.getMessage());
-            p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+            p6eLoginDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
         return "p6eLoginDto";
     }
@@ -316,7 +320,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                     || param.getVoucher() == null
                     || param.getCode() == null
                     || param.getMark() == null) {
-                p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                p6eLoginDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
                 final P6ePushEntity p6ePushEntity = new P6ePushEntity().getCache(param.getVoucher());
                 boolean bool = p6ePushEntity.verification(param.getCode(), P6ePushEntity.EMAIL_LOGIN_TYPE);
@@ -369,16 +373,16 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                         p6ePushEntity.clean();
                     }
                 } else {
-                    p6eLoginDto.setError(P6eModel.Error.VERIFICATION_CODE_EXCEPTION);
+                    p6eLoginDto.setError(P6eResultModel.Error.VERIFICATION_CODE_EXCEPTION);
                 }
             }
         } catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
-            p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            p6eLoginDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
         } catch (Exception ee) {
             LOGGER.error(ee.getMessage());
-            p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+            p6eLoginDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
         return p6eLoginDto;
     }
@@ -390,7 +394,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
         if (qq.isEnable()) {
             try {
                 if (mark == null) {
-                    p6eUrlLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                    p6eUrlLoginDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
                 } else {
                     // 判断 mark 是否存在
                     new P6eMarkEntity(mark);
@@ -413,13 +417,13 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                 }
             } catch (RuntimeException e) {
                 LOGGER.error(e.getMessage());
-                p6eUrlLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                p6eUrlLoginDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } catch (Exception ee) {
                 LOGGER.error(ee.getMessage());
-                p6eUrlLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+                p6eUrlLoginDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
             }
         } else {
-            p6eUrlLoginDto.setError(P6eModel.Error.SERVICE_NOT_ENABLE);
+            p6eUrlLoginDto.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
         }
         return p6eUrlLoginDto;
     }
@@ -431,7 +435,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
         if (qq.isEnable()) {
             try {
                 if (param == null || param.getCode() == null || param.getState() == null) {
-                    p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                    p6eLoginDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
                 } else {
                     // 获取用户在 QQ 的 ACCESS TOKEN
                     final String tokenUrl = qq.getTokenUrl()
@@ -514,25 +518,25 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                                     }
                                 }
                             } else {
-                                p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+                                p6eLoginDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
                             }
                         } else {
-                            p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+                            p6eLoginDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
                         }
                     } else {
-                        p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+                        p6eLoginDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
                     }
                 }
             } catch (RuntimeException e) {
                 e.printStackTrace();
                 LOGGER.error(e.getMessage());
-                p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                p6eLoginDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } catch (Exception ee) {
                 LOGGER.error(ee.getMessage());
-                p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+                p6eLoginDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
             }
         } else {
-            p6eLoginDto.setError(P6eModel.Error.SERVICE_NOT_ENABLE);
+            p6eLoginDto.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
         }
         return p6eLoginDto;
     }
@@ -544,7 +548,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
         if (weChat.isEnable()) {
             try {
                 if (mark == null) {
-                    p6eUrlLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                    p6eUrlLoginDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
                 } else {
                     // 判断 mark 是否存在
                     new P6eMarkEntity(mark);
@@ -563,13 +567,13 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                 }
             } catch (RuntimeException e) {
                 LOGGER.error(e.getMessage());
-                p6eUrlLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                p6eUrlLoginDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } catch (Exception ee) {
                 LOGGER.error(ee.getMessage());
-                p6eUrlLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+                p6eUrlLoginDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
             }
         } else {
-            p6eUrlLoginDto.setError(P6eModel.Error.SERVICE_NOT_ENABLE);
+            p6eUrlLoginDto.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
         }
         return p6eUrlLoginDto;
     }
@@ -581,7 +585,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
         if (weChat.isEnable()) {
             try {
                 if (param == null || param.getCode() == null || param.getState() == null) {
-                    p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                    p6eLoginDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
                 } else {
                     // 读取配置信息
                     final String tokenUrl = weChat.getTokenUrl()
@@ -652,21 +656,21 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                                 }
                             }
                         } else {
-                            p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+                            p6eLoginDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
                         }
                     } else {
-                        p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+                        p6eLoginDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
                     }
                 }
             } catch (RuntimeException e) {
                 LOGGER.error(e.getMessage());
-                p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                p6eLoginDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } catch (Exception ee) {
                 LOGGER.error(ee.getMessage());
-                p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+                p6eLoginDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
             }
         } else {
-            p6eLoginDto.setError(P6eModel.Error.SERVICE_NOT_ENABLE);
+            p6eLoginDto.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
         }
         return p6eLoginDto;
     }
@@ -676,7 +680,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
         final P6eGenerateCodeLoginDto p6eGenerateCodeLoginDto = new P6eGenerateCodeLoginDto().setMark(mark);
         try {
             if (mark == null) {
-                p6eGenerateCodeLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                p6eGenerateCodeLoginDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
                 // 写入 mark 缓存
                 final String key = new P6eCodeEntity().create(mark).cache().getKey();
@@ -686,10 +690,10 @@ public class P6eLoginServiceImpl implements P6eLoginService {
         }catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
-            p6eGenerateCodeLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            p6eGenerateCodeLoginDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
         } catch (Exception ee) {
             LOGGER.error(ee.getMessage());
-            p6eGenerateCodeLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+            p6eGenerateCodeLoginDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
         return p6eGenerateCodeLoginDto;
     }
@@ -699,7 +703,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
         final P6eLoginDto p6eLoginDto = new P6eLoginDto();
         try {
             if (param == null || param.getCode() == null || param.getMark() == null || param.getAccessToken() == null) {
-                p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                p6eLoginDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
                 // 读取 MARK 数据
                 final String mark = param.getMark();
@@ -750,16 +754,16 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                     }
                     // 如果不是采用轮训的机制，而是推送的机制，这里可以直接推送数据
                 } else {
-                    p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                    p6eLoginDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
                 }
             }
         }catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
-            p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            p6eLoginDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
         } catch (Exception ee) {
             LOGGER.error(ee.getMessage());
-            p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+            p6eLoginDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
         return p6eLoginDto;
     }
@@ -769,7 +773,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
         final P6eLoginDto p6eLoginDto = new P6eLoginDto();
         try {
             if (code == null) {
-                p6eLoginDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+                p6eLoginDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
                 final P6eCodeEntity p6eCodeEntity = new P6eCodeEntity(code).get();
                 final P6eCodeKeyValue p6eCodeKeyValue = p6eCodeEntity.getP6eCodeKeyValue();
@@ -783,10 +787,10 @@ public class P6eLoginServiceImpl implements P6eLoginService {
         }catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
-            p6eLoginDto.setError(P6eModel.Error.EXPIRATION_EXCEPTION);
+            p6eLoginDto.setError(P6eResultModel.Error.EXPIRATION_EXCEPTION);
         } catch (Exception ee) {
             LOGGER.error(ee.getMessage());
-            p6eLoginDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+            p6eLoginDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
         return p6eLoginDto;
     }

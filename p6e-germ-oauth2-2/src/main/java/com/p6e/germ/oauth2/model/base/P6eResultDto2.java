@@ -1,6 +1,6 @@
 package com.p6e.germ.oauth2.model.base;
 
-import com.p6e.germ.oauth2.model.P6eModel;
+import com.p6e.germ.oauth2.model.P6eResultModel;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,9 +11,9 @@ import java.util.List;
  * @version 1.0
  */
 @Data
-public class P6eResultDto<T> implements Serializable {
+public class P6eResultDto2<T> implements Serializable {
     /** 错误的描述 */
-    private P6eModel.Error error;
+    private P6eResultModel.Error error;
 
     /** 多条查询的数据内容 */
     private List<T> list;

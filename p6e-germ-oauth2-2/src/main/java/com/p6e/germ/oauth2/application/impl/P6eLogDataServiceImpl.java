@@ -5,7 +5,7 @@ import com.p6e.germ.oauth2.application.P6eLoginService;
 import com.p6e.germ.oauth2.domain.entity.P6eLogEntity;
 import com.p6e.germ.oauth2.model.db.P6eOauth2LogDb;
 import com.p6e.germ.common.utils.P6eCopyUtil;
-import com.p6e.germ.oauth2.model.P6eModel;
+import com.p6e.germ.oauth2.model.P6eResultModel;
 import com.p6e.germ.oauth2.model.dto.P6eLogDataDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +28,10 @@ public class P6eLogDataServiceImpl implements P6eLogDataService {
         } catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
-            p6eLogDataDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            p6eLogDataDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
         } catch (Exception ee) {
             LOGGER.error(ee.getMessage());
-            p6eLogDataDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+            p6eLogDataDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
         return p6eLogDataDto;
     }
@@ -51,10 +51,10 @@ public class P6eLogDataServiceImpl implements P6eLogDataService {
         } catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
-            p6eLogDataDto.setError(P6eModel.Error.PARAMETER_EXCEPTION);
+            p6eLogDataDto.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
         } catch (Exception ee) {
             LOGGER.error(ee.getMessage());
-            p6eLogDataDto.setError(P6eModel.Error.SERVICE_EXCEPTION);
+            p6eLogDataDto.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
         return p6eLogDataDto;
     }

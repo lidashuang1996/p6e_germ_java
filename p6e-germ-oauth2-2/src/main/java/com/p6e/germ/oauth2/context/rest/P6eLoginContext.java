@@ -2,10 +2,10 @@ package com.p6e.germ.oauth2.context.rest;
 
 import com.p6e.germ.common.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.application.P6eApplication;
-import com.p6e.germ.oauth2.context.controller.support.model.P6eAuthResult;
-import com.p6e.germ.oauth2.context.controller.support.model.P6eCodeLoginParam;
-import com.p6e.germ.oauth2.context.controller.support.model.P6eDefaultLoginResult;
-import com.p6e.germ.oauth2.model.P6eModel;
+import com.p6e.germ.oauth2.model.P6eAuthResult;
+import com.p6e.germ.oauth2.model.P6eCodeLoginParam;
+import com.p6e.germ.oauth2.model.P6eDefaultLoginResult;
+import com.p6e.germ.oauth2.model.P6eResultModel;
 import com.p6e.germ.oauth2.model.dto.P6eAuthDto;
 import com.p6e.germ.oauth2.model.dto.P6eCodeLoginDto;
 import com.p6e.germ.oauth2.model.dto.P6eLoginDto;
@@ -29,17 +29,17 @@ public class P6eLoginContext {
     private static final String AUTH_PARAM_NAME = "access_token";
 
     @RequestMapping("/mark/{id}")
-    public P6eModel mark(@PathVariable("id") String mark) {
+    public P6eResultModel mark(@PathVariable("id") String mark) {
         final P6eAuthDto p6eAuthDto = P6eApplication.auth.mark(mark);
         if (p6eAuthDto.getError() == null) {
-            return P6eModel.build().setData(P6eCopyUtil.run(p6eAuthDto, P6eAuthResult.class));
+            return P6eResultModel.build().setData(P6eCopyUtil.run(p6eAuthDto, P6eAuthResult.class));
         } else {
-            return P6eModel.build(p6eAuthDto.getError());
+            return P6eResultModel.build(p6eAuthDto.getError());
         }
     }
 
     @RequestMapping("/code")
-    public P6eModel code(HttpServletRequest request, P6eCodeLoginParam param) {
+    public P6eResultModel code(HttpServletRequest request, P6eCodeLoginParam param) {
         final String accessToken = request.getParameter(AUTH_PARAM_NAME);
         if (param == null) {
             param = new P6eCodeLoginParam();
@@ -49,9 +49,9 @@ public class P6eLoginContext {
         }
         final P6eLoginDto p6eLoginDto = P6eApplication.login.codeLogin(P6eCopyUtil.run(param, P6eCodeLoginDto.class));
         if (p6eLoginDto.getError() == null) {
-            return P6eModel.build().setData(P6eCopyUtil.run(p6eLoginDto, P6eDefaultLoginResult.class));
+            return P6eResultModel.build().setData(P6eCopyUtil.run(p6eLoginDto, P6eDefaultLoginResult.class));
         } else {
-            return P6eModel.build(p6eLoginDto.getError());
+            return P6eResultModel.build(p6eLoginDto.getError());
         }
     }
 

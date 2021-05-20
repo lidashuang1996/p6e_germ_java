@@ -28,11 +28,20 @@ public class P6eClientEntity {
     /** 注入服务 */
     private final P6eOauth2ClientMapper p6eOauth2ClientMapper = P6eSpringUtil.getBean(P6eOauth2ClientMapper.class);
 
+    public static P6eClientEntity get(int id) {
+        return new P6eClientEntity(id);
+    }
+
+    public static P6eClientEntity get(String id) {
+        return new P6eClientEntity(id);
+    }
+
+
     /**
      * 构造创建
      * @param id id
      */
-    public P6eClientEntity(Integer id) {
+    private P6eClientEntity(Integer id) {
         try {
             final String content = p6eCacheClient.getDbId(String.valueOf(id));
             if (content == null || "".equals(content)) {
@@ -59,7 +68,7 @@ public class P6eClientEntity {
      * 构造创建
      * @param key key
      */
-    public P6eClientEntity(String key) {
+    private P6eClientEntity(String key) {
         // 去缓存中获取如果没有再去DB读取然后缓存
         try {
             final String content = p6eCacheClient.getDbKey(key);

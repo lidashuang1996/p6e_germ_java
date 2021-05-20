@@ -19,12 +19,14 @@ public class P6eBaseController {
     protected static final Logger LOGGER = LoggerFactory.getLogger(P6eBaseController.class);
     protected static final String HTML_CONTENT_TYPE = "text/html;charset=UTF-8";
 
-    protected static String INDEX_HTML = "";
+    protected static String INDEX_HTML = "<p>312321</p>";
 
     /**
      * 请求头内容的前缀
      */
     protected static final String AUTH_HEADER_BEARER = "Bearer ";
+
+    protected static final int AUTH_HEADER_BEARER_LENGTH = 7;
 
     /**
      * 请求的携带认证信息的参数

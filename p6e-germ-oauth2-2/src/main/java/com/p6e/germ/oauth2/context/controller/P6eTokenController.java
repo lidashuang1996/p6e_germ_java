@@ -3,9 +3,9 @@ package com.p6e.germ.oauth2.context.controller;
 import com.p6e.germ.common.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.application.P6eApplication;
 import com.p6e.germ.oauth2.context.controller.support.P6eBaseController;
-import com.p6e.germ.oauth2.context.controller.support.model.P6eTokenParam;
-import com.p6e.germ.oauth2.context.controller.support.model.P6eTokenResult;
-import com.p6e.germ.oauth2.model.P6eModel;
+import com.p6e.germ.oauth2.model.P6eTokenParam;
+import com.p6e.germ.oauth2.model.P6eTokenResult;
+import com.p6e.germ.oauth2.model.P6eResultModel;
 import com.p6e.germ.oauth2.model.dto.*;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 public class P6eTokenController extends P6eBaseController {
 
     @RequestMapping
-    public P6eModel def(HttpServletRequest request, P6eTokenParam param) {
+    public P6eResultModel def(HttpServletRequest request, P6eTokenParam param) {
         param.setClientId(request.getParameter(CLIENT_ID_PARAM));
         param.setGrantType(request.getParameter(GRANT_TYPE_PARAM));
         param.setRedirectUri(request.getParameter(REDIRECT_URI_PARAM));
@@ -32,7 +32,7 @@ public class P6eTokenController extends P6eBaseController {
                 || param.getClientSecret() == null
                 || param.getRedirectUri() == null
                 || param.getGrantType() == null) {
-            return P6eModel.build(P6eModel.Error.PARAMETER_EXCEPTION);
+            return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
         } else {
             final P6eAuthTokenDto p6eAuthTokenDto;
             switch (param.getGrantType().toUpperCase()) {
@@ -46,7 +46,7 @@ public class P6eTokenController extends P6eBaseController {
                         p6eAuthTokenDto = P6eApplication.auth.password(P6eCopyUtil.run(param, P6ePasswordAuthDto.class));
                         break;
                     } else {
-                        return P6eModel.build(P6eModel.Error.HTTP_METHOD_EXCEPTION);
+                        return P6eResultModel.build(P6eResultModel.Error.HTTP_METHOD_EXCEPTION);
                     }
                 case CLIENT_TYPE:
                     // 客户端执行模式
@@ -54,21 +54,21 @@ public class P6eTokenController extends P6eBaseController {
                         p6eAuthTokenDto = P6eApplication.auth.client(P6eCopyUtil.run(param, P6eClientAuthDto.class));
                         break;
                     } else {
-                        return P6eModel.build(P6eModel.Error.HTTP_METHOD_EXCEPTION);
+                        return P6eResultModel.build(P6eResultModel.Error.HTTP_METHOD_EXCEPTION);
                     }
                 default:
-                    return P6eModel.build(P6eModel.Error.PARAMETER_EXCEPTION);
+                    return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
             }
             if (p6eAuthTokenDto.getError() == null) {
-                return P6eModel.build().setData(P6eCopyUtil.run(p6eAuthTokenDto, P6eTokenResult.class));
+                return P6eResultModel.build().setData(P6eCopyUtil.run(p6eAuthTokenDto, P6eTokenResult.class));
             } else {
-                return P6eModel.build(p6eAuthTokenDto.getError());
+                return P6eResultModel.build(p6eAuthTokenDto.getError());
             }
         }
     }
 
     @RequestMapping("/refresh")
-    public P6eModel refresh(HttpServletRequest request) {
+    public P6eResultModel refresh(HttpServletRequest request) {
         String token = request.getParameter(AUTH_PARAM_NAME);
         String refreshToken = request.getParameter(REFRESH_TOKEN_NAME);
         if (token == null) {
@@ -81,12 +81,12 @@ public class P6eTokenController extends P6eBaseController {
         if (token != null && refreshToken != null) {
             final P6eAuthTokenDto p6eAuthTokenDto = P6eApplication.auth.refresh(token, refreshToken);
             if (p6eAuthTokenDto.getError() == null) {
-                return P6eModel.build().setData(P6eCopyUtil.run(p6eAuthTokenDto, P6eTokenResult.class));
+                return P6eResultModel.build().setData(P6eCopyUtil.run(p6eAuthTokenDto, P6eTokenResult.class));
             } else {
-                return P6eModel.build(p6eAuthTokenDto.getError());
+                return P6eResultModel.build(p6eAuthTokenDto.getError());
             }
         }
-        return P6eModel.build(P6eModel.Error.PARAMETER_EXCEPTION);
+        return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
     }
 
 }

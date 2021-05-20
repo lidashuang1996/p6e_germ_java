@@ -1,6 +1,7 @@
 package com.p6e.germ.oauth2.starter;
 
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScans;
 
@@ -22,6 +23,7 @@ import java.lang.annotation.*;
         @ComponentScan("com.p6e.germ.oauth2.context.controller"),
         @ComponentScan("com.p6e.germ.oauth2.context.support.filter")
 })
-@MapperScan({ "com.p6e.germ.oauth2.infrastructure.repository.mapper" })
+@ServletComponentScan
+@MapperScan({ "com.p6e.germ.oauth2.infrastructure.mapper" })
 public @interface P6eEnableOauth2 {
 }
