@@ -10,6 +10,10 @@ public final class P6eResultModel {
         /**
          * 资源不存在
          */
+        PAGE_EXPIRED(1),
+        /**
+         * 资源不存在
+         */
         RESOURCES_NO_EXIST(1),
         /**
          * DB 操作异常

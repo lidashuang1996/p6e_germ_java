@@ -21,10 +21,6 @@ public class P6eAuthModel implements Serializable {
 
     @Data
     public static class VoResult implements Serializable {
-        private Integer id;
-        private String icon;
-        private String name;
-        private String describe;
         private String mark;
     }
 
@@ -39,10 +35,6 @@ public class P6eAuthModel implements Serializable {
 
     @Data
     public static class DtoResult extends P6eBaseDtoResult implements Serializable {
-        private Integer id;
-        private String icon;
-        private String name;
-        private String describe;
         private String mark;
     }
 }

@@ -112,6 +112,10 @@ public class P6eClientEntity {
         return p6eOauth2ClientDb;
     }
 
+    public P6eOauth2ClientDb getData() {
+        return p6eOauth2ClientDb;
+    }
+
     /**
      * 将数据写入到数据库
      * @return 创建的数据对象

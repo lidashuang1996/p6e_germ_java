@@ -43,7 +43,47 @@ public class P6eLoginModel implements Serializable {
     }
 
     @Data
-    public static class AccountPasswordDtoResult extends P6eBaseDtoResult implements Serializable {
+    public static class AccountPasswordDtoResult extends DtoResult implements Serializable {
+        private String code;
+        private String clientId;
+        private String scope;
+        private String state;
+        private String responseType;
+        private String redirectUri;
+        private String accessToken;
+        private String refreshToken;
+        private String tokenType;
+        private Long expiresIn;
+    }
+
+    @Data
+    public static class VerificationVoParam implements Serializable {
+        private String mark;
+        private String accessToken;
+    }
+
+    @Data
+    public static class VerificationDtoParam implements Serializable {
+        private String mark;
+        private String accessToken;
+    }
+
+    @Data
+    public static class VerificationDtoResult extends DtoResult implements Serializable {
+        private String code;
+        private String clientId;
+        private String scope;
+        private String state;
+        private String responseType;
+        private String redirectUri;
+        private String accessToken;
+        private String refreshToken;
+        private String tokenType;
+        private Long expiresIn;
+    }
+
+    @Data
+    public static class DtoResult extends P6eBaseDtoResult implements Serializable {
         private String code;
         private String clientId;
         private String scope;

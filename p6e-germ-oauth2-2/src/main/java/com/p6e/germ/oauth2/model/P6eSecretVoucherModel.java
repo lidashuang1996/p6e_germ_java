@@ -12,9 +12,19 @@ import java.io.Serializable;
 public class P6eSecretVoucherModel implements Serializable {
 
     @Data
+    public static class VoParam implements Serializable {
+        private String mark;
+    }
+
+    @Data
     public static class VoResult implements Serializable {
         private String voucher;
         private String publicKey;
+    }
+
+    @Data
+    public static class DtoParam implements Serializable {
+        private String mark;
     }
 
     @Data

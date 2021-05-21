@@ -27,19 +27,17 @@ public class P6eAuthServiceImpl implements P6eAuthService {
         final P6eAuthModel.DtoResult result = new P6eAuthModel.DtoResult();
         try {
             // 读取客户端信息
-            final P6eClientEntity p6eClientEntity = P6eClientEntity.get(param.getClientId());
+            final P6eClientEntity client = P6eClientEntity.get(param.getClientId());
             // 验证客户端信息
-            if (p6eClientEntity.verificationScope(param.getScope())
-                    && p6eClientEntity.verificationRedirectUri(param.getRedirectUri())) {
+            if (client.verificationScope(param.getScope())
+                    && client.verificationRedirectUri(param.getRedirectUri())) {
                 // 记号参数
-                final P6eMarkKeyValue p6eMarkKeyValue =
-                        P6eCopyUtil.run(param, P6eMarkKeyValue.class).setId(p6eClientEntity.get().getId());
+                final P6eMarkKeyValue.Content content = P6eCopyUtil.run(param, P6eMarkKeyValue.Content.class);
+                P6eCopyUtil.run(client.getData(), content);
                 // 生成记号
-                final P6eMarkEntity p6eMarkEntity = P6eMarkEntity.set(p6eMarkKeyValue).cache();
+                final P6eMarkEntity mark = P6eMarkEntity.create(content).cache();
                 // 写入信息
-                result.setMark(p6eMarkEntity.getMark());
-                // 复制信息并写入
-                P6eCopyUtil.run(p6eClientEntity.get(), result);
+                result.setMark(mark.getKey());
             } else {
                 result.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
             }

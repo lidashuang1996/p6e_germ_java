@@ -21,15 +21,20 @@ import javax.servlet.http.HttpServletResponse;
 public class P6eLoginController extends P6eBaseController {
 
     @GetMapping("/login/secret_voucher")
-    public P6eResultModel secretVoucher() {
+    public P6eResultModel secretVoucher(P6eSecretVoucherModel.VoParam param) {
         try {
-            final P6eSecretVoucherModel.DtoResult result = P6eApplication.login.secretVoucher();
-            if (result == null) {
-                return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
-            } else if (result.getError() != null) {
-                return P6eResultModel.build(result.getError());
+            if (param == null || param.getMark() == null) {
+                return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
-                return P6eResultModel.build().setData(P6eCopyUtil.run(result, P6eSecretVoucherModel.VoResult.class));
+                final P6eSecretVoucherModel.DtoResult result =
+                        P6eApplication.login.secretVoucher(P6eCopyUtil.run(param, P6eSecretVoucherModel.DtoParam.class));
+                if (result == null) {
+                    return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
+                } else if (result.getError() != null) {
+                    return P6eResultModel.build(result.getError());
+                } else {
+                    return P6eResultModel.build(P6eCopyUtil.run(result, P6eSecretVoucherModel.VoResult.class));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -40,7 +45,7 @@ public class P6eLoginController extends P6eBaseController {
 
     @GetMapping("/login/verification")
     public P6eResultModel verification(HttpServletRequest request,
-                                       P6eVerificationLoginModel.VoParam param) {
+                                       P6eLoginModel.VerificationVoParam param) {
         try {
             // 读取 ACCESS TOKEN 数据
             if (param.getAccessToken() == null) {
@@ -59,14 +64,14 @@ public class P6eLoginController extends P6eBaseController {
                 return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
                 // 执行登录验证服务
-                final P6eVerificationLoginModel.DtoResult result =
-                        P6eApplication.login.verification(P6eCopyUtil.run(param, P6eVerificationLoginModel.DtoParam.class));
+                final P6eLoginModel.DtoResult result =
+                        P6eApplication.login.verification(P6eCopyUtil.run(param, P6eLoginModel.VerificationDtoParam.class));
                 if (result == null) {
                     return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
                 } else if (result.getError() != null) {
                     return P6eResultModel.build(result.getError());
                 } else {
-                    return P6eResultModel.build(P6eCopyUtil.run(result, P6eVerificationLoginModel.VoResult.class));
+                    return P6eResultModel.build(P6eCopyUtil.run(result, P6eLoginModel.VerificationDtoResult.class));
                 }
             }
         } catch (Exception e) {
@@ -106,16 +111,15 @@ public class P6eLoginController extends P6eBaseController {
 
 
     @GetMapping("/login/nr_code")
-    public P6eResultModel nrCode() {
+    public P6eResultModel nrCode(P6eQrCodeModel.VoParam param) {
         try {
-//            if (param == null || param.getMark() == null) {
-//                return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
-//            } else {
-//                final P6eQrCodeModel.DtoResult result =
-//                        P6eApplication.login.qrCode(P6eCopyUtil.run(param, P6eQrCodeModel.DtoParam.class));
-//                return P6eResultModel.build(P6eCopyUtil.run(result, P6eQrCodeModel.DtoResult.class));
-//            }
-            return null;
+            if (param == null || param.getMark() == null) {
+                return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
+            } else {
+                final P6eQrCodeModel.DtoResult result =
+                        P6eApplication.login.qrCode(P6eCopyUtil.run(param, P6eQrCodeModel.DtoParam.class));
+                return P6eResultModel.build(P6eCopyUtil.run(result, P6eQrCodeModel.DtoResult.class));
+            }
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());

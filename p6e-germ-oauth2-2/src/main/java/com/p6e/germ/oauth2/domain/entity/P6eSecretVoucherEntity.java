@@ -3,11 +3,10 @@ package com.p6e.germ.oauth2.domain.entity;
 import com.p6e.germ.common.utils.P6eGeneratorUtil;
 import com.p6e.germ.common.utils.P6eJsonUtil;
 import com.p6e.germ.common.utils.P6eRsaUtil;
+import com.p6e.germ.oauth2.domain.keyvalue.P6eSecretVoucherKeyValue;
 import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheVoucher;
 import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
 import java.security.KeyPair;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author lidashuang
@@ -16,86 +15,65 @@ import java.util.Map;
 public class P6eSecretVoucherEntity {
 
     /** KEY */
-    private final String voucher;
+    private final String key;
 
-    /** 公钥 */
-    private String publicSecretKey;
-
-    /** 私钥 */
-    private String privateSecretKey;
+    /** 公钥 // 私钥 */
+    private final P6eSecretVoucherKeyValue.Content value;
 
     /** 缓存服务对象 */
-    private final IP6eCacheVoucher p6eCacheVoucher = P6eCache.voucher;
+    private static final IP6eCacheVoucher CACHE_VOUCHER = P6eCache.voucher;
 
-    /**
-     * 构造创建
-     */
-    public P6eSecretVoucherEntity() {
-        this.voucher = P6eGeneratorUtil.uuid();
-    }
-
-    /**
-     * 构造创建
-     * @param key 缓存 key
-     */
-    public P6eSecretVoucherEntity(String key) {
-        this.voucher = key;
-    }
-
-    /**
-     * 创建凭证
-     * @return 对象
-     */
-    public P6eSecretVoucherEntity create() {
+    public static P6eSecretVoucherEntity get(String key) {
         try {
-            final KeyPair keyPair = P6eRsaUtil.initKey();
-            publicSecretKey = P6eRsaUtil.getPublicKey(keyPair);
-            privateSecretKey = P6eRsaUtil.getPrivateKey(keyPair);
-            if (publicSecretKey == null || privateSecretKey == null) {
-                throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
+            if (key != null) {
+                final String content = CACHE_VOUCHER.get(key);
+                if (content != null) {
+                    final P6eSecretVoucherKeyValue.Content value =
+                            P6eJsonUtil.fromJson(content, P6eSecretVoucherKeyValue.Content.class);
+                    if (value != null) {
+                        return new P6eSecretVoucherEntity(key, value);
+                    }
+                }
             }
+            throw new Exception();
         } catch (Exception e) {
-            throw new NullPointerException(e.getMessage());
+            throw new RuntimeException(e);
         }
-        return this;
+    }
+
+    public static P6eSecretVoucherEntity create() {
+        try {
+            final String key = P6eGeneratorUtil.uuid();
+            final KeyPair keyPair = P6eRsaUtil.initKey();
+            final String publicSecretKey = P6eRsaUtil.getPublicKey(keyPair);
+            final String privateSecretKey = P6eRsaUtil.getPrivateKey(keyPair);
+            return new P6eSecretVoucherEntity(key,
+                    new P6eSecretVoucherKeyValue.Content(publicSecretKey, privateSecretKey));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
-     * 查询凭证
-     * @return 对象
+     * 构造创建
      */
-
-
-    public P6eSecretVoucherEntity get() {
-        final String content = p6eCacheVoucher.get(voucher);
-        if (content == null) {
-            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
-        } else {
-            final Map<String, String> map = P6eJsonUtil.fromJsonToMap(content, String.class, String.class);
-            publicSecretKey = map.get("publicSecretKey");
-            privateSecretKey = map.get("privateSecretKey");
-            if (publicSecretKey == null || privateSecretKey == null) {
-                throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
-            }
-        }
-        return this;
+    private P6eSecretVoucherEntity(String key, P6eSecretVoucherKeyValue.Content value) {
+        this.key = key;
+        this.value = value;
     }
 
     /**
      * 执行 (解密输出文本内容)
      */
     public String execute(String content) throws Exception {
-        return P6eRsaUtil.decrypt(P6eRsaUtil.loadingPrivateKey(privateSecretKey), content);
+        return P6eRsaUtil.decrypt(P6eRsaUtil.loadingPrivateKey(value.getPrivateSecretKey()), content);
     }
 
     /**
      * 缓存
      */
     public P6eSecretVoucherEntity cache() {
-        final Map<String, String> map = new HashMap<>(2);
-        map.put("publicSecretKey", publicSecretKey);
-        map.put("privateSecretKey", privateSecretKey);
-        p6eCacheVoucher.set(voucher, P6eJsonUtil.toJson(map));
+        CACHE_VOUCHER.set(key, P6eJsonUtil.toJson(value));
         return this;
     }
 
@@ -103,7 +81,7 @@ public class P6eSecretVoucherEntity {
      * 清除缓存
      */
     public void clean() {
-        p6eCacheVoucher.del(voucher);
+        CACHE_VOUCHER.del(key);
     }
 
     /**
@@ -111,7 +89,7 @@ public class P6eSecretVoucherEntity {
      * @return 公钥
      */
     public String getPrivateSecretKey() {
-        return privateSecretKey.replaceAll("\n", "");
+        return value.getPrivateSecretKey().replaceAll("\n", "");
     }
 
     /**
@@ -119,14 +97,14 @@ public class P6eSecretVoucherEntity {
      * @return 私钥
      */
     public String getPublicSecretKey() {
-        return publicSecretKey.replaceAll("\n", "");
+        return value.getPublicSecretKey().replaceAll("\n", "");
     }
 
     /**
      * 获取凭证编号
      * @return 凭证编号
      */
-    public String getVoucher() {
-        return voucher;
+    public String getKey() {
+        return key;
     }
 }

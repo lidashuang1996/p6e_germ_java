@@ -6,7 +6,6 @@ import com.p6e.germ.oauth2.application.P6eLoginService;
 import com.p6e.germ.oauth2.domain.entity.*;
 import com.p6e.germ.oauth2.domain.keyvalue.P6eMarkKeyValue;
 import com.p6e.germ.oauth2.model.*;
-import com.p6e.germ.oauth2.model.db.P6eOauth2LogDb;
 import com.p6e.germ.oauth2.model.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,70 +24,24 @@ public class P6eLoginServiceImpl implements P6eLoginService {
     private final P6eConfig p6eConfig = P6eSpringUtil.getBean(P6eConfig.class);
 
     @Override
-    public P6eSecretVoucherModel.DtoResult secretVoucher() {
+    public P6eSecretVoucherModel.DtoResult secretVoucher(P6eSecretVoucherModel.DtoParam param) {
         // 创建凭证对象
         final P6eSecretVoucherModel.DtoResult result = new P6eSecretVoucherModel.DtoResult();
         try {
-            // 创建凭证并缓存
-            final P6eSecretVoucherEntity p6eVoucherEntity = new P6eSecretVoucherEntity().create().cache();
-            // 写入数据
-            result.setVoucher(p6eVoucherEntity.getVoucher());
-            result.setPublicKey(p6eVoucherEntity.getPublicSecretKey());
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            LOGGER.error(e.getMessage());
-            result.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
-        } catch (Exception ee) {
-            LOGGER.error(ee.getMessage());
-            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
-        }
-        return result;
-    }
-
-    @Override
-    public P6eVerificationLoginModel.DtoResult verification(P6eVerificationLoginModel.DtoParam param) {
-        // 创建登录信息返回对象
-        final P6eVerificationLoginModel.DtoResult result = new P6eVerificationLoginModel.DtoResult();
-        try {
-            // 查询 mark 信息
-            final P6eMarkEntity p6eMarkEntity = P6eMarkEntity.get(param.getMark());
-            // 读取 mark 信息内容
-            final P6eMarkKeyValue p6eMarkKeyValue = p6eMarkEntity.getData();
-            // 查询用户信息并重制模型
-            final P6eUserTokenEntity p6eTokenEntity =
-                    new P6eUserTokenEntity(param.getAccessToken(), P6eUserTokenEntity.ACCESS_TOKEN).resetModel();
-            // 写入客户端信息
-            P6eCopyUtil.run(p6eMarkKeyValue, result);
-            // 写入用户认证信息
-            P6eCopyUtil.run(p6eTokenEntity.getModel(), result);
-            // 写入返回数据 CODE
-            result.setCode(p6eTokenEntity.getKey());
-            // CID / UID
-            int cid = p6eMarkKeyValue.getId();
-            int uid = Integer.parseInt(p6eTokenEntity.getValue().get("id"));
-            // 简化模式修改过期时间
-            final long simpleDateTime = 120;
-            final String simpleType = "TOKEN";
-            final String type = p6eMarkKeyValue.getResponseType();
-            if (simpleType.equals(type.toUpperCase())) {
-                // 如果为简化模式对返回的数据进行一下修改
-                p6eTokenEntity.delRefreshToken();
-                p6eTokenEntity.setAccessTokenExpirationTime(simpleDateTime);
-                result.setRefreshToken(null);
-                result.setExpiresIn(simpleDateTime);
-                // 写入日志数据
-                new P6eLogEntity(new P6eOauth2LogDb()
-                        .setCid(cid)
-                        .setUid(uid)
-                        .setType("UID_TO_CID_VERIFICATION_TO_TOKEN_TYPE")
-                ).create();
-            } else {
-                // 写入日志数据
-                new P6eLogEntity(new P6eOauth2LogDb()
-                        .setCid(cid)
-                        .setUid(uid)
-                        .setType("UID_TO_CID_VERIFICATION_TO_CODE_TYPE")
-                ).create();
+            boolean bool = true;
+            try {
+                // 验证是否过期
+                P6eMarkEntity.get(param.getMark());
+            } catch (Exception e) {
+                bool = false;
+                result.setError(P6eResultModel.Error.PAGE_EXPIRED);
+            }
+            if (bool) {
+                // 创建凭证并缓存
+                final P6eSecretVoucherEntity secretVoucher = P6eSecretVoucherEntity.create().cache();
+                // 写入数据
+                result.setVoucher(secretVoucher.getKey());
+                result.setPublicKey(secretVoucher.getPublicSecretKey());
             }
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -101,7 +54,28 @@ public class P6eLoginServiceImpl implements P6eLoginService {
         return result;
     }
 
-
+    @Override
+    public P6eLoginModel.VerificationDtoResult verification(P6eLoginModel.VerificationDtoParam param) {
+        // 创建登录信息返回对象
+        final P6eLoginModel.VerificationDtoResult result = new P6eLoginModel.VerificationDtoResult();
+        try {
+            // 查询 mark 信息
+            final P6eMarkEntity mark = P6eMarkEntity.get(param.getMark());
+            // 读取 mark 信息内容
+            final P6eMarkKeyValue.Content content = mark.getData();
+            // 查询用户信息并重制模型
+            final P6eUserTokenEntity userToken =
+                    new P6eUserTokenEntity(param.getAccessToken(), P6eUserTokenEntity.ACCESS_TOKEN).resetModel();
+            result(content, userToken, result);
+        } catch (RuntimeException e) {
+            LOGGER.error(e.getMessage());
+            result.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
+        } catch (Exception ee) {
+            LOGGER.error(ee.getMessage());
+            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+        return result;
+    }
 
     @Override
     public P6eLoginModel.AccountPasswordDtoResult accountPassword(P6eLoginModel.AccountPasswordDtoParam param) {
@@ -111,7 +85,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
             // 获取标记信息
             final P6eMarkEntity p6eMarkEntity = P6eMarkEntity.get(param.getMark());
             // 获取凭证信息
-            final P6eSecretVoucherEntity p6eVoucherEntity = new P6eSecretVoucherEntity(param.getVoucher()).get();
+            final P6eSecretVoucherEntity p6eVoucherEntity = P6eSecretVoucherEntity.get(param.getVoucher());
             // 获取用户信息
             final P6eUserEntity p6eUserEntity;
             try {
@@ -125,42 +99,10 @@ public class P6eLoginServiceImpl implements P6eLoginService {
             if (p6eUserEntity.defaultVerification(p6eVoucherEntity.execute(param.getPassword()))) {
                 try {
                     // 创建用户认证信息并缓存
-                    final P6eUserTokenEntity p6eTokenEntity = p6eUserEntity.createTokenCache().cache();
+                    final P6eUserTokenEntity userToken = p6eUserEntity.createTokenCache().cache();
                     // 读取 MARK 信息
-                    final P6eMarkKeyValue p6eMarkKeyValue = p6eMarkEntity.getData();
-                    // 写入返回数据 CODE
-                    result.setCode(p6eTokenEntity.getKey());
-                    // 写入客户端信息
-                    P6eCopyUtil.run(p6eMarkKeyValue, result);
-                    // 写入用户认证信息
-                    P6eCopyUtil.run(p6eTokenEntity.getModel(), result);
-                    // CID / UID
-                    int cid = p6eMarkKeyValue.getId();
-                    int uid = Integer.parseInt(p6eTokenEntity.getValue().get("id"));
-                    // 简化模式修改过期时间
-                    final long simpleDateTime = 120;
-                    final String simpleType = "TOKEN";
-                    final String type = p6eMarkEntity.getData().getResponseType();
-                    if (simpleType.equals(type.toUpperCase())) {
-                        // 如果为简化模式对返回的数据进行一下修改
-                        p6eTokenEntity.delRefreshToken();
-                        p6eTokenEntity.setAccessTokenExpirationTime(simpleDateTime);
-                        result.setRefreshToken(null);
-                        result.setExpiresIn(simpleDateTime);
-                        // 写入日志数据
-                        new P6eLogEntity(new P6eOauth2LogDb()
-                                .setCid(cid)
-                                .setUid(uid)
-                                .setType("UID_TO_CID_LOGIN_TO_TOKEN_TYPE")
-                        ).create();
-                    } else {
-                        // 写入日志数据
-                        new P6eLogEntity(new P6eOauth2LogDb()
-                                .setCid(cid)
-                                .setUid(uid)
-                                .setType("UID_TO_CID_LOGIN_TO_CODE_TYPE")
-                        ).create();
-                    }
+                    final P6eMarkKeyValue.Content content = p6eMarkEntity.getData();
+                    result(content, userToken, result);
                 } catch (Exception e) {
                     throw new Exception(e);
                 } finally {
@@ -179,6 +121,32 @@ public class P6eLoginServiceImpl implements P6eLoginService {
             result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
         return result;
+    }
+
+    /**
+     *
+     */
+    private void result(P6eMarkKeyValue.Content content, P6eUserTokenEntity userToken, P6eLoginModel.DtoResult result) {
+        // 写入客户端信息
+        P6eCopyUtil.run(content, result);
+        // 写入用户认证信息
+        P6eCopyUtil.run(userToken.getModel(), result);
+        // 写入返回数据 CODE
+        result.setCode(userToken.getKey());
+        // CID / UID
+        int cid = content.getId();
+        int uid = Integer.parseInt(userToken.getValue().get("id"));
+        // 简化模式修改过期时间
+        final long simpleDateTime = 120;
+        final String simpleType = "TOKEN";
+        final String type = content.getResponseType();
+        if (simpleType.equalsIgnoreCase(type)) {
+            // 如果为简化模式对返回的数据进行一下修改
+            userToken.delRefreshToken();
+            userToken.setAccessTokenExpirationTime(simpleDateTime);
+            result.setRefreshToken(null);
+            result.setExpiresIn(simpleDateTime);
+        }
     }
 
     @Override
@@ -227,10 +195,11 @@ public class P6eLoginServiceImpl implements P6eLoginService {
         try {
             boolean bool = true;
             try {
+                // 验证是否过期
                 P6eMarkEntity.get(param.getMark());
             } catch (Exception e) {
                 bool = false;
-                result.setError(P6eResultModel.Error.RESOURCES_NO_EXIST);
+                result.setError(P6eResultModel.Error.PAGE_EXPIRED);
             }
             if (bool) {
                 result.setContent("http://lidashuang.com/auth/?code=" + P6eQrCodeEntity.create().cache().getKey());

@@ -2,7 +2,6 @@ package com.p6e.germ.oauth2.application;
 
 import com.p6e.germ.oauth2.model.P6eLoginModel;
 import com.p6e.germ.oauth2.model.P6eQrCodeModel;
-import com.p6e.germ.oauth2.model.P6eVerificationLoginModel;
 import com.p6e.germ.oauth2.model.P6eSecretVoucherModel;
 import com.p6e.germ.oauth2.model.dto.*;
 
@@ -12,20 +11,20 @@ import com.p6e.germ.oauth2.model.dto.*;
  * @version 1.0
  */
 public interface P6eLoginService {
+    /**
+     * 获取凭证信息
+     * 用于用户的登录密码的加密
+     * @return 凭证对象
+     */
+    public P6eSecretVoucherModel.DtoResult secretVoucher(P6eSecretVoucherModel.DtoParam param);
+
 
     /**
      * 验证的用户的 ACCESS TOKEN 数据
      * @param param 验证对象
      * @return 结果对象
      */
-    public P6eVerificationLoginModel.DtoResult verification(P6eVerificationLoginModel.DtoParam param);
-
-    /**
-     * 获取凭证信息
-     * 用于用户的登录密码的加密
-     * @return 凭证对象
-     */
-    public P6eSecretVoucherModel.DtoResult secretVoucher();
+    public P6eLoginModel.VerificationDtoResult verification(P6eLoginModel.VerificationDtoParam param);
 
     /**
      * 默认登陆（账号密码登录）
