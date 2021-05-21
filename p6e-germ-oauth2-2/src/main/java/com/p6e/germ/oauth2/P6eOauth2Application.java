@@ -1,5 +1,6 @@
 package com.p6e.germ.oauth2;
 
+import com.p6e.germ.oauth2.domain.entity.P6eUserEntity;
 import com.p6e.germ.oauth2.starter.P6eEnableOauth2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,5 +15,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class P6eOauth2Application {
     public static void main(String[] args) {
         SpringApplication.run(P6eOauth2Application.class, args);
+        System.out.println(P6eUserEntity.encryption("123456"));
     }
 }

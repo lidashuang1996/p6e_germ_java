@@ -181,12 +181,12 @@ public class P6eUserEntity implements Serializable {
      * 创建缓存
      * @return 认证缓存对象
      */
-    public P6eTokenEntity createTokenCache() {
+    public P6eUserTokenEntity createTokenCache() {
         final Map<String, String> map = new HashMap<>(3);
         map.put("email", p6eOauth2UserDb.getEmail());
         map.put("phone", p6eOauth2UserDb.getPhone());
         map.put("id", String.valueOf(p6eOauth2UserDb.getId()));
-        return new P6eTokenEntity(String.valueOf(p6eOauth2UserDb.getId()), map);
+        return new P6eUserTokenEntity(String.valueOf(p6eOauth2UserDb.getId()), map);
     }
 
     /**

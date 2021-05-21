@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
  * @author lidashuang
  * @version 1.0
  */
-public class P6eCacheRedisCode extends P6eCacheRedis implements IP6eCacheCode {
+public class P6eCacheRedisCode extends P6eCacheRedis implements IP6eCacheQrCode {
 
     private static final String SOURCE_NAME = "A";
 

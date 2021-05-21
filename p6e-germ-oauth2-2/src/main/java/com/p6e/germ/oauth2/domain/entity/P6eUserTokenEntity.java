@@ -12,7 +12,7 @@ import java.util.Map;
  * @author lidashuang
  * @version 1.0
  */
-public class P6eTokenEntity implements Serializable {
+public class P6eUserTokenEntity implements Serializable {
 
     /** 类型 */
     public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
@@ -37,7 +37,7 @@ public class P6eTokenEntity implements Serializable {
      * 构造创建
      * @param key key
      */
-    public P6eTokenEntity(String key) {
+    public P6eUserTokenEntity(String key) {
         this.key = key;
         // 读取缓存数据
         final String modelContent = p6eCacheToken.get(key);
@@ -71,7 +71,7 @@ public class P6eTokenEntity implements Serializable {
      * @param token token
      * @param type 类型
      */
-    public P6eTokenEntity(String token, String type) {
+    public P6eUserTokenEntity(String token, String type) {
         final String tokenContent;
         switch (type) {
             case "ACCESS_TOKEN":
@@ -111,7 +111,7 @@ public class P6eTokenEntity implements Serializable {
      * 构造创建
      * @param value value
      */
-    public P6eTokenEntity(String id, Map<String, String> value) {
+    public P6eUserTokenEntity(String id, Map<String, String> value) {
         this.key = P6eGeneratorUtil.uuid();
         this.id = id;
         this.value = value;
@@ -126,7 +126,7 @@ public class P6eTokenEntity implements Serializable {
     /**
      * 缓存
      */
-    public P6eTokenEntity cache() {
+    public P6eUserTokenEntity cache() {
         // 缓存认证信息
         p6eCacheToken.set(key, P6eJsonUtil.toJson(model));
         // 缓存用户信息
@@ -182,7 +182,7 @@ public class P6eTokenEntity implements Serializable {
      * 删除模型
      * @return 本身对象
      */
-    public P6eTokenEntity delModel() {
+    public P6eUserTokenEntity delModel() {
         if (key != null) {
             p6eCacheToken.del(key);
         }
@@ -217,18 +217,18 @@ public class P6eTokenEntity implements Serializable {
      * 刷新对象
      * @return 本身对象
      */
-    public P6eTokenEntity refresh() {
+    public P6eUserTokenEntity refresh() {
         p6eCacheToken.del(key);
         p6eCacheToken.delAccessToken(model.getAccessToken());
         p6eCacheToken.delRefreshToken(model.getRefreshToken());
-        return new P6eTokenEntity(id, value).cache();
+        return new P6eUserTokenEntity(id, value).cache();
     }
 
     /**
      * 重置模型
      * @return 本身对象
      */
-    public P6eTokenEntity resetModel() {
+    public P6eUserTokenEntity resetModel() {
         this.key = P6eGeneratorUtil.uuid();
         final Data token = new Data(id, model.getAccessToken(), model.getRefreshToken());
         p6eCacheToken.setAccessToken(model.getAccessToken(), P6eJsonUtil.toJson(token));

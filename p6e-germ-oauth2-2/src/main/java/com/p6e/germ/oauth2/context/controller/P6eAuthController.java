@@ -32,7 +32,8 @@ public class P6eAuthController extends P6eBaseController {
      * 登录页面并写入 voucher 数据
      */
     @GetMapping
-    public Object def(P6eAuthModel.VoParam param, HttpServletRequest request, HttpServletResponse response) {
+    public Object def(P6eAuthModel.VoParam param,
+                      HttpServletRequest request, HttpServletResponse response) {
         try {
             // 获取请求的数据
             if (param.getClientId() == null) {
@@ -82,4 +83,5 @@ public class P6eAuthController extends P6eBaseController {
             return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
     }
+
 }

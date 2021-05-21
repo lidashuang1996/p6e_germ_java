@@ -8,60 +8,53 @@ import com.p6e.germ.common.utils.P6eJsonUtil;
 import java.io.Serializable;
 
 /**
+ * 记号缓存实体
  * @author lidashuang
  * @version 1.0
  */
 public class P6eMarkEntity implements Serializable {
 
     /** 标记记号 */
-    private final String mark;
+    private final String key;
 
     /** auth key/value */
-    private final P6eMarkKeyValue p6eMarkKeyValue;
+    private final P6eMarkKeyValue.Content value;
 
     /** 注入缓存服务 */
-    private final IP6eCacheMark p6eCacheMark = P6eCache.mark;
+    private static final IP6eCacheMark CACHE_MARK = P6eCache.mark;
 
-    /**
-     * 读取 mark 数据
-     * @param mark 参数数据
-     */
-    public P6eMarkEntity(String mark) {
+    public static P6eMarkEntity get(String key) {
         try {
-            // 赋值，读取数据
-            this.mark = mark;
-            final String content = p6eCacheMark.get(mark);
-            if (content == null) {
-                throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
-            } else {
-                // 序列化数据为对象
-                this.p6eMarkKeyValue = P6eJsonUtil.fromJson(content, P6eMarkKeyValue.class);
-                if (this.p6eMarkKeyValue == null) {
-                    throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
+            if (key != null) {
+                final String value = CACHE_MARK.get(key);
+                if (value != null) {
+                    final P6eMarkKeyValue.Content content =
+                            P6eJsonUtil.fromJson(value, P6eMarkKeyValue.Content.class);
+                    if (content != null) {
+                        return new P6eMarkEntity(key, content);
+                    }
                 }
             }
+            throw new Exception();
         } catch (Exception e) {
-            throw new NullPointerException(this.getClass() + " construction data ==> " + e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 
-    /**
-     * 写入 mark 数据
-     * @param p6eAuthKeyValue 写入的数据对象
-     */
-    public P6eMarkEntity(P6eMarkKeyValue p6eAuthKeyValue) {
-        this.mark = P6eGeneratorUtil.uuid();
-        this.p6eMarkKeyValue = p6eAuthKeyValue;
-        if (this.p6eMarkKeyValue == null) {
-            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
-        }
+    public static P6eMarkEntity create(P6eMarkKeyValue.Content content) {
+        return new P6eMarkEntity(P6eGeneratorUtil.uuid(), content);
+    }
+
+    private P6eMarkEntity(String key, P6eMarkKeyValue.Content value) {
+        this.key = key;
+        this.value = value;
     }
 
     /**
      * 缓存
      */
     public P6eMarkEntity cache() {
-        p6eCacheMark.set(mark, P6eJsonUtil.toJson(p6eMarkKeyValue));
+        CACHE_MARK.set(key, P6eJsonUtil.toJson(value));
         return this;
     }
 
@@ -69,22 +62,22 @@ public class P6eMarkEntity implements Serializable {
      * 清除缓存
      */
     public void clean() {
-        p6eCacheMark.del(mark);
+        CACHE_MARK.del(key);
     }
 
     /**
      * 读取记号
      * @return 记号数据
      */
-    public String getMark() {
-        return mark;
+    public String getKey() {
+        return key;
     }
 
     /**
      * 读取标记对象
      * @return 标记对象
      */
-    public P6eMarkKeyValue getP6eMarkKeyValue() {
-        return p6eMarkKeyValue;
+    public P6eMarkKeyValue.Content getData() {
+        return value;
     }
 }

@@ -13,7 +13,7 @@ import java.util.Map;
  * @author lidashuang
  * @version 1.0
  */
-public class P6eVoucherEntity {
+public class P6eSecretVoucherEntity {
 
     /** KEY */
     private final String voucher;
@@ -30,7 +30,7 @@ public class P6eVoucherEntity {
     /**
      * 构造创建
      */
-    public P6eVoucherEntity() {
+    public P6eSecretVoucherEntity() {
         this.voucher = P6eGeneratorUtil.uuid();
     }
 
@@ -38,7 +38,7 @@ public class P6eVoucherEntity {
      * 构造创建
      * @param key 缓存 key
      */
-    public P6eVoucherEntity(String key) {
+    public P6eSecretVoucherEntity(String key) {
         this.voucher = key;
     }
 
@@ -46,7 +46,7 @@ public class P6eVoucherEntity {
      * 创建凭证
      * @return 对象
      */
-    public P6eVoucherEntity create() {
+    public P6eSecretVoucherEntity create() {
         try {
             final KeyPair keyPair = P6eRsaUtil.initKey();
             publicSecretKey = P6eRsaUtil.getPublicKey(keyPair);
@@ -64,7 +64,9 @@ public class P6eVoucherEntity {
      * 查询凭证
      * @return 对象
      */
-    public P6eVoucherEntity get() {
+
+
+    public P6eSecretVoucherEntity get() {
         final String content = p6eCacheVoucher.get(voucher);
         if (content == null) {
             throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
@@ -89,7 +91,7 @@ public class P6eVoucherEntity {
     /**
      * 缓存
      */
-    public P6eVoucherEntity cache() {
+    public P6eSecretVoucherEntity cache() {
         final Map<String, String> map = new HashMap<>(2);
         map.put("publicSecretKey", publicSecretKey);
         map.put("privateSecretKey", privateSecretKey);

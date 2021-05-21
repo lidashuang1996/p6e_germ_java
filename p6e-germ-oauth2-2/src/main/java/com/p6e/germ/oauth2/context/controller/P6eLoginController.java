@@ -20,16 +20,16 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 public class P6eLoginController extends P6eBaseController {
 
-    @GetMapping("/login/voucher")
-    public P6eResultModel voucher() {
+    @GetMapping("/login/secret_voucher")
+    public P6eResultModel secretVoucher() {
         try {
-            final P6eVoucherModel.DtoResult result = P6eApplication.login.defaultVoucher();
+            final P6eSecretVoucherModel.DtoResult result = P6eApplication.login.secretVoucher();
             if (result == null) {
                 return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
             } else if (result.getError() != null) {
                 return P6eResultModel.build(result.getError());
             } else {
-                return P6eResultModel.build().setData(P6eCopyUtil.run(result, P6eVoucherResult.class));
+                return P6eResultModel.build().setData(P6eCopyUtil.run(result, P6eSecretVoucherModel.VoResult.class));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -39,7 +39,8 @@ public class P6eLoginController extends P6eBaseController {
     }
 
     @GetMapping("/login/verification")
-    public P6eResultModel verification(HttpServletRequest request, P6eVerificationLoginModel.VoParam param) {
+    public P6eResultModel verification(HttpServletRequest request,
+                                       P6eVerificationLoginModel.VoParam param) {
         try {
             // 读取 ACCESS TOKEN 数据
             if (param.getAccessToken() == null) {
@@ -93,7 +94,7 @@ public class P6eLoginController extends P6eBaseController {
                 } else if (result.getError() != null) {
                     return P6eResultModel.build(result.getError());
                 } else {
-                    return P6eResultModel.build().setData(P6eCopyUtil.run(result, P6eLoginModel.VoResult.class));
+                    return P6eResultModel.build(P6eCopyUtil.run(result, P6eLoginModel.VoResult.class));
                 }
             }
         } catch (Exception e) {
@@ -107,7 +108,14 @@ public class P6eLoginController extends P6eBaseController {
     @GetMapping("/login/nr_code")
     public P6eResultModel nrCode() {
         try {
-            return P6eResultModel.build();
+//            if (param == null || param.getMark() == null) {
+//                return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
+//            } else {
+//                final P6eQrCodeModel.DtoResult result =
+//                        P6eApplication.login.qrCode(P6eCopyUtil.run(param, P6eQrCodeModel.DtoParam.class));
+//                return P6eResultModel.build(P6eCopyUtil.run(result, P6eQrCodeModel.DtoResult.class));
+//            }
+            return null;
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
@@ -127,9 +135,15 @@ public class P6eLoginController extends P6eBaseController {
     }
 
     @GetMapping("/login/qr_code")
-    public P6eResultModel qrCode() {
+    public P6eResultModel qrCode(P6eQrCodeModel.VoParam param) {
         try {
-            return P6eResultModel.build();
+            if (param == null || param.getMark() == null) {
+                return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
+            } else {
+                final P6eQrCodeModel.DtoResult result =
+                        P6eApplication.login.qrCode(P6eCopyUtil.run(param, P6eQrCodeModel.DtoParam.class));
+                return P6eResultModel.build(P6eCopyUtil.run(result, P6eQrCodeModel.DtoResult.class));
+            }
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());

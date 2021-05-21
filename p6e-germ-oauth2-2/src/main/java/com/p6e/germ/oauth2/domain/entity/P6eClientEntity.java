@@ -208,11 +208,11 @@ public class P6eClientEntity {
      * 创建登录缓存认证对象
      * @return P6eTokenEntity 认证对象
      */
-    public P6eTokenEntity createTokenCache() {
+    public P6eUserTokenEntity createTokenCache() {
         final Map<String, String> map = new HashMap<>(3);
         map.put("describe", p6eOauth2ClientDb.getDescribe());
         map.put("name", p6eOauth2ClientDb.getName());
         map.put("id", String.valueOf(p6eOauth2ClientDb.getId()));
-        return new P6eTokenEntity(String.valueOf(p6eOauth2ClientDb.getId()), map);
+        return new P6eUserTokenEntity(String.valueOf(p6eOauth2ClientDb.getId()), map);
     }
 }

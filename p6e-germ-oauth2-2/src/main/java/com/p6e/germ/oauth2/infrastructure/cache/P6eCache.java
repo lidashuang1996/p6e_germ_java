@@ -8,7 +8,7 @@ import com.p6e.germ.common.utils.P6eSpringUtil;
  */
 public final class P6eCache {
     /** CODE 缓存 */
-    public static IP6eCacheCode code;
+    public static IP6eCacheQrCode qrCode;
     /** 认证缓存 */
     public static IP6eCacheAuth auth;
     /** 授权记号缓存 */
@@ -29,7 +29,7 @@ public final class P6eCache {
      */
     public static void init() {
         // CODE 缓存
-        code = P6eSpringUtil.getBean(IP6eCacheCode.class, new P6eCacheRedisCode());
+        qrCode = P6eSpringUtil.getBean(IP6eCacheQrCode.class, new P6eCacheRedisCode());
         // 认证缓存
         auth = P6eSpringUtil.getBean(IP6eCacheAuth.class, new P6eCacheRedisAuth());
         // 授权记号缓存
