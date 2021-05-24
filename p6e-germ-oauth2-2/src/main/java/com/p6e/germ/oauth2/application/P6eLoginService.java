@@ -107,7 +107,7 @@ public interface P6eLoginService {
      * @param param 扫描登录凭证和认证信息
      * @return 登录结果对象
      */
-    public P6eLoginDto codeLogin(P6eCodeLoginDto param);
+    public P6eNrCodeModel.DtoResult nrCodeLogin(P6eNrCodeModel.DtoParam param);
 
     /**
      * 获取扫码登录数据

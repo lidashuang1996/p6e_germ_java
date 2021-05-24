@@ -212,8 +212,56 @@ public class P6eLoginServiceImpl implements P6eLoginService {
     }
 
     @Override
-    public P6eLoginDto codeLogin(P6eCodeLoginDto param) {
-        return null;
+    public P6eNrCodeModel.DtoResult nrCode(P6eNrCodeModel.DtoParam param) {
+        final P6eNrCodeModel.DtoResult result = new P6eNrCodeModel.DtoResult();
+        try {
+            try {
+                // 验证是否过期
+                P6eMarkEntity.get(param.getMark());
+            } catch (Exception e) {
+                result.setError(P6eResultModel.Error.PAGE_EXPIRED);
+                return result;
+            }
+            // 创建且推送且缓存
+            final String ip = param.getIp();
+            final String account = param.getAccount();
+            final P6eNrCodeEntity nrCode = P6eNrCodeEntity.create(account, ip).push().cache();
+            result.setAccount(account);
+            result.setContent(nrCode.getKey());
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+        return result;
+    }
+
+    @Override
+    public P6eNrCodeModel.DtoResult nrCodeLogin(P6eNrCodeModel.DtoParam param) {
+        final P6eNrCodeModel.DtoResult result = new P6eNrCodeModel.DtoResult();
+        try {
+            try {
+                // 验证是否过期
+                P6eMarkEntity.get(param.getMark());
+            } catch (Exception e) {
+                result.setError(P6eResultModel.Error.PAGE_EXPIRED);
+                return result;
+            }
+            try {
+                final String account = param.getAccount();
+                final String codeKey = param.getCodeKey();
+                final String codeContent = param.getCodeContent();
+                if (P6eNrCodeEntity.get(codeKey).verification(account, codeContent)) {
+                    // 登录操作
+                }
+            } catch (Exception e) {
+                result.setError(P6eResultModel.Error.CODE_EXCEPTION);
+                return result;
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+        return result;
     }
 
     @Override

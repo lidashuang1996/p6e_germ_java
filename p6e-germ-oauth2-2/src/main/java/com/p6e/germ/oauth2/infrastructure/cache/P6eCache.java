@@ -23,6 +23,7 @@ public final class P6eCache {
     public static IP6eCacheVoucher voucher;
 
     public static IP6eCachePush push;
+    public static IP6eCacheNrCode nrCode;
 
     /**
      * 初始化操作
@@ -30,6 +31,7 @@ public final class P6eCache {
     public static void init() {
         // CODE 缓存
         qrCode = P6eSpringUtil.getBean(IP6eCacheQrCode.class, new P6eCacheRedisCode());
+        nrCode = P6eSpringUtil.getBean(IP6eCacheNrCode.class, new P6eCacheRedisNrCode());
         // 认证缓存
         auth = P6eSpringUtil.getBean(IP6eCacheAuth.class, new P6eCacheRedisAuth());
         // 授权记号缓存

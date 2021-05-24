@@ -116,8 +116,8 @@ public class P6eLoginController extends P6eBaseController {
             if (param == null || param.getMark() == null || param.getAccount() == null) {
                 return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
-                final P6eNrCodeModel.DtoResult result =
-                        P6eApplication.login.nrCode(P6eCopyUtil.run(param, P6eNrCodeModel.DtoParam.class));
+                final P6eNrCodeModel.DtoResult result = P6eApplication.login.nrCode(
+                        P6eCopyUtil.run(param, P6eNrCodeModel.DtoParam.class).setIp(obtainIp()));
                 if (result == null) {
                     return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
                 } else if (result.getError() != null) {
@@ -134,9 +134,22 @@ public class P6eLoginController extends P6eBaseController {
     }
 
     @PostMapping("/login/nr_code/data")
-    public P6eResultModel nrCodeData() {
+    public P6eResultModel nrCodeData(P6eNrCodeModel.VoParam param) {
         try {
-            return P6eResultModel.build();
+            if (param == null || param.getMark() == null
+                    || param.getCode() == null || param.getAccount() == null) {
+                return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
+            } else {
+                final P6eNrCodeModel.DtoResult result = P6eApplication.login.nrCodeLogin(
+                        P6eCopyUtil.run(param, P6eNrCodeModel.DtoParam.class).setIp(obtainIp()));
+                if (result == null) {
+                    return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
+                } else if (result.getError() != null) {
+                    return P6eResultModel.build(result.getError());
+                } else {
+                    return P6eResultModel.build(P6eCopyUtil.run(result, P6eNrCodeModel.VoResult.class));
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
