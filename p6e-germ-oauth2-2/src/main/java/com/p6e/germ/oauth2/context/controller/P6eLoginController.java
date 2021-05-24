@@ -111,14 +111,20 @@ public class P6eLoginController extends P6eBaseController {
 
 
     @GetMapping("/login/nr_code")
-    public P6eResultModel nrCode(P6eQrCodeModel.VoParam param) {
+    public P6eResultModel nrCode(P6eNrCodeModel.VoParam param) {
         try {
-            if (param == null || param.getMark() == null) {
+            if (param == null || param.getMark() == null || param.getAccount() == null) {
                 return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
-                final P6eQrCodeModel.DtoResult result =
-                        P6eApplication.login.qrCode(P6eCopyUtil.run(param, P6eQrCodeModel.DtoParam.class));
-                return P6eResultModel.build(P6eCopyUtil.run(result, P6eQrCodeModel.DtoResult.class));
+                final P6eNrCodeModel.DtoResult result =
+                        P6eApplication.login.nrCode(P6eCopyUtil.run(param, P6eNrCodeModel.DtoParam.class));
+                if (result == null) {
+                    return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
+                } else if (result.getError() != null) {
+                    return P6eResultModel.build(result.getError());
+                } else {
+                    return P6eResultModel.build(P6eCopyUtil.run(result, P6eNrCodeModel.VoResult.class));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -146,7 +152,13 @@ public class P6eLoginController extends P6eBaseController {
             } else {
                 final P6eQrCodeModel.DtoResult result =
                         P6eApplication.login.qrCode(P6eCopyUtil.run(param, P6eQrCodeModel.DtoParam.class));
-                return P6eResultModel.build(P6eCopyUtil.run(result, P6eQrCodeModel.DtoResult.class));
+                if (result == null) {
+                    return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
+                } else if (result.getError() != null) {
+                    return P6eResultModel.build(result.getError());
+                } else {
+                    return P6eResultModel.build(P6eCopyUtil.run(result, P6eQrCodeModel.VoResult.class));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

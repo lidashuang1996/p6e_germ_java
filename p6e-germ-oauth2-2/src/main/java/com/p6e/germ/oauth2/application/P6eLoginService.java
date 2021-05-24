@@ -1,6 +1,7 @@
 package com.p6e.germ.oauth2.application;
 
 import com.p6e.germ.oauth2.model.P6eLoginModel;
+import com.p6e.germ.oauth2.model.P6eNrCodeModel;
 import com.p6e.germ.oauth2.model.P6eQrCodeModel;
 import com.p6e.germ.oauth2.model.P6eSecretVoucherModel;
 import com.p6e.germ.oauth2.model.dto.*;
@@ -95,6 +96,11 @@ public interface P6eLoginService {
      * @return 生成扫码登录凭证信息对象
      */
     public P6eQrCodeModel.DtoResult qrCode(P6eQrCodeModel.DtoParam param);
+
+    /**
+     *
+     */
+    public P6eNrCodeModel.DtoResult nrCode(P6eNrCodeModel.DtoParam param);
 
     /**
      * 扫码登录
