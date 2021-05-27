@@ -96,7 +96,7 @@ public class P6eTokenController extends P6eBaseController {
     }
 
     @GetMapping("/refresh")
-    public P6eResultModel refresh(HttpServletRequest request, P6eTokenModel.VoParam param) {
+    public P6eResultModel refresh(HttpServletRequest request, P6eAuthTokenModel.VoParam param) {
         try {
             String accessToken, refreshToken;
             if (param.getAccessToken() == null) {

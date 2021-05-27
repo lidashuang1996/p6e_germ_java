@@ -10,6 +10,15 @@ public class P6eOauth2Config implements Serializable {
 
     private QQ qq = new QQ();
     private WeChat weChat = new WeChat();
+    private Sina sina = new Sina();
+
+    public Sina getSina() {
+        return sina;
+    }
+
+    public void setSina(Sina sina) {
+        this.sina = sina;
+    }
 
     public QQ getQq() {
         return qq;
@@ -542,5 +551,107 @@ public class P6eOauth2Config implements Serializable {
         }
     }
 
+    public static class Sina {
+        /** 是否启用 */
+        private boolean enable = true;
+        /** response_type */
+        private String responseType = "code";
+        /** grant_type */
+        private String grantType = "authorization_code";
+        /** 范围 */
+        private String scope = "get_user_info";
+        /** client_id */
+        private String clientId;
+        /** client_secret */
+        private String clientSecret;
+        /** redirect_uri */
+        private String redirectUri;
+        /** 获取认证页面 */
+        private String authUrl = "https://graph.qq.com/oauth2.0/authorize";
+        /** 获取CODE数据 */
+        private String tokenUrl = "https://graph.qq.com/oauth2.0/token";
+        /** 获取用户信息 */
+        private String infoUrl = "https://graph.qq.com/oauth2.0/me";
+
+        public boolean isEnable() {
+            return enable;
+        }
+
+        public void setEnable(boolean enable) {
+            this.enable = enable;
+        }
+
+        public String getScope() {
+            return scope;
+        }
+
+        public void setScope(String scope) {
+            this.scope = scope;
+        }
+
+        public String getResponseType() {
+            return responseType;
+        }
+
+        public void setResponseType(String responseType) {
+            this.responseType = responseType;
+        }
+
+        public String getGrantType() {
+            return grantType;
+        }
+
+        public void setGrantType(String grantType) {
+            this.grantType = grantType;
+        }
+
+        public String getClientId() {
+            return clientId;
+        }
+
+        public void setClientId(String clientId) {
+            this.clientId = clientId;
+        }
+
+        public String getClientSecret() {
+            return clientSecret;
+        }
+
+        public void setClientSecret(String clientSecret) {
+            this.clientSecret = clientSecret;
+        }
+
+        public String getRedirectUri() {
+            return redirectUri;
+        }
+
+        public void setRedirectUri(String redirectUri) {
+            this.redirectUri = redirectUri;
+        }
+
+        public String getAuthUrl() {
+            return authUrl;
+        }
+
+        public void setAuthUrl(String authUrl) {
+            this.authUrl = authUrl;
+        }
+
+        public String getTokenUrl() {
+            return tokenUrl;
+        }
+
+        public void setTokenUrl(String tokenUrl) {
+            this.tokenUrl = tokenUrl;
+        }
+
+        public String getInfoUrl() {
+            return infoUrl;
+        }
+
+        public void setInfoUrl(String infoUrl) {
+            this.infoUrl = infoUrl;
+        }
+    }
 
 }

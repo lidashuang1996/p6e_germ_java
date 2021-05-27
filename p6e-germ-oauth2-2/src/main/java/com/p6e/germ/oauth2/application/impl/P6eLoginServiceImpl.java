@@ -1,6 +1,7 @@
 package com.p6e.germ.oauth2.application.impl;
 
 import com.p6e.germ.common.config.P6eConfig;
+import com.p6e.germ.common.config.P6eOauth2Config;
 import com.p6e.germ.common.utils.*;
 import com.p6e.germ.oauth2.application.P6eLoginService;
 import com.p6e.germ.oauth2.domain.entity.*;
@@ -21,28 +22,25 @@ public class P6eLoginServiceImpl implements P6eLoginService {
     private final static Logger LOGGER = LoggerFactory.getLogger(P6eLoginService.class);
 
     /** 注入配置文件数据 */
-    private final P6eConfig p6eConfig = P6eSpringUtil.getBean(P6eConfig.class);
+    private final P6eOauth2Config config = P6eSpringUtil.getBean(P6eConfig.class).getOauth2();
 
     @Override
     public P6eSecretVoucherModel.DtoResult secretVoucher(P6eSecretVoucherModel.DtoParam param) {
         // 创建凭证对象
         final P6eSecretVoucherModel.DtoResult result = new P6eSecretVoucherModel.DtoResult();
         try {
-            boolean bool = true;
             try {
                 // 验证是否过期
                 P6eMarkEntity.get(param.getMark());
             } catch (Exception e) {
-                bool = false;
                 result.setError(P6eResultModel.Error.PAGE_EXPIRED);
+                return result;
             }
-            if (bool) {
-                // 创建凭证并缓存
-                final P6eSecretVoucherEntity secretVoucher = P6eSecretVoucherEntity.create().cache();
-                // 写入数据
-                result.setVoucher(secretVoucher.getKey());
-                result.setPublicKey(secretVoucher.getPublicSecretKey());
-            }
+            // 创建凭证并缓存
+            final P6eSecretVoucherEntity secretVoucher = P6eSecretVoucherEntity.create().cache();
+            // 写入数据
+            result.setVoucher(secretVoucher.getKey());
+            result.setPublicKey(secretVoucher.getPublicSecretKey());
         } catch (RuntimeException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
@@ -170,23 +168,98 @@ public class P6eLoginServiceImpl implements P6eLoginService {
     }
 
     @Override
-    public P6eUrlLoginDto qqInfo(String mark, String display) {
-        return null;
+    public P6eOtherLoginModel.DtoResult qqInfo(P6eOtherLoginModel.DtoParam param) {
+        final P6eOtherLoginModel.DtoResult result = new P6eOtherLoginModel.DtoResult();
+        try {
+            if (config.getQq().isEnable()) {
+                try {
+                    P6eMarkEntity.get(param.getMark());
+                } catch (Exception e) {
+                    result.setError(P6eResultModel.Error.PAGE_EXPIRED);
+                    return result;
+                }
+                result.setContent(P6eOtherQqLoginEntity.create(param.getMark()).getAuthUrl());
+            } else {
+                result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+        return result;
     }
 
     @Override
-    public P6eLoginDto qqLogin(P6eQqLoginDto param) {
-        return null;
+    public P6eOtherLoginModel.DtoResult qqLogin(P6eOtherLoginModel.DtoParam param) {
+        final P6eOtherLoginModel.DtoResult result = new P6eOtherLoginModel.DtoResult();
+        if (config.getQq().isEnable()) {
+
+        } else {
+            result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
+        }
+        return result;
     }
 
     @Override
-    public P6eUrlLoginDto weChatInfo(String mark) {
-        return null;
+    public P6eOtherLoginModel.DtoResult weChatInfo(P6eOtherLoginModel.DtoParam param) {
+        final P6eOtherLoginModel.DtoResult result = new P6eOtherLoginModel.DtoResult();
+        if (config.getWeChat().isEnable()) {
+            try {
+                P6eMarkEntity.get(param.getMark());
+            } catch (Exception e) {
+                result.setError(P6eResultModel.Error.PAGE_EXPIRED);
+                return result;
+            }
+            result.setContent(P6eOtherWeChatLoginEntity.create(param.getMark()).getAuthUrl());
+        } else {
+            result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
+        }
+        return result;
     }
 
     @Override
     public P6eLoginDto weChatLogin(P6eWeChatLoginDto param) {
+        final P6eOtherLoginModel.DtoResult result = new P6eOtherLoginModel.DtoResult();
+        if (config.getWeChat().isEnable()) {
+
+        } else {
+            result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
+        }
         return null;
+    }
+
+    @Override
+    public P6eOtherLoginModel.DtoResult sinaInfo(P6eOtherLoginModel.DtoParam param) {
+        final P6eOtherLoginModel.DtoResult result = new P6eOtherLoginModel.DtoResult();
+        try {
+            if (config.getSina().isEnable()) {
+                try {
+                    P6eMarkEntity.get(param.getMark());
+                } catch (Exception e) {
+                    result.setError(P6eResultModel.Error.PAGE_EXPIRED);
+                    return result;
+                }
+                result.setContent(P6eOtherSinaLoginEntity.create(param.getMark()).getAuthUrl());
+            } else {
+                result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+        return result;
+    }
+
+    @Override
+    public P6eOtherLoginModel.DtoResult sinaLogin(P6eOtherLoginModel.DtoParam param) {
+        final P6eOtherLoginModel.DtoResult result = new P6eOtherLoginModel.DtoResult();
+        try {
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+        return result;
     }
 
     @Override
@@ -254,7 +327,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                     // 登录操作
                 }
             } catch (Exception e) {
-                result.setError(P6eResultModel.Error.CODE_EXCEPTION);
+                result.setError(P6eResultModel.Error.VERIFICATION_CODE_EXCEPTION);
                 return result;
             }
         } catch (Exception e) {

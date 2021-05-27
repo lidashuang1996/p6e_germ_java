@@ -6,7 +6,7 @@ package com.p6e.germ.oauth2.infrastructure.cache;
  */
 public interface IP6eCacheNrCode {
     /** 凭证缓存的前缀名称 */
-    String CODE_NAME = "P6E:OAUTH2:CODE:";
+    String CODE_NAME = "P6E:OAUTH2:NR_CODE:";
 
     /** 凭证缓存的过期时间 */
     long CODE_TIME = 60;

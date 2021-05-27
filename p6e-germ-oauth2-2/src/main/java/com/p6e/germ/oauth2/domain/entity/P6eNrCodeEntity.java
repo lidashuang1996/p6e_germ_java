@@ -5,6 +5,9 @@ import com.p6e.germ.common.utils.P6eGeneratorUtil;
 import com.p6e.germ.common.utils.P6eJsonUtil;
 import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheNrCode;
 import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +16,7 @@ import java.util.Map;
  * @version 1.0
  */
 public class P6eNrCodeEntity {
+    private static final Logger LOGGER = LoggerFactory.getLogger(P6eNrCodeEntity.class);
 
     private static final String IP_NAME = "ip";
     private static final String CODE_NAME = "code";
@@ -48,6 +52,7 @@ public class P6eNrCodeEntity {
     public static P6eNrCodeEntity create(String account, String ip) {
         final String key = P6eGeneratorUtil.uuid();
         final String code = P6eGeneratorUtil.random();
+        LOGGER.info("给账号 " + account + " 发送的验证码为: " + code);
         return new P6eNrCodeEntity(key, code, account, ip);
     }
 

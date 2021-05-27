@@ -10,17 +10,14 @@ import java.io.Serializable;
  * @author lidashuang
  * @version 1.0
  */
-public class P6eNrCodeModel implements Serializable {
+public class P6eOtherLoginModel implements Serializable {
     @Data
     public static class VoParam implements Serializable {
         private String mark;
-        private String account;
-        private String code;
     }
 
     @Data
     public static class VoResult implements Serializable {
-        private String account;
         private String content;
     }
 
@@ -28,15 +25,10 @@ public class P6eNrCodeModel implements Serializable {
     @Accessors(chain = true)
     public static class DtoParam implements Serializable {
         private String mark;
-        private String account;
-        private String ip;
-        private String codeKey;
-        private String codeContent;
     }
 
     @Data
     public static class DtoResult extends P6eBaseDtoResult implements Serializable {
-        private String account;
         private String content;
     }
 }

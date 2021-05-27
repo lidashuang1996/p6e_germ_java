@@ -36,7 +36,7 @@ public class P6eBaseController {
     /**
      * 请求头名称
      */
-    protected static final String AUTH_HEADER_NAME = "authentication";
+    protected static final String AUTH_HEADER_NAME = "authorization";
 
     /**
      * CODE 认证类型

@@ -1,9 +1,6 @@
 package com.p6e.germ.oauth2.application;
 
-import com.p6e.germ.oauth2.model.P6eLoginModel;
-import com.p6e.germ.oauth2.model.P6eNrCodeModel;
-import com.p6e.germ.oauth2.model.P6eQrCodeModel;
-import com.p6e.germ.oauth2.model.P6eSecretVoucherModel;
+import com.p6e.germ.oauth2.model.*;
 import com.p6e.germ.oauth2.model.dto.*;
 
 /**
@@ -68,21 +65,21 @@ public interface P6eLoginService {
      * @param display 显示参数
      * @return 获取的信息
      */
-    public P6eUrlLoginDto qqInfo(String mark, String display);
+    public P6eOtherLoginModel.DtoResult qqInfo(P6eOtherLoginModel.DtoParam param);
 
     /**
      * QQ 登录
      * @param param QQ登陆认证信息
      * @return 登录结果对象
      */
-    public P6eLoginDto qqLogin(P6eQqLoginDto param);
+    public P6eOtherLoginModel.DtoResult qqLogin(P6eOtherLoginModel.DtoParam param);
 
     /**
      * 获取微信登录的信息
      * @param mark 记号
      * @return 获取的信息
      */
-    public P6eUrlLoginDto weChatInfo(String mark);
+    public P6eOtherLoginModel.DtoResult weChatInfo(P6eOtherLoginModel.DtoParam param);
 
     /**
      * 微信登录
@@ -90,6 +87,9 @@ public interface P6eLoginService {
      * @return 登录结果对象
      */
     public P6eLoginDto weChatLogin(P6eWeChatLoginDto param);
+
+    public P6eOtherLoginModel.DtoResult sinaInfo(P6eOtherLoginModel.DtoParam param);
+    public P6eOtherLoginModel.DtoResult sinaLogin(P6eOtherLoginModel.DtoParam param);
 
     /**
      * 生成扫码登录的基础信息

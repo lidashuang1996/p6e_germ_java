@@ -21,6 +21,10 @@ public class P6eAuthTokenModel implements Serializable {
         private String code;
         private String account;
         private String password;
+
+
+        private String accessToken;
+        private String refreshToken;
     }
 
     @Data
@@ -38,6 +42,10 @@ public class P6eAuthTokenModel implements Serializable {
         private String code;
         private String account;
         private String password;
+
+
+        private String accessToken;
+        private String refreshToken;
     }
 
     @Data

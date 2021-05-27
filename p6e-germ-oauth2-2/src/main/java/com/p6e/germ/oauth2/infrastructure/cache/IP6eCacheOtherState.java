@@ -5,7 +5,7 @@ package com.p6e.germ.oauth2.infrastructure.cache;
  * @author lidashuang
  * @version 1.0
  */
-public interface IP6eCacheMark {
+public interface IP6eCacheOtherState {
 
     /** 缓存名称 */
     String MARK_NAME = "P6E:OAUTH2:MARK:";
@@ -18,19 +18,19 @@ public interface IP6eCacheMark {
      * @param key 数据名称
      * @param value 数据内容
      */
-    public void set(String key, String value);
+    public void set(String type, String key, String value);
 
     /**
      * 读取数据
      * @param key 数据名称
      * @return 数据内容
      */
-    public String get(String key);
+    public String get(String type, String key);
 
     /**
      * 删除数据
      * @param key 数据名称
      */
-    public void del(String key);
+    public void del(String type, String key);
 
 }

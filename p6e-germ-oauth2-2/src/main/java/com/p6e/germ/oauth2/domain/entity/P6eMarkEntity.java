@@ -62,7 +62,7 @@ public class P6eMarkEntity implements Serializable {
      * 清除缓存
      */
     public void clean() {
-        CACHE_MARK.del(key);
+        // CACHE_MARK.del(key);
     }
 
     /**

@@ -160,6 +160,10 @@ public final class P6eHttpUtil {
         globalHeaders = headers;
     }
 
+    public static String doGet(String url) throws IOException {
+        return httpString(new HttpGet(url), null, globalProxyHost, globalProxyHost);
+    }
+
     public static String doGet(String url, Map<String, String> params, Map<String, String> headers) throws IOException {
         return httpString(new HttpGet(urlParamFormat(url, params)), headers, globalProxyHost, globalProxyHost);
     }

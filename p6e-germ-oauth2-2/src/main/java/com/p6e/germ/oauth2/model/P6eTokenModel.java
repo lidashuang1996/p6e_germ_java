@@ -23,8 +23,6 @@ public class P6eTokenModel implements Serializable {
         private String account;
         private String password;
 
-        private String accessToken;
-        private String refreshToken;
     }
 
     @Data

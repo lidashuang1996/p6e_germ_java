@@ -68,7 +68,19 @@ public class P6eAuthServiceImpl implements P6eAuthService {
 
     @Override
     public P6eAuthTokenModel.DtoResult refresh(P6eAuthTokenModel.DtoParam param) {
-        return null;
+        final P6eAuthTokenModel.DtoResult result = new P6eAuthTokenModel.DtoResult();
+        try {
+            final String accessToken = param.getAccessToken();
+            final String refreshToken = param.getRefreshToken();
+            P6eUserTokenEntity userToken = new P6eUserTokenEntity(accessToken);
+            if (userToken.verificationRefreshToken(refreshToken)) {
+                P6eCopyUtil.run(result,  userToken.refresh().getModel());
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            result.setError(P6eResultModel.Error.EXPIRATION_EXCEPTION);
+        }
+        return result;
     }
 
 

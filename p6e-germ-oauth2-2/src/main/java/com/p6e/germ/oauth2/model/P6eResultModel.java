@@ -8,10 +8,6 @@ public final class P6eResultModel {
 
     public enum Error {
         /**
-         * yanzhengma cuowu
-         */
-        CODE_EXCEPTION(155),
-        /**
          * 资源不存在
          */
         PAGE_EXPIRED(1),

@@ -25,10 +25,13 @@ public final class P6eCache {
     public static IP6eCachePush push;
     public static IP6eCacheNrCode nrCode;
 
+    public static IP6eCacheOtherState otherState;
+
     /**
      * 初始化操作
      */
     public static void init() {
+        otherState = P6eSpringUtil.getBean(IP6eCacheOtherState.class, new P6eCacheRedisOtherState());
         // CODE 缓存
         qrCode = P6eSpringUtil.getBean(IP6eCacheQrCode.class, new P6eCacheRedisCode());
         nrCode = P6eSpringUtil.getBean(IP6eCacheNrCode.class, new P6eCacheRedisNrCode());
