@@ -25,6 +25,8 @@ public class P6eOtherLoginModel implements Serializable {
     @Accessors(chain = true)
     public static class DtoParam implements Serializable {
         private String mark;
+        private String code;
+        private String state;
     }
 
     @Data

@@ -19,7 +19,7 @@ public class P6eAuthTokenModel implements Serializable {
         private String grantType;
         private String redirectUri;
         private String code;
-        private String account;
+        private String username;
         private String password;
 
 
@@ -40,7 +40,7 @@ public class P6eAuthTokenModel implements Serializable {
         private String grantType;
         private String redirectUri;
         private String code;
-        private String account;
+        private String username;
         private String password;
 
 

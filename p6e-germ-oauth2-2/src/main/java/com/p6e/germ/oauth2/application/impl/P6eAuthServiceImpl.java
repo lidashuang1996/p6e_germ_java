@@ -21,13 +21,18 @@ public class P6eAuthServiceImpl implements P6eAuthService {
     /** 注入日志系统 */
     private final static Logger LOGGER = LoggerFactory.getLogger(P6eAuthService.class);
 
-
     @Override
     public P6eAuthModel.DtoResult verification(P6eAuthModel.DtoParam param) {
         final P6eAuthModel.DtoResult result = new P6eAuthModel.DtoResult();
         try {
             // 读取客户端信息
-            final P6eClientEntity client = P6eClientEntity.get(param.getClientId());
+            final P6eClientEntity client;
+            try {
+                client = P6eClientEntity.get(param.getClientId());
+            } catch (Exception e) {
+                result.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
+                return result;
+            }
             // 验证客户端信息
             if (client.verificationScope(param.getScope())
                     && client.verificationRedirectUri(param.getRedirectUri())) {
@@ -41,29 +46,67 @@ public class P6eAuthServiceImpl implements P6eAuthService {
             } else {
                 result.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
             }
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             LOGGER.error(e.getMessage());
-            result.setError(P6eResultModel.Error.RESOURCES_NO_EXIST);
-        } catch (Exception ee) {
-            LOGGER.error(ee.getMessage());
+            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+        return result;
+    }
+
+
+    @Override
+    public P6eAuthTokenModel.DtoResult code(P6eAuthTokenModel.DtoParam param) {
+        final P6eAuthTokenModel.DtoResult result = new P6eAuthTokenModel.DtoResult();
+        try {
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
             result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
         return result;
     }
 
     @Override
-    public P6eAuthTokenModel.DtoResult code(P6eAuthTokenModel.DtoParam param) {
-        return null;
-    }
-
-    @Override
     public P6eAuthTokenModel.DtoResult client(P6eAuthTokenModel.DtoParam param) {
-        return null;
+        final P6eAuthTokenModel.DtoResult result = new P6eAuthTokenModel.DtoResult();
+        try {
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+        return result;
     }
 
     @Override
     public P6eAuthTokenModel.DtoResult password(P6eAuthTokenModel.DtoParam param) {
-        return null;
+        final P6eAuthTokenModel.DtoResult result = new P6eAuthTokenModel.DtoResult();
+        try {
+            final String cid = param.getClientId();
+            final String username = param.getUsername();
+            final String password = param.getPassword();
+            final P6eClientEntity client;
+            try {
+                client = P6eClientEntity.get(cid);
+            } catch (Exception e) {
+                result.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
+                return result;
+            }
+            final P6eUserEntity user;
+            try {
+                user = new P6eUserEntity(new P6eUserEntity.Account(username));
+            } catch (Exception e) {
+                result.setError(P6eResultModel.Error.ACCOUNT_OR_PASSWORD);
+                return result;
+            }
+            if (user.defaultVerification(password)) {
+                P6eCopyUtil.run(client.getData(), result);
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+        return result;
     }
 
     @Override

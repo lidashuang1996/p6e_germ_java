@@ -28,6 +28,8 @@ public class P6eBaseController {
 
     protected static final int AUTH_HEADER_BEARER_LENGTH = 7;
 
+    /** HTML 数据名称 */
+    protected static final String HTML_DATA_NAME = "__DATA__";
     /**
      * 请求的携带认证信息的参数
      */

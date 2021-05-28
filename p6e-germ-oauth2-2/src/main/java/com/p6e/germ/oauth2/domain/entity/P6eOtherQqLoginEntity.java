@@ -10,6 +10,7 @@ import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheOtherState;
 import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
 
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -80,9 +81,14 @@ public final class P6eOtherQqLoginEntity {
 
     }
 
+
+
     private final String mark;
     public static P6eOtherQqLoginEntity create(String mark) {
         return new P6eOtherQqLoginEntity(mark);
+    }
+    public static Map<String, String> getData(String code) {
+        return new HashMap<>();
     }
 
     public P6eOtherQqLoginEntity(String mark) {

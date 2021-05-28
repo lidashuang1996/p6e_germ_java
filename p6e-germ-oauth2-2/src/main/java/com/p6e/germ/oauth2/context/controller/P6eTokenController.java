@@ -4,6 +4,8 @@ import com.p6e.germ.common.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.application.P6eApplication;
 import com.p6e.germ.oauth2.context.controller.support.P6eBaseController;
 import com.p6e.germ.oauth2.model.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,10 +18,14 @@ import javax.servlet.http.HttpServletRequest;
  * @author lidashuang
  * @version 1.0
  */
+@Api("Oauth2认证入口")
 @RestController
 @RequestMapping("/token")
 public class P6eTokenController extends P6eBaseController {
 
+    @ApiOperation(
+            value = "验证传入的数据是否为客户端数据，正确则返回登录的页面的，否则错误提示"
+    )
     @RequestMapping
     public P6eResultModel def(HttpServletRequest request, P6eTokenModel.VoParam param) {
         try {
