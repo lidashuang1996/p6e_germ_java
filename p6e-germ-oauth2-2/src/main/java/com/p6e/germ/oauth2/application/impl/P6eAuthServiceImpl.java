@@ -11,6 +11,8 @@ import com.p6e.germ.oauth2.model.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+
 /**
  * 认证服务
  * @author lidashuang
@@ -37,12 +39,11 @@ public class P6eAuthServiceImpl implements P6eAuthService {
             if (client.verificationScope(param.getScope())
                     && client.verificationRedirectUri(param.getRedirectUri())) {
                 // 记号参数
-                final P6eMarkKeyValue.Content content = P6eCopyUtil.run(param, P6eMarkKeyValue.Content.class);
+                final P6eMarkKeyValue.Content content = new P6eMarkKeyValue.Content();
+                P6eCopyUtil.run(param, content);
                 P6eCopyUtil.run(client.getData(), content);
                 // 生成记号
-                final P6eMarkEntity mark = P6eMarkEntity.create(content).cache();
-                // 写入信息
-                result.setMark(mark.getKey());
+                result.setMark(P6eMarkEntity.create(content).cache().getKey());
             } else {
                 result.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
             }
@@ -53,12 +54,28 @@ public class P6eAuthServiceImpl implements P6eAuthService {
         return result;
     }
 
-
     @Override
     public P6eAuthTokenModel.DtoResult code(P6eAuthTokenModel.DtoParam param) {
         final P6eAuthTokenModel.DtoResult result = new P6eAuthTokenModel.DtoResult();
         try {
-
+            // 读取客户端信息
+            final P6eClientEntity client;
+            try {
+                client = P6eClientEntity.get(param.getClientId());
+            } catch (Exception e) {
+                result.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
+                return result;
+            }
+            if (client.verificationSecret(param.getClientSecret())
+                    && client.verificationRedirectUri(param.getRedirectUri())) {
+                try {
+                    P6eCopyUtil.run(P6eTokenEntity.get(param.getCode()).getModel(), result);
+                } catch (Exception e) {
+                    result.setError(P6eResultModel.Error.EXPIRATION_EXCEPTION);
+                }
+            } else {
+                result.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
+            }
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
             result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
@@ -70,7 +87,20 @@ public class P6eAuthServiceImpl implements P6eAuthService {
     public P6eAuthTokenModel.DtoResult client(P6eAuthTokenModel.DtoParam param) {
         final P6eAuthTokenModel.DtoResult result = new P6eAuthTokenModel.DtoResult();
         try {
-
+            // 读取客户端信息
+            final P6eClientEntity client;
+            try {
+                client = P6eClientEntity.get(param.getClientId());
+            } catch (Exception e) {
+                result.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
+                return result;
+            }
+            if (client.verificationSecret(param.getClientSecret())) {
+                final P6eTokenEntity token = new P6eTokenEntity(String.valueOf(client.getData().getId()), new HashMap<>());
+                P6eCopyUtil.run(token.getModel(), result);
+            } else {
+                result.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
+            }
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
             result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
@@ -85,9 +115,8 @@ public class P6eAuthServiceImpl implements P6eAuthService {
             final String cid = param.getClientId();
             final String username = param.getUsername();
             final String password = param.getPassword();
-            final P6eClientEntity client;
             try {
-                client = P6eClientEntity.get(cid);
+                P6eClientEntity.get(cid);
             } catch (Exception e) {
                 result.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
                 return result;
@@ -100,7 +129,9 @@ public class P6eAuthServiceImpl implements P6eAuthService {
                 return result;
             }
             if (user.defaultVerification(password)) {
-                P6eCopyUtil.run(client.getData(), result);
+                P6eCopyUtil.run(user.createTokenCache().getModel(), result);
+            } else {
+                result.setError(P6eResultModel.Error.ACCOUNT_OR_PASSWORD);
             }
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
@@ -115,7 +146,7 @@ public class P6eAuthServiceImpl implements P6eAuthService {
         try {
             final String accessToken = param.getAccessToken();
             final String refreshToken = param.getRefreshToken();
-            P6eUserTokenEntity userToken = new P6eUserTokenEntity(accessToken);
+            P6eTokenEntity userToken = new P6eTokenEntity(accessToken);
             if (userToken.verificationRefreshToken(refreshToken)) {
                 P6eCopyUtil.run(result,  userToken.refresh().getModel());
             }

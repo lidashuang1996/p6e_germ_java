@@ -4,15 +4,12 @@ import com.p6e.germ.common.config.P6eConfig;
 import com.p6e.germ.common.config.P6eOauth2Config;
 import com.p6e.germ.common.utils.*;
 import com.p6e.germ.oauth2.application.P6eLoginService;
-import com.p6e.germ.oauth2.domain.aggregate.P6eUserAggregate;
 import com.p6e.germ.oauth2.domain.entity.*;
 import com.p6e.germ.oauth2.domain.keyvalue.P6eMarkKeyValue;
 import com.p6e.germ.oauth2.model.*;
 import com.p6e.germ.oauth2.model.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
 
 /**
  * 登录服务
@@ -65,8 +62,8 @@ public class P6eLoginServiceImpl implements P6eLoginService {
             // 读取 mark 信息内容
             final P6eMarkKeyValue.Content content = mark.getData();
             // 查询用户信息并重制模型
-            final P6eUserTokenEntity userToken =
-                    new P6eUserTokenEntity(param.getAccessToken(), P6eUserTokenEntity.ACCESS_TOKEN).resetModel();
+            final P6eTokenEntity userToken =
+                    new P6eTokenEntity(param.getAccessToken(), P6eTokenEntity.ACCESS_TOKEN).resetModel();
             result(content, userToken, result);
         } catch (RuntimeException e) {
             LOGGER.error(e.getMessage());
@@ -100,7 +97,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
             if (p6eUserEntity.defaultVerification(p6eVoucherEntity.execute(param.getPassword()))) {
                 try {
                     // 创建用户认证信息并缓存
-                    final P6eUserTokenEntity userToken = p6eUserEntity.createTokenCache().cache();
+                    final P6eTokenEntity userToken = p6eUserEntity.createTokenCache().cache();
                     // 读取 MARK 信息
                     final P6eMarkKeyValue.Content content = p6eMarkEntity.getData();
                     result(content, userToken, result);
@@ -127,7 +124,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
     /**
      *
      */
-    private void result(P6eMarkKeyValue.Content content, P6eUserTokenEntity userToken, P6eLoginModel.DtoResult result) {
+    private void result(P6eMarkKeyValue.Content content, P6eTokenEntity userToken, P6eLoginModel.DtoResult result) {
         // 写入客户端信息
         P6eCopyUtil.run(content, result);
         // 写入用户认证信息
@@ -199,11 +196,8 @@ public class P6eLoginServiceImpl implements P6eLoginService {
         try {
             // 判断其他登录是否启动
             if (config.getQq().isEnable()) {
-                final P6eUserAggregate userAggregate = P6eUserAggregate.getQqLoginData(param.getCode(), param.getState());
-                // 验证
-                // 信息
-                // 账号合并
-                // .....
+                final P6eUserEntity user = new P6eUserEntity(new P6eUserEntity.Qq(param.getCode()));
+                P6eCopyUtil.run(user.createTokenCache().getModel(), result);
             } else {
                 result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
             }

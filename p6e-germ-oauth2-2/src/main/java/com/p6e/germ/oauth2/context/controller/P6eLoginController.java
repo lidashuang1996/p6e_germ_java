@@ -2,21 +2,29 @@ package com.p6e.germ.oauth2.context.controller;
 
 import com.p6e.germ.common.utils.P6eCopyUtil;
 import com.p6e.germ.common.utils.P6eFormatUtil;
+import com.p6e.germ.common.utils.P6eJsonUtil;
 import com.p6e.germ.oauth2.application.P6eApplication;
 import com.p6e.germ.oauth2.context.controller.support.P6eBaseController;
 import com.p6e.germ.oauth2.model.*;
 import com.p6e.germ.oauth2.model.P6eResultModel;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 登录服务的接口
  * @author lidashuang
  * @version 1.0
  */
+@Api("登录接口")
 @RestController
 public class P6eLoginController extends P6eBaseController {
 
+    @ApiOperation(
+            value = "账号密码登录的密码加密凭证接口"
+    )
     @GetMapping("/login/secret_voucher")
     public P6eResultModel secretVoucher(P6eSecretVoucherModel.VoParam param) {
         try {
@@ -40,6 +48,9 @@ public class P6eLoginController extends P6eBaseController {
         }
     }
 
+    @ApiOperation(
+            value = "验证登录的接口"
+    )
     @GetMapping("/login/verification")
     public P6eResultModel verification(HttpServletRequest request,
                                        P6eLoginModel.VerificationVoParam param) {
@@ -78,6 +89,9 @@ public class P6eLoginController extends P6eBaseController {
         }
     }
 
+    @ApiOperation(
+            value = "账号密码登录的接口"
+    )
     @PostMapping("/login/account_password")
     public P6eResultModel accountPassword(@RequestBody P6eLoginModel.AccountPasswordVoParam param) {
         try {
@@ -106,6 +120,9 @@ public class P6eLoginController extends P6eBaseController {
         }
     }
 
+    @ApiOperation(
+            value = "获取登录验证码的接口"
+    )
     @GetMapping("/login/nr_code")
     public P6eResultModel nrCode(P6eNrCodeModel.VoParam param) {
         try {
@@ -134,6 +151,9 @@ public class P6eLoginController extends P6eBaseController {
         }
     }
 
+    @ApiOperation(
+            value = "采用登录验证码登录的接口"
+    )
     @PostMapping("/login/nr_code/data")
     public P6eResultModel nrCodeData(P6eNrCodeModel.VoParam param) {
         try {
@@ -160,6 +180,9 @@ public class P6eLoginController extends P6eBaseController {
         }
     }
 
+    @ApiOperation(
+            value = "获取二维码登录的接口"
+    )
     @GetMapping("/login/qr_code")
     public P6eResultModel qrCode(P6eQrCodeModel.VoParam param) {
         try {
@@ -183,9 +206,13 @@ public class P6eLoginController extends P6eBaseController {
         }
     }
 
+    @ApiOperation(
+            value = "获取二维码登录信息的接口"
+    )
     @GetMapping("/login/qr_code/data")
     public P6eResultModel qrCodeData() {
         try {
+            //
             return P6eResultModel.build();
         } catch (Exception e) {
             e.printStackTrace();
@@ -194,6 +221,9 @@ public class P6eLoginController extends P6eBaseController {
         }
     }
 
+    @ApiOperation(
+            value = "QQ登录的接口"
+    )
     @GetMapping("/login/qq")
     public P6eResultModel qqLogin(P6eOtherLoginModel.VoParam param) {
         try {
@@ -217,10 +247,25 @@ public class P6eLoginController extends P6eBaseController {
         }
     }
 
+    @ApiOperation(
+            value = "QQ登录的回调接口"
+    )
     @GetMapping("/login/qq/callback")
-    public P6eResultModel qqLoginCallback(P6eOtherLoginModel.VoParam param) {
+    public P6eResultModel qqLoginCallback(HttpServletResponse response,
+                                          P6eOtherLoginModel.VoParam param) {
         try {
-            return P6eResultModel.build("返回脚本内容，让脚本完成跳转");
+            if (param == null
+                    || param.getCode() == null
+                    || param.getState() == null) {
+                return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
+            } else {
+                final P6eOtherLoginModel.DtoResult result =
+                        P6eApplication.login.qqLogin(P6eCopyUtil.run(param, P6eOtherLoginModel.DtoParam.class));
+                response.getWriter().write(P6eJsonUtil.toJson(result));
+                response.getWriter().flush();
+                response.getWriter().close();
+                return null;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
@@ -228,6 +273,9 @@ public class P6eLoginController extends P6eBaseController {
         }
     }
 
+    @ApiOperation(
+            value = "微信登录的接口"
+    )
     @GetMapping("/login/we_chat")
     public P6eResultModel weChatLogin(P6eOtherLoginModel.VoParam param) {
         try {
@@ -251,10 +299,25 @@ public class P6eLoginController extends P6eBaseController {
         }
     }
 
+    @ApiOperation(
+            value = "微信登录的回调接口"
+    )
     @GetMapping("/login/we_chat/callback")
-    public P6eResultModel weChatLoginCallback(P6eOtherLoginModel.VoParam param) {
+    public P6eResultModel weChatLoginCallback(HttpServletResponse response,
+                                              P6eOtherLoginModel.VoParam param) {
         try {
-            return P6eResultModel.build("返回脚本内容，让脚本完成跳转");
+            if (param == null
+                    || param.getCode() == null
+                    || param.getState() == null) {
+                return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
+            } else {
+                final P6eOtherLoginModel.DtoResult result =
+                        P6eApplication.login.weChatLogin(P6eCopyUtil.run(param, P6eOtherLoginModel.DtoParam.class));
+                response.getWriter().write(P6eJsonUtil.toJson(result));
+                response.getWriter().flush();
+                response.getWriter().close();
+                return null;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
@@ -262,6 +325,9 @@ public class P6eLoginController extends P6eBaseController {
         }
     }
 
+    @ApiOperation(
+            value = "新浪登录的接口"
+    )
     @GetMapping("/login/sina")
     public P6eResultModel sinaLogin(P6eOtherLoginModel.VoParam param) {
         try {
@@ -285,10 +351,25 @@ public class P6eLoginController extends P6eBaseController {
         }
     }
 
+    @ApiOperation(
+            value = "新浪登录的回调接口"
+    )
     @GetMapping("/login/sina/callback")
-    public P6eResultModel sinaLoginCallback(P6eOtherLoginModel.VoParam param) {
+    public P6eResultModel sinaLoginCallback(HttpServletResponse response,
+                                            P6eOtherLoginModel.VoParam param) {
         try {
-            return P6eResultModel.build("返回脚本内容，让脚本完成跳转");
+            if (param == null
+                    || param.getCode() == null
+                    || param.getState() == null) {
+                return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
+            } else {
+                final P6eOtherLoginModel.DtoResult result =
+                        P6eApplication.login.sinaLogin(P6eCopyUtil.run(param, P6eOtherLoginModel.DtoParam.class));
+                response.getWriter().write(P6eJsonUtil.toJson(result));
+                response.getWriter().flush();
+                response.getWriter().close();
+                return null;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());

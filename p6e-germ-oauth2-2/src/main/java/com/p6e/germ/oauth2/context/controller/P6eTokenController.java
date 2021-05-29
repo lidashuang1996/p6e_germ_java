@@ -27,7 +27,7 @@ public class P6eTokenController extends P6eBaseController {
             value = "验证传入的数据是否为客户端数据，正确则返回登录的页面的，否则错误提示"
     )
     @RequestMapping
-    public P6eResultModel def(HttpServletRequest request, P6eTokenModel.VoParam param) {
+    public P6eResultModel def(HttpServletRequest request, P6eAuthTokenModel.VoParam param) {
         try {
             if (param.getClientId() == null) {
                 param.setClientId(request.getParameter(CLIENT_ID_PARAM));
@@ -41,10 +41,7 @@ public class P6eTokenController extends P6eBaseController {
             if (param.getClientSecret() == null) {
                 param.setClientSecret(request.getParameter(CLIENT_SECRET_PARAM));
             }
-            if (param.getClientId() == null
-                    || param.getClientSecret() == null
-                    || param.getRedirectUri() == null
-                    || param.getGrantType() == null) {
+            if (param.getClientId() == null || param.getGrantType() == null) {
                 return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
                 final P6eAuthTokenModel.DtoResult p6eAuthTokenDto;
@@ -53,22 +50,26 @@ public class P6eTokenController extends P6eBaseController {
                         // CODE 执行模式
                         if (HttpMethod.GET.name().equals(request.getMethod().toUpperCase())
                                 || HttpMethod.POST.name().equals(request.getMethod().toUpperCase())) {
-                            if (param.getCode() == null) {
+                            if (param.getCode() == null
+                                    || param.getRedirectUri() == null
+                                    || param.getClientSecret() == null) {
+                                return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
+                            } else {
                                 p6eAuthTokenDto = P6eApplication.auth.code(
                                         P6eCopyUtil.run(param, P6eAuthTokenModel.DtoParam.class));
                                 break;
-                            } else {
-                                return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
                             }
+                        } else {
+                            return P6eResultModel.build(P6eResultModel.Error.HTTP_METHOD_EXCEPTION);
                         }
                     case PASSWORD_TYPE:
                         // PASSWORD 执行模式
                         if (HttpMethod.POST.name().equals(request.getMethod().toUpperCase())) {
-                            if (param.getAccount() == null || param.getPassword() == null) {
+                            if (param.getUsername() == null || param.getPassword() == null) {
+                                return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
+                            } else {
                                 p6eAuthTokenDto = P6eApplication.auth.password(
                                         P6eCopyUtil.run(param, P6eAuthTokenModel.DtoParam.class));
-                            } else {
-                                return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
                             }
                             break;
                         } else {
@@ -77,8 +78,12 @@ public class P6eTokenController extends P6eBaseController {
                     case CLIENT_TYPE:
                         // 客户端执行模式
                         if (HttpMethod.POST.name().equals(request.getMethod().toUpperCase())) {
-                            p6eAuthTokenDto = P6eApplication.auth.client(
-                                    P6eCopyUtil.run(param, P6eAuthTokenModel.DtoParam.class));
+                            if (param.getClientSecret() == null) {
+                                return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
+                            } else {
+                                p6eAuthTokenDto = P6eApplication.auth.client(
+                                        P6eCopyUtil.run(param, P6eAuthTokenModel.DtoParam.class));
+                            }
                             break;
                         } else {
                             return P6eResultModel.build(P6eResultModel.Error.HTTP_METHOD_EXCEPTION);

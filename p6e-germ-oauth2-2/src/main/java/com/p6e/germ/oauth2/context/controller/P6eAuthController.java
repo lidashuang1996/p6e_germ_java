@@ -9,7 +9,6 @@ import com.p6e.germ.oauth2.context.controller.support.P6eBaseController;
 import com.p6e.germ.oauth2.model.P6eAuthModel;
 import com.p6e.germ.oauth2.model.P6eResultModel;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,13 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @RequestMapping("/auth")
 public class P6eAuthController extends P6eBaseController {
-
-
-
-    /**
-     * 验证数据
-     * 登录页面并写入 voucher 数据
-     */
 
     @ApiOperation(
             value = "验证传入的数据是否为客户端数据，正确则返回登录的页面的，否则错误提示"

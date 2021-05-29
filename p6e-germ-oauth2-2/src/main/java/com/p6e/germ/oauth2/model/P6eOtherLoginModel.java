@@ -14,6 +14,8 @@ public class P6eOtherLoginModel implements Serializable {
     @Data
     public static class VoParam implements Serializable {
         private String mark;
+        private String code;
+        private String state;
     }
 
     @Data

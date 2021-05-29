@@ -86,7 +86,7 @@ public interface P6eLoginService {
      * @param param 微信登陆认证信息
      * @return 登录结果对象
      */
-    public P6eLoginDto weChatLogin(P6eWeChatLoginDto param);
+    public P6eOtherLoginModel.DtoResult weChatLogin(P6eOtherLoginModel.DtoParam param);
 
     public P6eOtherLoginModel.DtoResult sinaInfo(P6eOtherLoginModel.DtoParam param);
     public P6eOtherLoginModel.DtoResult sinaLogin(P6eOtherLoginModel.DtoParam param);
