@@ -147,135 +147,8 @@ public class P6eLoginServiceImpl implements P6eLoginService {
         }
     }
 
-    @Override
-    public String smsInfo(P6eSmsInfoDto param) {
-        return null;
-    }
 
-    @Override
-    public P6eLoginDto smsCodeLogin(P6eSmsCodeLoginDto param) {
-        return null;
-    }
 
-    @Override
-    public String emailInfo(P6eEmailInfoDto param) {
-        return null;
-    }
-
-    @Override
-    public P6eLoginDto emailCodeLogin(P6eEmailCodeLoginDto param) {
-        return null;
-    }
-
-    @Override
-    public P6eOtherLoginModel.DtoResult qqInfo(P6eOtherLoginModel.DtoParam param) {
-        final P6eOtherLoginModel.DtoResult result = new P6eOtherLoginModel.DtoResult();
-        try {
-            // 判断其他登录是否启动
-            if (config.getQq().isEnable()) {
-                try {
-                    P6eMarkEntity.get(param.getMark());
-                } catch (Exception e) {
-                    result.setError(P6eResultModel.Error.PAGE_EXPIRED);
-                    return result;
-                }
-                result.setContent(P6eOtherQqLoginEntity.create(param.getMark()).getAuthUrl());
-            } else {
-                result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
-            }
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
-        }
-        return result;
-    }
-
-    @Override
-    public P6eOtherLoginModel.DtoResult qqLogin(P6eOtherLoginModel.DtoParam param) {
-        final P6eOtherLoginModel.DtoResult result = new P6eOtherLoginModel.DtoResult();
-        try {
-            // 判断其他登录是否启动
-            if (config.getQq().isEnable()) {
-                final P6eUserEntity user = new P6eUserEntity(new P6eUserEntity.Qq(param.getCode()));
-                P6eCopyUtil.run(user.createTokenCache().getModel(), result);
-            } else {
-                result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
-            }
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
-        }
-        return result;
-    }
-
-    @Override
-    public P6eOtherLoginModel.DtoResult weChatInfo(P6eOtherLoginModel.DtoParam param) {
-        final P6eOtherLoginModel.DtoResult result = new P6eOtherLoginModel.DtoResult();
-        try {
-            // 判断其他登录是否启动
-            if (config.getWeChat().isEnable()) {
-                try {
-                    P6eMarkEntity.get(param.getMark());
-                } catch (Exception e) {
-                    result.setError(P6eResultModel.Error.PAGE_EXPIRED);
-                    return result;
-                }
-                result.setContent(P6eOtherWeChatLoginEntity.create(param.getMark()).getAuthUrl());
-            } else {
-                result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
-            }
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
-        }
-        return result;
-    }
-
-    @Override
-    public P6eLoginDto weChatLogin(P6eWeChatLoginDto param) {
-        final P6eOtherLoginModel.DtoResult result = new P6eOtherLoginModel.DtoResult();
-        if (config.getWeChat().isEnable()) {
-
-        } else {
-            result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
-        }
-        return null;
-    }
-
-    @Override
-    public P6eOtherLoginModel.DtoResult sinaInfo(P6eOtherLoginModel.DtoParam param) {
-        final P6eOtherLoginModel.DtoResult result = new P6eOtherLoginModel.DtoResult();
-        try {
-            // 判断其他登录是否启动
-            if (config.getSina().isEnable()) {
-                try {
-                    P6eMarkEntity.get(param.getMark());
-                } catch (Exception e) {
-                    result.setError(P6eResultModel.Error.PAGE_EXPIRED);
-                    return result;
-                }
-                result.setContent(P6eOtherSinaLoginEntity.create(param.getMark()).getAuthUrl());
-            } else {
-                result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
-            }
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
-        }
-        return result;
-    }
-
-    @Override
-    public P6eOtherLoginModel.DtoResult sinaLogin(P6eOtherLoginModel.DtoParam param) {
-        final P6eOtherLoginModel.DtoResult result = new P6eOtherLoginModel.DtoResult();
-        try {
-
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
-        }
-        return result;
-    }
 
     @Override
     public P6eQrCodeModel.DtoResult qrCode(P6eQrCodeModel.DtoParam param) {
@@ -358,4 +231,117 @@ public class P6eLoginServiceImpl implements P6eLoginService {
     }
 
 
+
+
+
+
+    @Override
+    public P6eOtherLoginModel.DtoResult qqInfo(P6eOtherLoginModel.DtoParam param) {
+        final P6eOtherLoginModel.DtoResult result = new P6eOtherLoginModel.DtoResult();
+        try {
+            // 判断其他登录是否启动
+            if (config.getQq().isEnable()) {
+                try {
+                    P6eMarkEntity.get(param.getMark());
+                } catch (Exception e) {
+                    result.setError(P6eResultModel.Error.PAGE_EXPIRED);
+                    return result;
+                }
+                result.setContent(P6eOtherQqLoginEntity.create(param.getMark()).getAuthUrl());
+            } else {
+                result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+        return result;
+    }
+
+    @Override
+    public P6eOtherLoginModel.DtoResult qqLogin(P6eOtherLoginModel.DtoParam param) {
+        final P6eOtherLoginModel.DtoResult result = new P6eOtherLoginModel.DtoResult();
+        try {
+            // 判断其他登录是否启动
+            if (config.getQq().isEnable()) {
+                final P6eUserEntity user = new P6eUserEntity(new P6eUserEntity.Qq(param.getCode()));
+                P6eCopyUtil.run(user.createTokenCache().getModel(), result);
+            } else {
+                result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+        return result;
+    }
+
+    @Override
+    public P6eOtherLoginModel.DtoResult weChatInfo(P6eOtherLoginModel.DtoParam param) {
+        final P6eOtherLoginModel.DtoResult result = new P6eOtherLoginModel.DtoResult();
+        try {
+            // 判断其他登录是否启动
+            if (config.getWeChat().isEnable()) {
+                try {
+                    P6eMarkEntity.get(param.getMark());
+                } catch (Exception e) {
+                    result.setError(P6eResultModel.Error.PAGE_EXPIRED);
+                    return result;
+                }
+                result.setContent(P6eOtherWeChatLoginEntity.create(param.getMark()).getAuthUrl());
+            } else {
+                result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+        return result;
+    }
+
+    @Override
+    public P6eOtherLoginModel.DtoResult weChatLogin(P6eOtherLoginModel.DtoParam param) {
+        final P6eOtherLoginModel.DtoResult result = new P6eOtherLoginModel.DtoResult();
+        if (config.getWeChat().isEnable()) {
+
+        } else {
+            result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
+        }
+        return null;
+    }
+
+    @Override
+    public P6eOtherLoginModel.DtoResult sinaInfo(P6eOtherLoginModel.DtoParam param) {
+        final P6eOtherLoginModel.DtoResult result = new P6eOtherLoginModel.DtoResult();
+        try {
+            // 判断其他登录是否启动
+            if (config.getSina().isEnable()) {
+                try {
+                    P6eMarkEntity.get(param.getMark());
+                } catch (Exception e) {
+                    result.setError(P6eResultModel.Error.PAGE_EXPIRED);
+                    return result;
+                }
+                result.setContent(P6eOtherSinaLoginEntity.create(param.getMark()).getAuthUrl());
+            } else {
+                result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+        return result;
+    }
+
+    @Override
+    public P6eOtherLoginModel.DtoResult sinaLogin(P6eOtherLoginModel.DtoParam param) {
+        final P6eOtherLoginModel.DtoResult result = new P6eOtherLoginModel.DtoResult();
+        try {
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+        return result;
+    }
 }
