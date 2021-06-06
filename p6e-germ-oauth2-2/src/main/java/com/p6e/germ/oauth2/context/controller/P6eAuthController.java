@@ -31,9 +31,16 @@ public class P6eAuthController extends P6eBaseController {
             value = "验证传入的数据是否为客户端数据，正确则返回登录的页面的，否则错误提示"
     )
     @GetMapping
-    public Object def(P6eAuthModel.VoParam param,
+    public Object def(P6eAuthModel.VoParam param, String code,
                       HttpServletRequest request, HttpServletResponse response) {
         try {
+            if (code != null && code.length() > 0) {
+                response.setContentType(HTML_CONTENT_TYPE);
+                response.getWriter().write(Utils.variableFormatting(Config.getHtml(), new String[]{ HTML_DATA_NAME, code }));
+                response.getWriter().flush();
+                response.getWriter().close();
+                return null;
+            }
             // 获取请求的数据
             if (param.getClientId() == null) {
                 param.setClientId(request.getParameter(CLIENT_ID_PARAM));
@@ -80,6 +87,25 @@ public class P6eAuthController extends P6eBaseController {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
             return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+    }
+
+
+    /**
+     * 写入认证信息的页面
+     * @param request HttpServletRequest 请求
+     * @param response HttpServletResponse 结果
+     */
+    public static void page(HttpServletRequest request, HttpServletResponse response, String code) {
+        try {
+            response.setContentType(HTML_CONTENT_TYPE);
+            response.getWriter().write(Utils.variableFormatting(Config.getHtml(),
+                    new String[]{ HTML_DATA_NAME, code }));
+            response.getWriter().flush();
+            response.getWriter().close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
     }
 

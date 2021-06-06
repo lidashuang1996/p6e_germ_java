@@ -11,6 +11,7 @@ import java.io.Serializable;
  * @version 1.0
  */
 public class P6eOtherLoginModel implements Serializable {
+
     @Data
     public static class VoParam implements Serializable {
         private String mark;
@@ -21,6 +22,24 @@ public class P6eOtherLoginModel implements Serializable {
     @Data
     public static class VoResult implements Serializable {
         private String content;
+
+        private String accessToken;
+        private String refreshToken;
+        private String tokenType;
+        private Long expiresIn;
+
+        private String scope;
+        private String state;
+        private String clientId;
+        private String responseType;
+        private String redirectUri;
+        private Integer status;
+        private String icon;
+        private String name;
+        private String key;
+        private String secret;
+        private String describe;
+        private String limitingRule;
     }
 
     @Data
@@ -34,5 +53,25 @@ public class P6eOtherLoginModel implements Serializable {
     @Data
     public static class DtoResult extends P6eBaseDtoResult implements Serializable {
         private String content;
+        private String code;
+
+
+        private String accessToken;
+        private String refreshToken;
+        private String tokenType;
+        private Long expiresIn;
+
+        private String scope;
+        private String state;
+        private String clientId;
+        private String responseType;
+        private String redirectUri;
+        private Integer status;
+        private String icon;
+        private String name;
+        private String key;
+        private String secret;
+        private String describe;
+        private String limitingRule;
     }
 }

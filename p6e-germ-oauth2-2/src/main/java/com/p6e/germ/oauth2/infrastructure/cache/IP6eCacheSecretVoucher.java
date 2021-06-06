@@ -5,7 +5,7 @@ package com.p6e.germ.oauth2.infrastructure.cache;
  * @author lidashuang
  * @version 1.0
  */
-public interface IP6eCacheVoucher {
+public interface IP6eCacheSecretVoucher {
 
     /** 凭证缓存的前缀名称 */
     String VOUCHER_NAME = "P6E:OAUTH2:VOUCHER:";

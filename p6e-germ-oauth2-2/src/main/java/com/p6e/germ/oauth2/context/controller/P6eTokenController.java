@@ -44,7 +44,6 @@ public class P6eTokenController extends P6eBaseController {
             if (param.getClientId() == null || param.getGrantType() == null) {
                 return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
-                final P6eAuthTokenModel.DtoResult p6eAuthTokenDto;
                 switch (param.getGrantType().toUpperCase()) {
                     case AUTH_CODE_TYPE:
                         // CODE 执行模式
@@ -55,9 +54,15 @@ public class P6eTokenController extends P6eBaseController {
                                     || param.getClientSecret() == null) {
                                 return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
                             } else {
-                                p6eAuthTokenDto = P6eApplication.auth.code(
-                                        P6eCopyUtil.run(param, P6eAuthTokenModel.DtoParam.class));
-                                break;
+                                final P6eCodeAuthModel.DtoResult result = P6eApplication.auth.code(
+                                        P6eCopyUtil.run(param, P6eCodeAuthModel.DtoParam.class));
+                                if (result == null) {
+                                    return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
+                                } else if (result.getError() != null) {
+                                    return P6eResultModel.build(result.getError());
+                                } else {
+                                    return P6eResultModel.build().setData(P6eCopyUtil.run(result, P6eCodeAuthModel.VoResult.class));
+                                }
                             }
                         } else {
                             return P6eResultModel.build(P6eResultModel.Error.HTTP_METHOD_EXCEPTION);
@@ -68,10 +73,16 @@ public class P6eTokenController extends P6eBaseController {
                             if (param.getUsername() == null || param.getPassword() == null) {
                                 return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
                             } else {
-                                p6eAuthTokenDto = P6eApplication.auth.password(
-                                        P6eCopyUtil.run(param, P6eAuthTokenModel.DtoParam.class));
+                                final P6ePasswordAuthModel.DtoResult result = P6eApplication.auth.password(
+                                        P6eCopyUtil.run(param, P6ePasswordAuthModel.DtoParam.class));
+                                if (result == null) {
+                                    return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
+                                } else if (result.getError() != null) {
+                                    return P6eResultModel.build(result.getError());
+                                } else {
+                                    return P6eResultModel.build().setData(P6eCopyUtil.run(result, P6ePasswordAuthModel.VoResult.class));
+                                }
                             }
-                            break;
                         } else {
                             return P6eResultModel.build(P6eResultModel.Error.HTTP_METHOD_EXCEPTION);
                         }
@@ -81,22 +92,21 @@ public class P6eTokenController extends P6eBaseController {
                             if (param.getClientSecret() == null) {
                                 return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
                             } else {
-                                p6eAuthTokenDto = P6eApplication.auth.client(
-                                        P6eCopyUtil.run(param, P6eAuthTokenModel.DtoParam.class));
+                                final P6eClientAuthModel.DtoResult result = P6eApplication.auth.client(
+                                        P6eCopyUtil.run(param, P6eClientAuthModel.DtoParam.class));
+                                if (result == null) {
+                                    return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
+                                } else if (result.getError() != null) {
+                                    return P6eResultModel.build(result.getError());
+                                } else {
+                                    return P6eResultModel.build().setData(P6eCopyUtil.run(result, P6eClientAuthModel.VoResult.class));
+                                }
                             }
-                            break;
                         } else {
                             return P6eResultModel.build(P6eResultModel.Error.HTTP_METHOD_EXCEPTION);
                         }
                     default:
                         return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
-                }
-                if (p6eAuthTokenDto == null) {
-                    return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
-                } else if (p6eAuthTokenDto.getError() != null) {
-                    return P6eResultModel.build(p6eAuthTokenDto.getError());
-                } else {
-                    return P6eResultModel.build().setData(P6eCopyUtil.run(p6eAuthTokenDto, P6eTokenResult.class));
                 }
             }
         } catch (Exception e) {
@@ -107,7 +117,7 @@ public class P6eTokenController extends P6eBaseController {
     }
 
     @GetMapping("/refresh")
-    public P6eResultModel refresh(HttpServletRequest request, P6eAuthTokenModel.VoParam param) {
+    public P6eResultModel refresh(HttpServletRequest request, P6eRefreshAuthModel.VoParam param) {
         try {
             String accessToken, refreshToken;
             if (param.getAccessToken() == null) {
@@ -130,14 +140,14 @@ public class P6eTokenController extends P6eBaseController {
             }
             // 通过 token 获取用户数据
             if (accessToken != null && refreshToken != null) {
-                final P6eAuthTokenModel.DtoResult p6eAuthTokenDto =
-                        P6eApplication.auth.refresh(P6eCopyUtil.run(param, P6eAuthTokenModel.DtoParam.class));
-                if (p6eAuthTokenDto == null) {
+                final P6eRefreshAuthModel.DtoResult result =
+                        P6eApplication.auth.refresh(P6eCopyUtil.run(param, P6eRefreshAuthModel.DtoParam.class));
+                if (result == null) {
                     return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
-                } else if (p6eAuthTokenDto.getError() != null) {
-                    return P6eResultModel.build(p6eAuthTokenDto.getError());
+                } else if (result.getError() != null) {
+                    return P6eResultModel.build(result.getError());
                 } else {
-                    return P6eResultModel.build(P6eCopyUtil.run(p6eAuthTokenDto, P6eTokenResult.class));
+                    return P6eResultModel.build(P6eCopyUtil.run(result, P6eRefreshAuthModel.VoResult.class));
                 }
             } else {
                 return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);

@@ -9,26 +9,34 @@ import java.io.Serializable;
  * @author lidashuang
  * @version 1.0
  */
-public class P6eQrCodeModel implements Serializable {
+public class P6eClientAuthModel implements Serializable {
+
     @Data
     public static class VoParam implements Serializable {
-        private String mark;
-        private String code;
+        private String clientId;
+        private String clientSecret;
+        private String grantType;
+        private String redirectUri;
     }
 
     @Data
     public static class VoResult implements Serializable {
-        private String content;
+
     }
 
     @Data
     public static class DtoParam implements Serializable {
-        private String mark;
-        private String code;
+        private String clientId;
+        private String clientSecret;
+        private String grantType;
+        private String redirectUri;
     }
 
     @Data
     public static class DtoResult extends P6eBaseDtoResult implements Serializable {
-        private String content;
+        private String accessToken;
+        private String refreshToken;
+        private String tokenType;
+        private Long expiresIn;
     }
 }

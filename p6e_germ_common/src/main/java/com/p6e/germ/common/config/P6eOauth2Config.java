@@ -12,6 +12,17 @@ public class P6eOauth2Config implements Serializable {
     private WeChat weChat = new WeChat();
     private Sina sina = new Sina();
 
+    private QrCode qrCode = new QrCode();
+    private NrCode nrCode = new NrCode();
+
+    public NrCode getNrCode() {
+        return nrCode;
+    }
+
+    public void setNrCode(NrCode nrCode) {
+        this.nrCode = nrCode;
+    }
+
     public Sina getSina() {
         return sina;
     }
@@ -34,6 +45,51 @@ public class P6eOauth2Config implements Serializable {
 
     public void setWeChat(WeChat weChat) {
         this.weChat = weChat;
+    }
+
+    public QrCode getQrCode() {
+        return qrCode;
+    }
+
+    public void setQrCode(QrCode qrCode) {
+        this.qrCode = qrCode;
+    }
+
+    public static class NrCode {
+        /**
+         * 是否启用
+         */
+        private boolean enable = true;
+
+        public boolean isEnable() {
+            return enable;
+        }
+
+        public void setEnable(boolean enable) {
+            this.enable = enable;
+        }
+    }
+
+    public static class QrCode {
+        private String url;
+        /** 是否启用 */
+        private boolean enable = true;
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        public boolean isEnable() {
+            return enable;
+        }
+
+        public void setEnable(boolean enable) {
+            this.enable = enable;
+        }
     }
 
     /**

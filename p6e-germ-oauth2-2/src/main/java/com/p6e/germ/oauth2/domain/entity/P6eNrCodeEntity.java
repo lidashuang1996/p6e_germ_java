@@ -83,4 +83,8 @@ public class P6eNrCodeEntity {
     public boolean verification(String account, String code) {
         return this.code.equals(code) && this.account.equals(account);
     }
+
+    public P6eNrCodeEntity clean() {
+        return this;
+    }
 }

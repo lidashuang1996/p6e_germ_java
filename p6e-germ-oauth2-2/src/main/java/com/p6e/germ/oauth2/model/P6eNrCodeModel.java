@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * @author lidashuang
@@ -15,13 +16,21 @@ public class P6eNrCodeModel implements Serializable {
     public static class VoParam implements Serializable {
         private String mark;
         private String account;
-        private String code;
+        private String codeKey;
+        private String codeContent;
     }
 
     @Data
     public static class VoResult implements Serializable {
         private String account;
         private String content;
+
+        private String accessToken;
+        private String refreshToken;
+        private String tokenType;
+        private Long expiresIn;
+
+        private Map<String, String> extend;
     }
 
     @Data
@@ -38,5 +47,12 @@ public class P6eNrCodeModel implements Serializable {
     public static class DtoResult extends P6eBaseDtoResult implements Serializable {
         private String account;
         private String content;
+
+        private String accessToken;
+        private String refreshToken;
+        private String tokenType;
+        private Long expiresIn;
+
+        private Map<String, String> extend;
     }
 }

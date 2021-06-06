@@ -10,6 +10,7 @@ import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheOtherState;
 import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
 
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -87,6 +88,19 @@ public final class P6eOtherWeChatLoginEntity {
 
     public P6eOtherWeChatLoginEntity(String mark) {
         this.mark = mark;
+    }
+
+    public static String getMark(String state) {
+        try {
+            return OTHER_STATE.get(TYPE, state);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+    }
+
+    public static Map<String, String> getUser(String code) {
+        return new HashMap<>();
     }
 
     public String getAuthUrl() {

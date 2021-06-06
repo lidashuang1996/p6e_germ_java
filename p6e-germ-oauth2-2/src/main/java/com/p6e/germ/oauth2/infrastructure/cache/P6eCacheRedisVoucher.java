@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
  * @author lidashuang
  * @version 1.0
  */
-public class P6eCacheRedisVoucher extends P6eCacheRedis implements IP6eCacheVoucher {
+public class P6eCacheRedisVoucher extends P6eCacheRedis implements IP6eCacheSecretVoucher {
 
     private static final String SOURCE_NAME = "A";
 

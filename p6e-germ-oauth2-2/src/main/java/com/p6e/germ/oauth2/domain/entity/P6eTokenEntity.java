@@ -2,6 +2,7 @@ package com.p6e.germ.oauth2.domain.entity;
 
 import com.p6e.germ.common.utils.P6eGeneratorUtil;
 import com.p6e.germ.common.utils.P6eJsonUtil;
+import com.p6e.germ.oauth2.domain.keyvalue.P6eTokenKeyValue;
 import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheToken;
 import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
 
@@ -14,117 +15,92 @@ import java.util.Map;
  */
 public class P6eTokenEntity implements Serializable {
 
-    /** 类型 */
-    public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
-    public static final String REFRESH_TOKEN = "REFRESH_TOKEN";
-
-    /** 缓存的内容 */
     private String key;
-
-    /** 缓存的内容 */
-    private final Model model;
-
-    /** 缓存的内容 */
     private final String id;
+//    private final Map<String, String> kCache;
+    private final Map<String, String> data;
+    private final P6eTokenKeyValue.Content content;
+    private final IP6eCacheToken cache = P6eCache.token;
 
-    /** 缓存的内容 */
-    private final Map<String, String> value;
 
-    /** 注入缓存对象 */
-    private final IP6eCacheToken p6eCacheToken = P6eCache.token;
-
-    /**
-     * 构造创建
-     * @param key key
-     */
-    public P6eTokenEntity(String key) {
-        this.key = key;
-        // 读取缓存数据
-        final String modelContent = p6eCacheToken.get(key);
-        if (modelContent == null) {
-            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
-        }
-        this.model = P6eJsonUtil.fromJson(modelContent, Model.class);
-        if (this.model == null) {
-            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
-        }
-        // 读取缓存数据
-        final String tokenContent = p6eCacheToken.getAccessToken(this.model.getAccessToken());
-        if (tokenContent == null) {
-            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
-        }
-        final Data data = P6eJsonUtil.fromJson(tokenContent, Data.class);
-        if (data == null) {
-            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
-        }
-        // 读取缓存数据
-        this.id = data.getId();
-        final String user = p6eCacheToken.getUser(this.id);
-        if (user == null) {
-            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
-        }
-        this.value = P6eJsonUtil.fromJsonToMap(user, String.class, String.class);
+    public static P6eTokenEntity get(String key) {
+        return new P6eTokenEntity(key);
     }
 
-    /**
-     * 构造创建
-     * @param token token
-     * @param type 类型
-     */
-    public P6eTokenEntity(String token, String type) {
-        final String tokenContent;
-        switch (type) {
-            case "ACCESS_TOKEN":
-                tokenContent = p6eCacheToken.getAccessToken(token);
-                break;
-            case "REFRESH_TOKEN":
-                tokenContent = p6eCacheToken.getRefreshToken(token);
-                break;
-            default:
-                throw new NullPointerException();
-        }
-        if (tokenContent == null) {
-            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
-        }
-        final Data data = P6eJsonUtil.fromJson(tokenContent, Data.class);
-        if (data == null) {
-            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
-        }
-        this.id = data.getId();
-        this.model = new Model(
-                data.getAccessToken(),
-                data.getRefreshToken(),
-                "bearer",
-                IP6eCacheToken.TOKEN_TIME
-        );
-        final String userContent = p6eCacheToken.getUser(data.getId());
-        if (userContent == null) {
-            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
-        }
-        this.value = P6eJsonUtil.fromJsonToMap(userContent, String.class, String.class);
-        if (this.value == null) {
-            throw new NullPointerException(this.getClass() + " construction data ==> NullPointerException.");
+    public static P6eTokenEntity get(P6eTokenKeyValue.AccessToken token) {
+        return new P6eTokenEntity(token);
+    }
+
+    public static P6eTokenEntity get(P6eTokenKeyValue.RefreshToken token) {
+        return new P6eTokenEntity(token);
+    }
+
+    public static P6eTokenEntity create(P6eTokenKeyValue.CodeParam codeParam, P6eTokenKeyValue.DataParam dataParam) {
+        return new P6eTokenEntity(codeParam, dataParam);
+    }
+
+    private P6eTokenEntity(String key) {
+        try {
+            final P6eTokenKeyValue.Content content = P6eJsonUtil.fromJson(cache.get(key), P6eTokenKeyValue.Content.class);
+            final P6eTokenKeyValue.Voucher voucher =
+                    P6eJsonUtil.fromJson(cache.getAccessToken(content.getAccessToken()), P6eTokenKeyValue.Voucher.class);
+            this.id = voucher.getId();
+            this.data = P6eJsonUtil.fromJsonToMap(cache.getUser(voucher.getId()), String.class, String.class);
+            this.content = new P6eTokenKeyValue.Content(
+                    voucher.getAccessToken(),
+                    voucher.getRefreshToken(),
+                    "bearer",
+                    IP6eCacheToken.TOKEN_TIME
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    /**
-     * 构造创建
-     * @param value value
-     */
-    public P6eTokenEntity(String id, Map<String, String> value) {
+    private P6eTokenEntity(P6eTokenKeyValue.AccessToken token) {
+        try {
+            final P6eTokenKeyValue.Voucher voucher =
+                    P6eJsonUtil.fromJson(cache.getAccessToken(token.getContent()), P6eTokenKeyValue.Voucher.class);
+            this.id = voucher.getId();
+            this.data = P6eJsonUtil.fromJsonToMap(cache.getUser(voucher.getId()), String.class, String.class);
+            this.content = new P6eTokenKeyValue.Content(
+                    voucher.getAccessToken(),
+                    voucher.getRefreshToken(),
+                    "bearer",
+                    IP6eCacheToken.TOKEN_TIME
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private P6eTokenEntity(P6eTokenKeyValue.RefreshToken token) {
+        try {
+            final P6eTokenKeyValue.Voucher voucher =
+                    P6eJsonUtil.fromJson(cache.getRefreshToken(token.getContent()), P6eTokenKeyValue.Voucher.class);
+            this.id = voucher.getId();
+            this.data = P6eJsonUtil.fromJsonToMap(cache.getUser(voucher.getId()), String.class, String.class);
+            this.content = new P6eTokenKeyValue.Content(
+                    voucher.getAccessToken(),
+                    voucher.getRefreshToken(),
+                    "bearer",
+                    IP6eCacheToken.TOKEN_TIME
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private P6eTokenEntity(P6eTokenKeyValue.CodeParam codeParam, P6eTokenKeyValue.DataParam dataParam) {
         this.key = P6eGeneratorUtil.uuid();
-        this.id = id;
-        this.value = value;
-        this.model = new Model(
+        this.id = dataParam.getId();
+        this.data = dataParam.getContent();
+        this.content = new P6eTokenKeyValue.Content(
                 P6eGeneratorUtil.uuid(),
                 P6eGeneratorUtil.uuid(),
                 "bearer",
                 IP6eCacheToken.TOKEN_TIME
         );
-    }
-
-    public static P6eTokenEntity get(String code) {
-        return new P6eTokenEntity(code);
     }
 
 
@@ -133,14 +109,14 @@ public class P6eTokenEntity implements Serializable {
      */
     public P6eTokenEntity cache() {
         // 缓存认证信息
-        p6eCacheToken.set(key, P6eJsonUtil.toJson(model));
+        cache.set(key, P6eJsonUtil.toJson(content));
         // 缓存用户信息
-        p6eCacheToken.setUser(id, P6eJsonUtil.toJson(value));
-        // 缓存 token 对应用户信息
-        final Data token = new Data(id, model.getAccessToken(), model.getRefreshToken());
+        cache.setUser(id, P6eJsonUtil.toJson(data));
         // 写入缓存数据
-        p6eCacheToken.setAccessToken(model.getAccessToken(), P6eJsonUtil.toJson(token));
-        p6eCacheToken.setRefreshToken(model.getRefreshToken(), P6eJsonUtil.toJson(token));
+        final P6eTokenKeyValue.Voucher voucher =
+                new P6eTokenKeyValue.Voucher(id, content.getAccessToken(), content.getRefreshToken());
+        cache.setAccessToken(content.getAccessToken(), P6eJsonUtil.toJson(voucher));
+        cache.setRefreshToken(content.getRefreshToken(), P6eJsonUtil.toJson(voucher));
         return this;
     }
 
@@ -148,14 +124,14 @@ public class P6eTokenEntity implements Serializable {
      * 删除 access token 的内容
      */
     public void delAccessToken() {
-        p6eCacheToken.delAccessToken(this.model.getAccessToken());
+        cache.delAccessToken(content.getAccessToken());
     }
 
     /**
      * 删除 refresh token 的内容
      */
     public void delRefreshToken() {
-        p6eCacheToken.delRefreshToken(this.model.getRefreshToken());
+        cache.delRefreshToken(content.getRefreshToken());
     }
 
     /**
@@ -163,7 +139,7 @@ public class P6eTokenEntity implements Serializable {
      * @param time 时间戳
      */
     public void setAccessTokenExpirationTime(long time) {
-        p6eCacheToken.setAccessTokenExpirationTime(this.model.getAccessToken(), time);
+        cache.setAccessTokenExpirationTime(content.getAccessToken(), time);
     }
 
     /**
@@ -171,7 +147,7 @@ public class P6eTokenEntity implements Serializable {
      * @param time 时间戳
      */
     public void setRefreshTokenExpirationTime(long time) {
-        p6eCacheToken.setRefreshTokenExpirationTime(this.model.getRefreshToken(), time);
+        cache.setRefreshTokenExpirationTime(content.getRefreshToken(), time);
     }
 
     /**
@@ -180,18 +156,7 @@ public class P6eTokenEntity implements Serializable {
      * @return 是否相同
      */
     public boolean verificationRefreshToken(String refresh) {
-        return model.getRefreshToken().equals(refresh);
-    }
-
-    /**
-     * 删除模型
-     * @return 本身对象
-     */
-    public P6eTokenEntity delModel() {
-        if (key != null) {
-            p6eCacheToken.del(key);
-        }
-        return this;
+        return content.getRefreshToken().equals(refresh);
     }
 
     /**
@@ -203,19 +168,19 @@ public class P6eTokenEntity implements Serializable {
     }
 
     /**
-     * 获取模型
-     * @return 模型对象
-     */
-    public Model getModel() {
-        return model;
-    }
-
-    /**
      * 返回缓存数据
      * @return 缓存数据对象
      */
-    public Map<String, String> getValue() {
-        return value;
+    public Map<String, String> getData() {
+        return data;
+    }
+
+    /**
+     * 获取模型
+     * @return 模型对象
+     */
+    public P6eTokenKeyValue.Content getContent() {
+        return content;
     }
 
     /**
@@ -223,97 +188,9 @@ public class P6eTokenEntity implements Serializable {
      * @return 本身对象
      */
     public P6eTokenEntity refresh() {
-        p6eCacheToken.del(key);
-        p6eCacheToken.delAccessToken(model.getAccessToken());
-        p6eCacheToken.delRefreshToken(model.getRefreshToken());
-        return new P6eTokenEntity(id, value).cache();
-    }
-
-    /**
-     * 重置模型
-     * @return 本身对象
-     */
-    public P6eTokenEntity resetModel() {
-        this.key = P6eGeneratorUtil.uuid();
-        final Data token = new Data(id, model.getAccessToken(), model.getRefreshToken());
-        p6eCacheToken.setAccessToken(model.getAccessToken(), P6eJsonUtil.toJson(token));
-        p6eCacheToken.setRefreshToken(model.getRefreshToken(), P6eJsonUtil.toJson(token));
-        return this;
-    }
-
-    /**
-     * 模型对象
-     */
-    public static class Model implements Serializable {
-        private String accessToken;
-        private String refreshToken;
-        private String tokenType;
-        private Long expiresIn;
-
-        public Model() { }
-
-        public Model(String accessToken, String refreshToken, String tokenType, Long expiresIn) {
-            this.accessToken = accessToken;
-            this.refreshToken = refreshToken;
-            this.tokenType = tokenType;
-            this.expiresIn = expiresIn;
-        }
-
-        public String getAccessToken() {
-            return accessToken;
-        }
-
-        public String getRefreshToken() {
-            return refreshToken;
-        }
-
-        public String getTokenType() {
-            return tokenType;
-        }
-
-        public Long getExpiresIn() {
-            return expiresIn;
-        }
-    }
-
-    /**
-     * 数据对象
-     */
-    public static class Data implements Serializable {
-        private String id;
-        private String accessToken;
-        private String refreshToken;
-
-        public Data() { }
-
-        public Data(String id, String accessToken, String refreshToken) {
-            this.id = id;
-            this.accessToken = accessToken;
-            this.refreshToken = refreshToken;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getAccessToken() {
-            return accessToken;
-        }
-
-        public void setAccessToken(String accessToken) {
-            this.accessToken = accessToken;
-        }
-
-        public String getRefreshToken() {
-            return refreshToken;
-        }
-
-        public void setRefreshToken(String refreshToken) {
-            this.refreshToken = refreshToken;
-        }
+        cache.del(key);
+        cache.delAccessToken(content.getAccessToken());
+        cache.delRefreshToken(content.getRefreshToken());
+        return new P6eTokenEntity(null, null).cache();
     }
 }

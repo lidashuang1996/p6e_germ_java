@@ -20,7 +20,7 @@ public final class P6eCache {
     /** 客户端缓存 */
     public static IP6eCacheClient client;
     /** 凭证缓存 */
-    public static IP6eCacheVoucher voucher;
+    public static IP6eCacheSecretVoucher voucher;
 
     public static IP6eCachePush push;
     public static IP6eCacheNrCode nrCode;
@@ -46,7 +46,7 @@ public final class P6eCache {
         // 客户端的缓存
         client = P6eSpringUtil.getBean(IP6eCacheClient.class, new P6eCacheRedisClient());
         // 凭证缓存
-        voucher = P6eSpringUtil.getBean(IP6eCacheVoucher.class, new P6eCacheRedisVoucher());
+        voucher = P6eSpringUtil.getBean(IP6eCacheSecretVoucher.class, new P6eCacheRedisVoucher());
         push = P6eSpringUtil.getBean(IP6eCachePush.class, new P6eCacheRedisPush());
     }
 }

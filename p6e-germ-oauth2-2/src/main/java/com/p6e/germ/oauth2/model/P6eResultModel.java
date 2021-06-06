@@ -46,7 +46,22 @@ public final class P6eResultModel {
         /**
          * 服务未启动
          */
-        SERVICE_NOT_ENABLE(20);
+        SERVICE_NOT_ENABLE(20),
+
+        /**
+         * 客户端 ID 不正确
+         */
+        CLIENT_ID_EXCEPTION(66),
+        /**
+         * 客户端参数异常
+         */
+        CLIENT_PARAM_EXCEPTION(66),
+        CLIENT_SCOPE_EXCEPTION(67),
+        CLIENT_NO_ENABLE_EXCEPTION(67),
+
+
+        OTHER_LOGIN_STATE_NOT_EXIST(55),
+        ACCOUNT_NOT_EXIST(60);
 
 
         private final Integer code;

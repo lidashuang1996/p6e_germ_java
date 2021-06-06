@@ -93,7 +93,8 @@ public class P6eLoginController extends P6eBaseController {
             value = "账号密码登录的接口"
     )
     @PostMapping("/login/account_password")
-    public P6eResultModel accountPassword(@RequestBody P6eLoginModel.AccountPasswordVoParam param) {
+    public P6eResultModel accountPassword(@RequestBody P6eLoginModel.AccountPasswordVoParam param,
+                                          HttpServletRequest request, HttpServletResponse response) {
         try {
             if (param == null
                     || param.getAccount() == null
@@ -110,7 +111,10 @@ public class P6eLoginController extends P6eBaseController {
                 } else if (result.getError() != null) {
                     return P6eResultModel.build(result.getError());
                 } else {
-                    return P6eResultModel.build(P6eCopyUtil.run(result, P6eLoginModel.VoResult.class));
+                    // 重定向去新的页面
+                    P6eAuthController.page(request, response, P6eJsonUtil.toJson(
+                            P6eCopyUtil.run(result, P6eLoginModel.AccountPasswordVoResult.class)));
+                    return null;
                 }
             }
         } catch (Exception e) {
@@ -119,6 +123,13 @@ public class P6eLoginController extends P6eBaseController {
             return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
     }
+
+
+
+
+
+
+
 
     @ApiOperation(
             value = "获取登录验证码的接口"
@@ -130,7 +141,9 @@ public class P6eLoginController extends P6eBaseController {
                 return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
                 final String account = param.getAccount();
+                // 验证账号格式是否正确
                 if (P6eFormatUtil.emailVerification(account) || P6eFormatUtil.phoneVerification(account)) {
+                    // 复制数据写入 IP 地址
                     final P6eNrCodeModel.DtoResult result = P6eApplication.login.nrCode(
                             P6eCopyUtil.run(param, P6eNrCodeModel.DtoParam.class).setIp(obtainIp()));
                     if (result == null) {
@@ -155,14 +168,17 @@ public class P6eLoginController extends P6eBaseController {
             value = "采用登录验证码登录的接口"
     )
     @PostMapping("/login/nr_code/data")
-    public P6eResultModel nrCodeData(P6eNrCodeModel.VoParam param) {
+    public P6eResultModel nrCodeData(@RequestBody P6eNrCodeModel.VoParam param,
+                                     HttpServletRequest request, HttpServletResponse response) {
         try {
             if (param == null
                     || param.getMark() == null
-                    || param.getCode() == null
-                    || param.getAccount() == null) {
+                    || param.getAccount() == null
+                    || param.getCodeKey() == null
+                    || param.getCodeContent() == null) {
                 return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
+                // 复制数据写入 IP 地址
                 final P6eNrCodeModel.DtoResult result = P6eApplication.login.nrCodeLogin(
                         P6eCopyUtil.run(param, P6eNrCodeModel.DtoParam.class).setIp(obtainIp()));
                 if (result == null) {
@@ -170,7 +186,10 @@ public class P6eLoginController extends P6eBaseController {
                 } else if (result.getError() != null) {
                     return P6eResultModel.build(result.getError());
                 } else {
-                    return P6eResultModel.build(P6eCopyUtil.run(result, P6eNrCodeModel.VoResult.class));
+                    // 重定向去新的页面
+                    P6eAuthController.page(request, response, P6eJsonUtil.toJson(
+                            P6eCopyUtil.run(result, P6eNrCodeModel.VoResult.class)));
+                    return null;
                 }
             }
         } catch (Exception e) {
@@ -179,6 +198,14 @@ public class P6eLoginController extends P6eBaseController {
             return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
     }
+
+
+
+
+
+
+
+
 
     @ApiOperation(
             value = "获取二维码登录的接口"
@@ -210,16 +237,38 @@ public class P6eLoginController extends P6eBaseController {
             value = "获取二维码登录信息的接口"
     )
     @GetMapping("/login/qr_code/data")
-    public P6eResultModel qrCodeData() {
+    public P6eResultModel qrCodeData(P6eQrCodeModel.VoParam param) {
         try {
-            //
-            return P6eResultModel.build();
+            if (param == null
+                    || param.getMark() == null
+                    || param.getCode() == null) {
+                return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
+            } else {
+                final P6eQrCodeModel.DtoResult result =
+                        P6eApplication.login.qrCodeLogin(P6eCopyUtil.run(param, P6eQrCodeModel.DtoParam.class));
+                if (result == null) {
+                    return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
+                } else if (result.getError() != null) {
+                    return P6eResultModel.build(result.getError());
+                } else {
+                    return P6eResultModel.build(P6eCopyUtil.run(result, P6eNrCodeModel.VoResult.class));
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
             return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
         }
     }
+
+
+
+
+
+
+
+
+
 
     @ApiOperation(
             value = "QQ登录的接口"
@@ -251,7 +300,8 @@ public class P6eLoginController extends P6eBaseController {
             value = "QQ登录的回调接口"
     )
     @GetMapping("/login/qq/callback")
-    public P6eResultModel qqLoginCallback(HttpServletResponse response,
+    public P6eResultModel qqLoginCallback(HttpServletRequest request,
+                                          HttpServletResponse response,
                                           P6eOtherLoginModel.VoParam param) {
         try {
             if (param == null
@@ -261,9 +311,8 @@ public class P6eLoginController extends P6eBaseController {
             } else {
                 final P6eOtherLoginModel.DtoResult result =
                         P6eApplication.login.qqLogin(P6eCopyUtil.run(param, P6eOtherLoginModel.DtoParam.class));
-                response.getWriter().write(P6eJsonUtil.toJson(result));
-                response.getWriter().flush();
-                response.getWriter().close();
+                // 写入数据到页面
+                P6eAuthController.page(request, response, P6eJsonUtil.toJson(result));
                 return null;
             }
         } catch (Exception e) {
@@ -303,7 +352,8 @@ public class P6eLoginController extends P6eBaseController {
             value = "微信登录的回调接口"
     )
     @GetMapping("/login/we_chat/callback")
-    public P6eResultModel weChatLoginCallback(HttpServletResponse response,
+    public P6eResultModel weChatLoginCallback(HttpServletRequest request,
+                                              HttpServletResponse response,
                                               P6eOtherLoginModel.VoParam param) {
         try {
             if (param == null
@@ -313,9 +363,8 @@ public class P6eLoginController extends P6eBaseController {
             } else {
                 final P6eOtherLoginModel.DtoResult result =
                         P6eApplication.login.weChatLogin(P6eCopyUtil.run(param, P6eOtherLoginModel.DtoParam.class));
-                response.getWriter().write(P6eJsonUtil.toJson(result));
-                response.getWriter().flush();
-                response.getWriter().close();
+                // 写入数据到页面
+                P6eAuthController.page(request, response, P6eJsonUtil.toJson(result));
                 return null;
             }
         } catch (Exception e) {
@@ -355,7 +404,8 @@ public class P6eLoginController extends P6eBaseController {
             value = "新浪登录的回调接口"
     )
     @GetMapping("/login/sina/callback")
-    public P6eResultModel sinaLoginCallback(HttpServletResponse response,
+    public P6eResultModel sinaLoginCallback(HttpServletRequest request,
+                                            HttpServletResponse response,
                                             P6eOtherLoginModel.VoParam param) {
         try {
             if (param == null
@@ -365,9 +415,8 @@ public class P6eLoginController extends P6eBaseController {
             } else {
                 final P6eOtherLoginModel.DtoResult result =
                         P6eApplication.login.sinaLogin(P6eCopyUtil.run(param, P6eOtherLoginModel.DtoParam.class));
-                response.getWriter().write(P6eJsonUtil.toJson(result));
-                response.getWriter().flush();
-                response.getWriter().close();
+                // 写入数据到页面
+                P6eAuthController.page(request, response, P6eJsonUtil.toJson(result));
                 return null;
             }
         } catch (Exception e) {

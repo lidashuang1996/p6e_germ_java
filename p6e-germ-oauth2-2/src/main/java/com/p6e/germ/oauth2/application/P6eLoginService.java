@@ -86,5 +86,5 @@ public interface P6eLoginService {
      * @param code CODE 标记
      * @return 登录结果对象
      */
-    public P6eLoginDto getCodeLogin(String code);
+    public P6eQrCodeModel.DtoResult qrCodeLogin(P6eQrCodeModel.DtoParam param);
 }

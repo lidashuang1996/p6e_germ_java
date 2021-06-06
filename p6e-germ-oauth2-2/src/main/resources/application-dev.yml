@@ -29,8 +29,10 @@ spring:
 # p6e 的配置
 p6e:
   oauth2:
+    qr-code:
+      url: 'https://baidu.com/auth?code='
     qq:
-      enable: false
+      enable: true
       client-id: ${my.oauth2.qq.client.id}
       client-secret: ${my.oauth2.qq.client.secret}
       redirect-uri: ${my.oauth2.qq.redirect}

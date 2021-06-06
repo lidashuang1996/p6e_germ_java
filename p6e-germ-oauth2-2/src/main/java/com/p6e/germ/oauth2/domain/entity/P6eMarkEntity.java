@@ -61,8 +61,9 @@ public class P6eMarkEntity implements Serializable {
     /**
      * 清除缓存
      */
-    public void clean() {
+    public P6eMarkEntity clean() {
         // CACHE_MARK.del(key);
+        return this;
     }
 
     /**
@@ -79,5 +80,9 @@ public class P6eMarkEntity implements Serializable {
      */
     public P6eMarkKeyValue.Content getData() {
         return value;
+    }
+
+    public P6eMarkEntity refresh() {
+        return this;
     }
 }

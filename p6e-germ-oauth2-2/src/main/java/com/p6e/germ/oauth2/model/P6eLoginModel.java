@@ -3,6 +3,7 @@ package com.p6e.germ.oauth2.model;
 import com.p6e.germ.oauth2.model.base.P6eBaseDtoResult;
 import lombok.Data;
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * @author lidashuang
@@ -22,16 +23,12 @@ public class P6eLoginModel implements Serializable {
 
     @Data
     public static class VoResult implements Serializable {
-        private String code;
-        private String clientId;
-        private String scope;
-        private String state;
-        private String responseType;
-        private String redirectUri;
         private String accessToken;
         private String refreshToken;
         private String tokenType;
         private Long expiresIn;
+
+        private Map<String, String> extend;
     }
 
     @Data
@@ -43,17 +40,13 @@ public class P6eLoginModel implements Serializable {
     }
 
     @Data
-    public static class AccountPasswordDtoResult extends DtoResult implements Serializable {
-        private String code;
-        private String clientId;
-        private String scope;
-        private String state;
-        private String responseType;
-        private String redirectUri;
+    public static class AccountPasswordDtoResult extends P6eBaseDtoResult implements Serializable {
         private String accessToken;
         private String refreshToken;
         private String tokenType;
         private Long expiresIn;
+
+        private Map<String, String> extend;
     }
 
     @Data
@@ -94,5 +87,15 @@ public class P6eLoginModel implements Serializable {
         private String refreshToken;
         private String tokenType;
         private Long expiresIn;
+    }
+
+    @Data
+    public static class AccountPasswordVoResult implements Serializable {
+        private String accessToken;
+        private String refreshToken;
+        private String tokenType;
+        private Long expiresIn;
+
+        private Map<String, String> extend;
     }
 }

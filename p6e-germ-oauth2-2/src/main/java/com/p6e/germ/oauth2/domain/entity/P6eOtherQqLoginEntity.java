@@ -87,8 +87,22 @@ public final class P6eOtherQqLoginEntity {
     public static P6eOtherQqLoginEntity create(String mark) {
         return new P6eOtherQqLoginEntity(mark);
     }
-    public static Map<String, String> getData(String code) {
-        return new HashMap<>();
+    public static Map<String, String> getUser(String code) {
+        try {
+            return getInfoData(getTokenData(code));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+    }
+
+    public static String getMark(String state) {
+        try {
+            return OTHER_STATE.get(TYPE, state);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
     }
 
     public P6eOtherQqLoginEntity(String mark) {

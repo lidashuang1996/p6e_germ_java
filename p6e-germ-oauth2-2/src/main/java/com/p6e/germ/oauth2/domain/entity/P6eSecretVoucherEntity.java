@@ -4,7 +4,7 @@ import com.p6e.germ.common.utils.P6eGeneratorUtil;
 import com.p6e.germ.common.utils.P6eJsonUtil;
 import com.p6e.germ.common.utils.P6eRsaUtil;
 import com.p6e.germ.oauth2.domain.keyvalue.P6eSecretVoucherKeyValue;
-import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheVoucher;
+import com.p6e.germ.oauth2.infrastructure.cache.IP6eCacheSecretVoucher;
 import com.p6e.germ.oauth2.infrastructure.cache.P6eCache;
 import java.security.KeyPair;
 
@@ -21,7 +21,7 @@ public class P6eSecretVoucherEntity {
     private final P6eSecretVoucherKeyValue.Content value;
 
     /** 缓存服务对象 */
-    private static final IP6eCacheVoucher CACHE_VOUCHER = P6eCache.voucher;
+    private static final IP6eCacheSecretVoucher CACHE_VOUCHER = P6eCache.voucher;
 
     public static P6eSecretVoucherEntity get(String key) {
         try {
