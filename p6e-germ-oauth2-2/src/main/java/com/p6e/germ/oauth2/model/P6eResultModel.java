@@ -23,6 +23,17 @@ public final class P6eResultModel {
          * 参数异常
          */
         PARAMETER_EXCEPTION(3),
+        /** 客户端--参数异常 */
+        CLIENT_ID_PARAMETER_EXCEPTION(3),
+        CLIENT_REDIRECT_URI_PARAMETER_EXCEPTION(3),
+        CLIENT_RESPONSE_TYPE_EXCEPTION(3),
+        CLIENT_SCOPE_EXCEPTION(3),
+
+        /**
+         * 认证类型没有启动
+         */
+        OAUTH2_AUTH_TYPE_NO_ENABLE(55),
+
         /**
          * 过期异常
          */
@@ -56,12 +67,15 @@ public final class P6eResultModel {
          * 客户端参数异常
          */
         CLIENT_PARAM_EXCEPTION(66),
-        CLIENT_SCOPE_EXCEPTION(67),
         CLIENT_NO_ENABLE_EXCEPTION(67),
 
 
         OTHER_LOGIN_STATE_NOT_EXIST(55),
-        ACCOUNT_NOT_EXIST(60);
+        ACCOUNT_NOT_EXIST(60),
+        /**
+         * token 认证异常
+         */
+        OAUTH2_TOKEN_AUTH_EXCEPTION(995);
 
 
         private final Integer code;

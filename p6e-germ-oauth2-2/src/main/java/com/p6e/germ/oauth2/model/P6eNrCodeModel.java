@@ -25,12 +25,20 @@ public class P6eNrCodeModel implements Serializable {
         private String account;
         private String content;
 
+        private String code;
+        private String state;
+        private String clientId;
+        private String responseType;
+        private String redirectUri;
+        private Integer status;
+        private String icon;
+        private String name;
+        private String describe;
+
         private String accessToken;
         private String refreshToken;
         private String tokenType;
         private Long expiresIn;
-
-        private Map<String, String> extend;
     }
 
     @Data
@@ -48,11 +56,21 @@ public class P6eNrCodeModel implements Serializable {
         private String account;
         private String content;
 
+        private String code;
+        private String state;
+        private String clientId;
+        private String responseType;
+        private String redirectUri;
+        private Integer status;
+        private String icon;
+        private String name;
+        private String describe;
+
         private String accessToken;
         private String refreshToken;
         private String tokenType;
         private Long expiresIn;
 
-        private Map<String, String> extend;
+
     }
 }

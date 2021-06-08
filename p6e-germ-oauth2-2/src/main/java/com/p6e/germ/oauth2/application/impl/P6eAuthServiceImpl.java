@@ -3,10 +3,7 @@ package com.p6e.germ.oauth2.application.impl;
 import com.p6e.germ.common.utils.P6eCopyUtil;
 import com.p6e.germ.oauth2.application.P6eAuthService;
 import com.p6e.germ.oauth2.domain.entity.*;
-import com.p6e.germ.oauth2.domain.keyvalue.P6eClientKeyValue;
-import com.p6e.germ.oauth2.domain.keyvalue.P6eMarkKeyValue;
-import com.p6e.germ.oauth2.domain.keyvalue.P6eTokenKeyValue;
-import com.p6e.germ.oauth2.domain.keyvalue.P6eUserKeyValue;
+import com.p6e.germ.oauth2.domain.keyvalue.*;
 import com.p6e.germ.oauth2.model.*;
 import com.p6e.germ.oauth2.model.P6eInfoAuthModel;
 import org.slf4j.Logger;
@@ -196,6 +193,49 @@ public class P6eAuthServiceImpl implements P6eAuthService {
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
             result.setError(P6eResultModel.Error.EXPIRATION_EXCEPTION);
+        }
+        return result;
+    }
+
+    @Override
+    public P6eCacheAuthModel.DtoResult setCache(P6eCacheAuthModel.DtoParam param) {
+        final P6eCacheAuthModel.DtoResult result = new P6eCacheAuthModel.DtoResult();
+        try {
+            final P6eAuthEntity auth =
+                    P6eAuthEntity.create(new P6eAuthKeyValue.Content(param.getContent()));
+            System.out.println(auth.getKey() + "  " + param.getContent());
+            result.setContent(auth.getKey());
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            result.setError(P6eResultModel.Error.RESOURCES_NO_EXIST);
+        }
+        return result;
+    }
+
+    @Override
+    public P6eCacheAuthModel.DtoResult getCache(P6eCacheAuthModel.DtoParam param) {
+        final P6eCacheAuthModel.DtoResult result = new P6eCacheAuthModel.DtoResult();
+        try {
+            final P6eAuthEntity auth =
+                    P6eAuthEntity.get(new P6eAuthKeyValue.Key(param.getKey()));
+            result.setContent(auth.getValue());
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            result.setError(P6eResultModel.Error.RESOURCES_NO_EXIST);
+        }
+        return result;
+    }
+
+    @Override
+    public P6eCacheAuthModel.DtoResult cleanCache(P6eCacheAuthModel.DtoParam param) {
+        final P6eCacheAuthModel.DtoResult result = new P6eCacheAuthModel.DtoResult();
+        try {
+            final P6eAuthEntity auth =
+                    P6eAuthEntity.get(new P6eAuthKeyValue.Key(param.getKey())).clean();
+            result.setContent(auth.getValue());
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            result.setError(P6eResultModel.Error.RESOURCES_NO_EXIST);
         }
         return result;
     }

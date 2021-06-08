@@ -2,6 +2,8 @@ package com.p6e.germ.oauth2.model;
 
 import com.p6e.germ.oauth2.model.base.P6eBaseDtoResult;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.io.Serializable;
 
 /**
@@ -22,6 +24,7 @@ public class P6eAuthModel implements Serializable {
     @Data
     public static class VoResult implements Serializable {
         private String mark;
+        private String type = "sign";
     }
 
     @Data
@@ -34,6 +37,7 @@ public class P6eAuthModel implements Serializable {
 
     }
 
+    @EqualsAndHashCode(callSuper = true)
     @Data
     public static class DtoResult extends P6eBaseDtoResult implements Serializable {
         private String mark;

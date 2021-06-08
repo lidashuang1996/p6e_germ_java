@@ -47,4 +47,14 @@ public interface P6eAuthService {
      * @return 用户的信息对象
      */
     public P6eInfoAuthModel.DtoResult info(P6eInfoAuthModel.DtoParam param);
+
+
+
+    public P6eCacheAuthModel.DtoResult setCache(P6eCacheAuthModel.DtoParam param);
+
+    public P6eCacheAuthModel.DtoResult getCache(P6eCacheAuthModel.DtoParam param);
+
+    public P6eCacheAuthModel.DtoResult cleanCache(P6eCacheAuthModel.DtoParam param);
+
+
 }

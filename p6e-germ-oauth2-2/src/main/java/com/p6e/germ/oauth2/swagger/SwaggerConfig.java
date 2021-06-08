@@ -40,9 +40,9 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo())
                 .select()
                 //方式一: 配置扫描 所有想在swagger界面的统一管理接口。都必须在此包下
-                //.apis(RequestHandlerSelectors.basePackage("com.baozun.dma.collection.delivery.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.p6e.germ.oauth2.context.controller"))
                 //方式二: 只有当方法上有  @ApiOperation 注解时才能生成对应的接口文档
-                .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
+//                .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
                 .paths(PathSelectors.any())
                 .build();
 

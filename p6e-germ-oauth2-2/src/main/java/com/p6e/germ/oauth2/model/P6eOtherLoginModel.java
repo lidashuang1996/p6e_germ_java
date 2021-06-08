@@ -22,6 +22,7 @@ public class P6eOtherLoginModel implements Serializable {
     @Data
     public static class VoResult implements Serializable {
         private String content;
+        private String code;
 
         private String accessToken;
         private String refreshToken;

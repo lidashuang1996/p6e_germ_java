@@ -21,7 +21,9 @@ import java.lang.annotation.*;
         @ComponentScan("com.p6e.germ.oauth2.infrastructure.repository.plugin"),
         @ComponentScan("com.p6e.germ.oauth2.context.rest"),
         @ComponentScan("com.p6e.germ.oauth2.context.controller"),
-        @ComponentScan("com.p6e.germ.oauth2.context.support.filter")
+        @ComponentScan("com.p6e.germ.oauth2.context.controller.support"),
+        @ComponentScan("com.p6e.germ.oauth2.context.controller.support"),
+        @ComponentScan("com.p6e.germ.oauth2.context.controller.support.filter")
 })
 @ServletComponentScan
 @MapperScan({ "com.p6e.germ.oauth2.infrastructure.mapper" })

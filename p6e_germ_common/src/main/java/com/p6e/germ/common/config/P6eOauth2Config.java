@@ -8,6 +8,27 @@ import java.io.Serializable;
  */
 public class P6eOauth2Config implements Serializable {
 
+    private String html = "${__DATA__}";
+    private Type[] types = new Type[]{
+            Type.CODE
+    };
+
+    public String getHtml() {
+        return html;
+    }
+
+    public void setHtml(String html) {
+        this.html = html;
+    }
+
+    public Type[] getTypes() {
+        return types;
+    }
+
+    public void setTypes(Type[] types) {
+        this.types = types;
+    }
+
     private QQ qq = new QQ();
     private WeChat weChat = new WeChat();
     private Sina sina = new Sina();
@@ -53,6 +74,29 @@ public class P6eOauth2Config implements Serializable {
 
     public void setQrCode(QrCode qrCode) {
         this.qrCode = qrCode;
+    }
+
+    public enum Type {
+        /**
+         * CODE 模式
+         */
+        CODE,
+        /**
+         * 客户端模式
+         */
+        CLIENT,
+        /**
+         * 简化模式
+         */
+        TOKEN,
+        /**
+         * 密码模式
+         */
+        PASSWORD;
+
+        public boolean is(String t) {
+            return this.name().equals(t);
+        }
     }
 
     public static class NrCode {

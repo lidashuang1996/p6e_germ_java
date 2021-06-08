@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,7 +20,7 @@ public class P6eBaseController {
     protected static final Logger LOGGER = LoggerFactory.getLogger(P6eBaseController.class);
     protected static final String HTML_CONTENT_TYPE = "text/html;charset=UTF-8";
 
-    protected static String INDEX_HTML = "<p>312321</p>";
+    public static String INDEX_HTML = null;
 
     /**
      * 请求头内容的前缀
@@ -30,6 +31,11 @@ public class P6eBaseController {
 
     /** HTML 数据名称 */
     protected static final String HTML_DATA_NAME = "__DATA__";
+
+    public static final String COOKIES_ACCESS_TOKEN_NAME = "P6E_AAA";
+    public static final String COOKIES_REFRESH_TOKEN_NAME = "P6E_BBB";
+
+
     /**
      * 请求的携带认证信息的参数
      */
@@ -102,6 +108,36 @@ public class P6eBaseController {
     private static ServletRequestAttributes getServletRequestAttributes() {
         return (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
     }
+
+
+    public static String getAccessToken() {
+        return getAccessToken(null);
+    }
+
+    public static String getAccessToken(String t) {
+        final HttpServletRequest request = getRequest();
+        if (t == null) {
+            t = request.getParameter(AUTH_PARAM_NAME);
+            if (t == null) {
+                final String content = request.getHeader(AUTH_HEADER_NAME);
+                if (content != null && content.startsWith(AUTH_HEADER_BEARER)) {
+                    t = content.substring(AUTH_HEADER_BEARER_LENGTH);
+                }
+                if (t == null) {
+                    final Cookie[] cookies = request.getCookies();
+                    for (final Cookie cookie : cookies) {
+                        if (cookie.getName().equals(COOKIES_ACCESS_TOKEN_NAME)) {
+                            t = cookie.getValue();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return t;
+    }
+
+
 
     /**
      * 获取 HttpServletRequest 对象

@@ -53,7 +53,7 @@ public class P6eLoginController extends P6eBaseController {
     )
     @GetMapping("/login/verification")
     public P6eResultModel verification(HttpServletRequest request,
-                                       P6eLoginModel.VerificationVoParam param) {
+                                       P6eApModel.VerificationVoParam param) {
         try {
             // 读取 ACCESS TOKEN 数据
             if (param.getAccessToken() == null) {
@@ -72,14 +72,14 @@ public class P6eLoginController extends P6eBaseController {
                 return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
                 // 执行登录验证服务
-                final P6eLoginModel.DtoResult result =
-                        P6eApplication.login.verification(P6eCopyUtil.run(param, P6eLoginModel.VerificationDtoParam.class));
+                final P6eApModel.DtoResult result =
+                        P6eApplication.login.verification(P6eCopyUtil.run(param, P6eApModel.VerificationDtoParam.class));
                 if (result == null) {
                     return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
                 } else if (result.getError() != null) {
                     return P6eResultModel.build(result.getError());
                 } else {
-                    return P6eResultModel.build(P6eCopyUtil.run(result, P6eLoginModel.VerificationDtoResult.class));
+                    return P6eResultModel.build(P6eCopyUtil.run(result, P6eApModel.VerificationDtoResult.class));
                 }
             }
         } catch (Exception e) {
@@ -93,7 +93,7 @@ public class P6eLoginController extends P6eBaseController {
             value = "账号密码登录的接口"
     )
     @PostMapping("/login/account_password")
-    public P6eResultModel accountPassword(@RequestBody P6eLoginModel.AccountPasswordVoParam param,
+    public P6eResultModel accountPassword(@RequestBody P6eApModel.VoParam param,
                                           HttpServletRequest request, HttpServletResponse response) {
         try {
             if (param == null
@@ -104,8 +104,8 @@ public class P6eLoginController extends P6eBaseController {
                 return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
                 // 执行登录服务
-                final P6eLoginModel.AccountPasswordDtoResult result = P6eApplication.login.accountPassword(
-                        P6eCopyUtil.run(param, P6eLoginModel.AccountPasswordDtoParam.class));
+                final P6eApModel.DtoResult result = P6eApplication.login.accountPassword(
+                        P6eCopyUtil.run(param, P6eApModel.DtoParam.class));
                 if (result == null) {
                     return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
                 } else if (result.getError() != null) {
@@ -113,7 +113,7 @@ public class P6eLoginController extends P6eBaseController {
                 } else {
                     // 重定向去新的页面
                     P6eAuthController.page(request, response, P6eJsonUtil.toJson(
-                            P6eCopyUtil.run(result, P6eLoginModel.AccountPasswordVoResult.class)));
+                            P6eCopyUtil.run(result, P6eApModel.DtoResult.class)));
                     return null;
                 }
             }

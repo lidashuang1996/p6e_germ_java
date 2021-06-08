@@ -56,9 +56,9 @@ public class P6eLoginServiceImpl implements P6eLoginService {
     }
 
     @Override
-    public P6eLoginModel.VerificationDtoResult verification(P6eLoginModel.VerificationDtoParam param) {
+    public P6eApModel.VerificationDtoResult verification(P6eApModel.VerificationDtoParam param) {
         // 创建登录信息返回对象
-        final P6eLoginModel.VerificationDtoResult result = new P6eLoginModel.VerificationDtoResult();
+        final P6eApModel.VerificationDtoResult result = new P6eApModel.VerificationDtoResult();
         try {
             // 查询 mark 信息
             final P6eMarkEntity mark = P6eMarkEntity.get(param.getMark());
@@ -78,8 +78,8 @@ public class P6eLoginServiceImpl implements P6eLoginService {
     }
 
     @Override
-    public P6eLoginModel.AccountPasswordDtoResult accountPassword(P6eLoginModel.AccountPasswordDtoParam param) {
-        final P6eLoginModel.AccountPasswordDtoResult result = new P6eLoginModel.AccountPasswordDtoResult();
+    public P6eApModel.DtoResult accountPassword(P6eApModel.DtoParam param) {
+        final P6eApModel.DtoResult result = new P6eApModel.DtoResult();
         try {
             // 获取标记信息
             final P6eMarkEntity mark = P6eMarkEntity.get(param.getMark());
@@ -106,7 +106,8 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                             new P6eTokenKeyValue.DataParam(uContent.getId().toString(), uContent.toMap())
                     ).cache();
                     // 写入返回数据
-                    result.setExtend(mContent.toMap());
+                    result.setCode(token.getKey());
+                    P6eCopyUtil.run(mContent, result);
                     P6eCopyUtil.run(token.getContent(), result);
                 } catch (Exception e) {
                     throw new Exception(e);
@@ -200,7 +201,8 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                                 new P6eTokenKeyValue.DataParam(uContent.getId().toString(), uContent.toMap())
                         ).cache();
                         // 写入返回数据
-                        result.setExtend(mContent.toMap());
+                        result.setCode(token.getKey());
+                        P6eCopyUtil.run(mContent, result);
                         P6eCopyUtil.run(token.getContent(), result);
                     } catch (Exception e) {
                         result.setError(P6eResultModel.Error.ACCOUNT_NOT_EXIST);
@@ -340,6 +342,8 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                             ).cache();
                     // 写入需要返回的信息
                     result.setCode(token.getKey());
+                    P6eCopyUtil.run(mContent, result);
+                    P6eCopyUtil.run(token.getContent(), result);
                 }
             } else {
                 result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
@@ -407,6 +411,8 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                     ).cache();
                     // 写入需要返回的信息
                     result.setCode(token.getKey());
+                    P6eCopyUtil.run(mContent, result);
+                    P6eCopyUtil.run(token.getContent(), result);
                 }
             } else {
                 result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
@@ -474,6 +480,8 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                     ).cache();
                     // 写入需要返回的信息
                     result.setCode(token.getKey());
+                    P6eCopyUtil.run(mContent, result);
+                    P6eCopyUtil.run(token.getContent(), result);
                 }
             } else {
                 result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);

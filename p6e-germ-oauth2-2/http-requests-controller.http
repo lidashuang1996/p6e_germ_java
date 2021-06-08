@@ -1,0 +1,3 @@
+
+### 获取登录页面
+GET {{url}}/auth?scope=123&redirectUri=http://127.0.0.1:10000&clientId=1234567890&responseType=token

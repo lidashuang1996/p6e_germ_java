@@ -1,7 +1,6 @@
 package com.p6e.germ.oauth2.application;
 
 import com.p6e.germ.oauth2.model.*;
-import com.p6e.germ.oauth2.model.dto.*;
 
 /**
  * 登录服务
@@ -22,14 +21,14 @@ public interface P6eLoginService {
      * @param param 验证对象
      * @return 结果对象
      */
-    public P6eLoginModel.VerificationDtoResult verification(P6eLoginModel.VerificationDtoParam param);
+    public P6eApModel.VerificationDtoResult verification(P6eApModel.VerificationDtoParam param);
 
     /**
      * 默认登陆（账号密码登录）
      * @param param 账号密码登录对象
      * @return 登录结果对象
      */
-    public P6eLoginModel.AccountPasswordDtoResult accountPassword(P6eLoginModel.AccountPasswordDtoParam param);
+    public P6eApModel.DtoResult accountPassword(P6eApModel.DtoParam param);
 
     /**
      * 获取 QQ 登录的信息
