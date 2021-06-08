@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>P6e Oauth2</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="keywords" content="p6e,登录,Oauth2,登录页面,登录系统,授权系统">
+    <meta name="description" content="Spring Boot,JAVA,P6E系统用户快速开发。">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <style type="text/css">
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        .main {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+        .p6e-main-error {
+            padding: 20px;
+            font-size: 20px;
+            display: none;
+        }
+        .p6e-main-login {
+            display: none;
+        }
+        .p6e-main-login-top {
+            width: 100%;
+            height: 36vh;
+            background-color: rgb(60 129 228);
+        }
+        .p6e-main-login-top .p6e-main-login-top-title {
+            width: 100%;
+            height: 80%;
+            margin: 0 auto;
+            color: #ffffff;
+            opacity: 0.05;
+            font-size: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .p6e-main-login-bottom {
+            width: 100%;
+            height: 64vh;
+            background-color: rgb(246 246 246);
+        }
+        .p6e-main-login-bottom .p6e-main-login-bottom-copyright {
+            position: absolute;
+            bottom: 10px;
+            width: 700px;
+            text-align: center;
+            left: 50%;
+            font-size: 12px;
+            color: #adadad;
+            transform: translateX(-50%);
+        }
+        .p6e-main-login-content {
+            width: 560px;
+            background-color: #ffffff;
+            position: absolute;
+            left: 50%;
+            top: 25vh;
+            transform: translateX(-50%);
+            border-radius: 6px;
+            padding: 24px 0;
+            box-shadow: 0 0 16px 0 rgba(204, 204, 204, 0.6);
+        }
+        .p6e-main-login-content-title {
+            position: absolute;
+            top: -60px;
+            width: 100%;
+            height: 60px;
+            color: #ffffff;
+            box-sizing: border-box;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .p6e-main-login-content-title .title {
+            font-size: 32px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+        .p6e-main-login-content-title .subtitle {
+            font-size: 16px;
+            height: 100%;
+            display: flex;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+        .p6e-main-login-content-client {
+            margin: 0 auto;
+        }
+        .p6e-main-login-content-client .ico {
+            margin: 0 auto;
+            width: 80px;
+            height: 80px;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid #aaaaaa;
+            background-color: #3C81E4;
+            background-size: 100% 100%;
+        }
+        .p6e-main-login-content-client .name {
+            font-size: 24px;
+            color: #262626;
+            margin: 16px auto 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .p6e-main-content-login-input {
+            display: none;
+            width: 400px;
+            margin: 20px auto;
+            padding-bottom: 4px;
+            border-bottom: 2px solid #262626;
+        }
+        .p6e-main-content-login-input label {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+            height: 36px;
+            font-size: 22px;
+            color: #262626;
+        }
+        .p6e-main-content-login-input input {
+            width: 100%;
+            height: 32px;
+            font-size: 18px;
+            border: none;
+            outline: none;
+            padding: 0 2px;
+            color: #262626;
+            margin-top: 6px;
+        }
+        .p6e-main-content-login-error {
+            display: none;
+            color: red;
+            width: 400px;
+            height: 20px;
+            margin: 0 auto;
+            font-size: 16px;
+        }
+        .p6e-main-content-login-button {
+            display: none;
+            width: 400px;
+            height: 48px;
+            margin: 20px auto;
+        }
+        .p6e-main-content-login-button button {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            outline: none;
+            border: none;
+            color: #ffffff;
+            font-size: 20px;
+            border-radius: 4px;
+            background: #3C81E4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .p6e-main-content-login-authorization {
+            display: none;
+            width: 400px;
+            height: 48px;
+            margin: 20px auto;
+        }
+        .p6e-main-content-login-authorization button {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            outline: none;
+            border: none;
+            color: #ffffff;
+            font-size: 20px;
+            border-radius: 4px;
+            background: #3C81E4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .p6e-main-login-content-switch {
+            width: 60px;
+            height: 60px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+        .p6e-main-login-content-switch img {
+            width: 100%;
+            height: 100%;
+        }
+        .p6e-main-login-content-switch:before {
+            content: '';
+            width: 0;
+            height: 0;
+            border-bottom: 60px solid #ffffff;
+            border-right: 60px solid transparent;
+            position: absolute;
+        }
+        .p6e-main-login-content-switch-pc {
+            display: none;
+        }
+        .p6e-main-login-content-code {
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .p6e-main-login-content-code-box {
+            border: 1px solid #cccccc;
+            padding: 20px;
+            border-radius: 12px;
+        }
+    </style>
+    <!-- JQ -->
+    <script type="text/javascript" src="/js/jsquery-2.1.1.js"></script>
+    <!-- RSA -->
+    <script src="/js/jssencrypt.js"></script>
+    <script src="/js/qrcode.min.js"></script>
+</head>
+<body>
+<div class="main">
+    <!-- 错误页面 -->
+    <div class="p6e-main-error"></div>
+    <div class="p6e-main-login">
+        <!-- 上部的内容 -->
+        <div class="p6e-main-login-top">
+            <p class="p6e-main-login-top-title">P6e Oauth2</p>
+        </div>
+        <!-- 下部的内容 -->
+        <div class="p6e-main-login-bottom">
+            <p class="p6e-main-login-bottom-copyright">p6e oauth2. github https://github.com/lidashuang1996<span onclick="qqLogin()">QQ登录</span></p>
+        </div>
+        <div class="p6e-main-login-content">
+            <!-- 二维码 -->
+            <div class="p6e-main-login-content-switch" onclick="switchCode()" >
+                <img class="p6e-main-login-content-switch-ewm" src="/images/ewm.png" alt="SWITCH_EWM"/>
+                <img class="p6e-main-login-content-switch-pc" src="/images/pc.png" alt="SWITCH_PC"/>
+            </div>
+            <div class="p6e-main-login-content-title">
+                <p class="title">P6e Oauth2 登录</p>
+                <p class="subtitle">Oauth2 授权码模式</p>
+            </div>
+            <div class="p6e-main-login-content-client">
+                <div class="ico"></div>
+                <div class="name"></div>
+            </div>
+            <div class="p6e-main-login-content-code">
+                <div class="p6e-main-login-content-code-box" id="qrcode"></div>
+            </div>
+            <div class="p6e-main-content-login-input p6e-main-content-login-input-account">
+                <label class="p6e-main-content-login-account-title">
+                    账号
+                </label>
+                <label class="p6e-main-content-login-account-content">
+                    <input name=""
+                           type="text"
+                           placeholder="请输入账号（邮箱/手机号）"
+                           id="p6e-input-account"
+                           value="15549562863"
+                           onkeyup="confirmLogin()"
+                           onfocus="inputFocus('account')"
+                           onblur="inputBlur('account')"/>
+                </label>
+            </div>
+            <div class="p6e-main-content-login-input p6e-main-content-login-input-password">
+                <label class="p6e-main-content-login-password-title">
+                    密码
+                </label>
+                <label class="p6e-main-content-login-password-content">
+                    <input name=""
+                           type="password"
+                           placeholder="请输入密码"
+                           id="p6e-input-password"
+                           value="123456"
+                           onkeyup="confirmLogin()"
+                           onfocus="inputFocus('password')"
+                           onblur="inputBlur('password')"/>
+                </label>
+            </div>
+            <div class="p6e-main-content-login-error"></div>
+            <div class="p6e-main-content-login-button">
+                <button onclick="confirmLogin('LOGIN')">
+                    <span class="p6e-button-text-1">登 录</span>
+                    <svg class="p6e-button-svg" style="width: 48px; height: 48px; display: none;" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve">
+						            <path fill="#fff" d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50" transform="rotate(273.148 50 50)">
+                            <animateTransform attributeName="transform" attributeType="XML" type="rotate" dur="1s" from="0 50 50" to="360 50 50" repeatCount="indefinite"></animateTransform>
+                        </path>
+					          </svg>
+                    <span class="p6e-button-text-2" style="display: none;">登录中...</span>
+                </button>
+            </div>
+            <!-- 授权按钮 -->
+            <div class="p6e-main-content-login-authorization">
+                <button onclick="authorization()">
+                    <span class="p6e-button-text-1">确 认</span>
+                    <svg class="p6e-button-svg" style="width: 48px; height: 48px; display: none;" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve">
+						            <path fill="#fff" d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50" transform="rotate(273.148 50 50)">
+                            <animateTransform attributeName="transform" attributeType="XML" type="rotate" dur="1s" from="0 50 50" to="360 50 50" repeatCount="indefinite"></animateTransform>
+                        </path>
+					          </svg>
+                    <span class="p6e-button-text-2" style="display: none;">加载中...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function qqLogin() {
+        window.location.href = baseUrl + "/login/qq?mark=" + initData.mark;
+    }
+</script>
+<script type="text/javascript">
+    function switchCode() {
+        isCode = !isCode;
+        const getCodeData = (code) => {
+            $.ajax({
+                type: 'GET',
+                url: baseUrl + '/login/code/get?code=' + code,
+                contentType: 'application/json',
+                dataType: 'JSON',
+                success: (res) => {
+                    // 处理数据
+                    if (res.code === 0) {
+                        console.log('lx ==> ' + res.data);
+                        if (res.data === null
+                            || res.data === undefined
+                            || res.data.accessToken === null
+                            || res.data.accessToken === undefined) {
+                            // 递归获取数据
+                            setTimeout(() => {
+                                if (new Date().getTime() > qrCodeDate + 50000) {
+                                    generateCodeData();
+                                } else {
+                                    getCodeData(code);
+                                }
+                            }, 1500);
+                        } else {
+                            loginSuccess(res);
+                        }
+                    } else {
+                        $('.p6e-main-error').text(res.message);
+                        $('.p6e-main-login').css('display', 'none');
+                        $('.p6e-main-error').css('display', 'block');
+                    }
+                }, error: (e) => {
+                    $('.p6e-main-error').text(e);
+                    $('.p6e-main-login').css('display', 'none');
+                    $('.p6e-main-error').css('display', 'block');
+                }
+            });
+        }
+        const generateCodeData = () => {
+            // 直接返回
+            if (qrCodeLoading) {
+                return;
+            }
+            qrCodeLoading = true;
+            $.ajax({
+                type: 'GET',
+                url: baseUrl + '/login/code/generate?mark=' + initData.mark,
+                contentType: 'application/json',
+                dataType: 'JSON',
+                success: (res) => {
+                    qrCodeLoading = false;
+                    // 处理数据
+                    if (res.code === 0) {
+                        console.log(res.data);
+                        // 获取时间戳
+                        qrCodeDate = new Date().getTime();
+                        if (qrCode === null) {
+                            qrCode = new QRCode('qrcode', {
+                                text: JSON.stringify(res.data),
+                                width: 180,
+                                height: 180,
+                                colorDark : '#3C81E4',
+                                colorLight : '#ffffff',
+                                correctLevel : QRCode.CorrectLevel.H
+                            });
+                            // 启动轮训获取数据
+                            getCodeData(res.data.code);
+                        } else {
+                            qrCode.makeCode(JSON.stringify(res.data));
+                        }
+                    } else {
+                        $('.p6e-main-error').text(res.message);
+                        $('.p6e-main-login').css('display', 'none');
+                        $('.p6e-main-error').css('display', 'block');
+                    }
+                }, error: (e) => {
+                    qrCodeLoading = false;
+                    $('.p6e-main-error').text(e);
+                    $('.p6e-main-login').css('display', 'none');
+                    $('.p6e-main-error').css('display', 'block');
+                }
+            });
+        };
+        if (isCode) {
+            $('.p6e-main-login-content-switch-ewm').css('display', 'none');
+            $('.p6e-main-login-content-switch-pc').css('display', 'block');
+            $('.p6e-main-login-content-code').css('display', 'flex');
+            $('.p6e-main-content-login-input').css('display', 'none');
+            $('.p6e-main-content-login-button').css('display', 'none');
+            if (new Date().getTime() > qrCodeDate + 50000) {
+                generateCodeData();
+            }
+        } else {
+            $('.p6e-main-login-content-switch-ewm').css('display', 'block');
+            $('.p6e-main-login-content-switch-pc').css('display', 'none');
+            $('.p6e-main-login-content-code').css('display', 'none');
+            $('.p6e-main-content-login-input').css('display', 'block');
+            $('.p6e-main-content-login-button').css('display', 'block');
+        }
+    }
+</script>
+<!--
+http://XXXX/?client_id=1234567890&redirect_uri=http://127.0.0.1:10000&response_type=code&scope=all&state=3123
+-->
+<script type="text/javascript">
+    /** */
+    let isCode = false;
+    let qrCode = null;
+    let qrCodeDate = 0;
+    let qrCodeLoading = false;
+    /** 是否初始化 */
+    let isInit = false;
+    /** 是否登录 */
+    let isLogin = false;
+    /** 初始化的数据 */
+    let initData = {};
+    /** 初始化的参数 */
+    const initParams = {};
+    /** 基本的 URL 的参数 */
+    const baseUrl = '';
+    // const baseUrl = 'http://127.0.0.1:80';
+</script>
+<script type="text/javascript">
+    /**
+     * 初始化信息方法
+     */
+    function init() {
+        // 读取 URL 信息里面的参数数据到 initData 里面
+        const search = window.location.search;
+        if (search !== null && search !== undefined && search !== '') {
+            const item = search.split('?');
+            for (let i = 0; i < item.length; i++) {
+                if (item[i] !== null && item[i] !== undefined && item[i] !== '') {
+                    const ite = item[i].split('&');
+                    for (let j = 0; j < ite.length; j++) {
+                        if (ite[j] !== null && ite[j] !== undefined && ite[j] !== '') {
+                            const it = ite[j].split('=');
+                            if (it !== null && it !== undefined && it.length === 2) {
+                                initParams[it[0]] = it[1];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 获取客户端数据信息
+     */
+    function getClientData(callback) {
+        // 生成 URL 地址，并初始化参数
+        let url = baseUrl + '/auth/verification?';
+        const data = {
+            scope: initParams.scope,
+            client_id: initParams.client_id,
+            redirect_uri: initParams.redirect_uri,
+            response_type: initParams.response_type
+        };
+        if (initParams.state !== null && initParams.state !== undefined) {
+            data.state =  initParams.state;
+        }
+        for (const param in initParams) {
+            url += param + '=' + encodeURIComponent(initParams[param]) + '&';
+        }
+        // 发送请求到服务器
+        $.ajax({
+            type: 'GET',
+            url: url.substring(0, url.length - 1),
+            contentType: 'application/json',
+            dataType: 'JSON',
+            success: (res) => {
+                if (res.code === 0) {
+                    // 获取初始化的数据
+                    initData = res.data;
+                    // 初始化客户端的信息
+                    $('.p6e-main-login').css('display', 'block');
+                    $('.p6e-main-login-content-client .name').text(res.data.name);
+                    $('.p6e-main-login-content-client .ico').css('background-image', 'url(\'' + res.data.icon + '\')');
+                    if (callback !== null && callback !== undefined) {
+                        callback();
+                    }
+                } else {
+                    $('.p6e-main-error').text(res.message);
+                    $('.p6e-main-login').css('display', 'none');
+                    $('.p6e-main-error').css('display', 'block');
+                }
+            }, error: (e) => {
+                console.log(e);
+            }
+        });
+    }
+
+    /**
+     * 按键触发事件，以及确认事件
+     */
+    function confirmLogin(e) {
+        if (isLogin || !isInit) {
+            return;
+        }
+        //在火狐下event会做为参数传进来，ie下会在window下
+        const event = e || window.event;
+        // e.which是火狐下获取keyCode的方式，ie下使用e.keyCode获取
+        const keyCode = event.which || event.keyCode || (e === 'LOGIN' && 13);
+        const account = $('#p6e-input-account').val();
+        const password = $('#p6e-input-password').val();
+        if (account.length === 0) {
+            $('.p6e-main-content-login-error').text('账号不能为空');
+            $('.p6e-main-content-login-error').css('display', 'block');
+            $('.p6e-main-content-login-button').css('margin-top', '20px');
+            return;
+        } else if (account.length < 5) {
+            $('.p6e-main-content-login-error').text('账号长度不能低于5位');
+            $('.p6e-main-content-login-error').css('display', 'block');
+            $('.p6e-main-content-login-button').css('margin-top', '20px');
+            return;
+        } else if (password.length === 0) {
+            $('.p6e-main-content-login-error').text('密码不能为空');
+            $('.p6e-main-content-login-error').css('display', 'block');
+            $('.p6e-main-content-login-button').css('margin-top', '20px');
+            return;
+        } else if (password.length < 6) {
+            $('.p6e-main-content-login-error').text('密码长度不能低于6位');
+            $('.p6e-main-content-login-error').css('display', 'block');
+            $('.p6e-main-content-login-button').css('margin-top', '20px');
+            return;
+        }
+        $('.p6e-main-content-login-error').text('');
+        $('.p6e-main-content-login-error').css('display', 'none');
+        $('.p6e-main-content-login-button').css('margin-top', '20px');
+        if (keyCode === 13) {
+            // 打开加载动画
+            isLogin = true;
+            $('.p6e-button-text-1').css('display', 'none');
+            $('.p6e-button-text-2').css('display', 'block');
+            $('.p6e-button-svg').css('display', 'block');
+            // 获取凭证
+            $.ajax({
+                type: 'GET',
+                url: baseUrl + '/voucher',
+                contentType: 'application/json',
+                dataType: 'JSON',
+                success: (res) => {
+                    if (res.code === 0) {
+                        $.ajax({
+                            type: 'POST',
+                            url: baseUrl + '/login/',
+                            contentType: 'application/json',
+                            data: JSON.stringify({
+                                account: account,
+                                password: encryption(res.data.publicKey, password),
+                                voucher: res.data.voucher,
+                                mark: initData.mark,
+                            }),
+                            dataType: 'JSON',
+                            success: (res) => {
+                                // 修改登录的状态
+                                isLogin = false;
+                                // 关闭加载动画
+                                $('.p6e-button-text-1').css('display', 'block');
+                                $('.p6e-button-text-2').css('display', 'none');
+                                $('.p6e-button-svg').css('display', 'none');
+                                if (res.code === 0) {
+                                    loginSuccess(res);
+                                } else {
+                                    if (res.message === 'ACCOUNT_OR_PASSWORD') {
+                                        $('.p6e-main-content-login-error').text('账号或者密码错误');
+                                    } else if (res.message === 'PARAMETER_EXCEPTION') {
+                                        $('.p6e-main-content-login-error').text('页面过期，请刷新重试');
+                                    } else {
+                                        $('.p6e-main-content-login-error').text('网络异常，请刷新重试');
+                                    }
+                                    $('.p6e-main-content-login-error').css('display', 'block');
+                                    $('.p6e-main-content-login-button').css('margin-top', '20px');
+                                }
+                            }, error: (e) => {
+                                // 修改登录的状态
+                                isLogin = false;
+                                // 关闭加载动画
+                                $('.p6e-main-content-login-error').text('网络异常，请刷新重试');
+                                $('.p6e-main-content-login-error').css('display', 'block');
+                                $('.p6e-main-content-login-button').css('margin-top', '20px');
+                                $('.p6e-button-text-1').css('display', 'block');
+                                $('.p6e-button-text-2').css('display', 'none');
+                                $('.p6e-button-svg').css('display', 'none');
+                                console.log(e);
+                            }
+                        });
+                    } else {
+                        // 修改登录的状态
+                        isLogin = false;
+                        // 关闭加载动画
+                        $('.p6e-main-content-login-error').text('网络异常，请刷新重试');
+                        $('.p6e-main-content-login-error').css('display', 'block');
+                        $('.p6e-main-content-login-button').css('margin-top', '20px');
+                        $('.p6e-button-text-1').css('display', 'block');
+                        $('.p6e-button-text-2').css('display', 'none');
+                        $('.p6e-button-svg').css('display', 'none');
+                    }
+                }, error: (e) => {
+                    // 修改登录的状态
+                    isLogin = false;
+                    // 关闭加载动画
+                    $('.p6e-main-content-login-error').text('网络异常，请刷新重试');
+                    $('.p6e-main-content-login-error').css('display', 'block');
+                    $('.p6e-main-content-login-button').css('margin-top', '20px');
+                    $('.p6e-button-text-1').css('display', 'block');
+                    $('.p6e-button-text-2').css('display', 'none');
+                    $('.p6e-button-svg').css('display', 'none');
+                }
+            });
+        }
+    }
+    
+    /**
+     * 授权
+     */
+    function authorization() {
+        if (!isLogin && isInit) {
+            // 读取缓存数据
+            const cache = getCache();
+            if (cache === null || cache === undefined) {
+                delCache();
+                $('.p6e-main-error').text('CACHE_NULL');
+                $('.p6e-main-login').css('display', 'none');
+                $('.p6e-main-error').css('display', 'block');
+            }
+            // 打开加载动画
+            isLogin = true;
+            $('.p6e-button-text-1').css('display', 'none');
+            $('.p6e-button-text-2').css('display', 'block');
+            $('.p6e-button-svg').css('display', 'block');
+            // 发送请求到服务器
+            $.ajax({
+                type: 'GET',
+                url: baseUrl + '/login/verification?mark=' + initData.mark,
+                contentType: 'application/json',
+                dataType: 'JSON',
+                headers: {
+                    'authentication': 'Bearer ' + cache.accessToken
+                },
+                success: (res) => {
+                    // 关闭动画
+                    isLogin = false;
+                    $('.p6e-button-text-1').css('display', 'block');
+                    $('.p6e-button-text-2').css('display', 'none');
+                    $('.p6e-button-svg').css('display', 'none');
+                    // 处理数据
+                    if (res.code === 0) {
+                        loginSuccess(res);
+                    } else {
+                        delCache();
+                        $('.p6e-main-error').text(res.message);
+                        $('.p6e-main-login').css('display', 'none');
+                        $('.p6e-main-error').css('display', 'block');
+                    }
+                }, error: (e) => {
+                    delCache();
+                    isLogin = false;
+                    $('.p6e-main-error').text(e);
+                    $('.p6e-main-login').css('display', 'none');
+                    $('.p6e-main-error').css('display', 'block');
+                }
+            });
+
+        }
+    }
+
+    /**
+     * 获取焦点事件
+     */
+    function inputFocus(name) {
+        $('.p6e-main-content-login-' + name + '-title').css('color', 'rgb(60 129 228)');
+        $('.p6e-main-content-login-input-'  + name).css('border-bottom', '2px solid rgb(60 129 228)');
+    }
+
+    /**
+     * 失去焦点事件
+     */
+    function inputBlur(name) {
+        $('.p6e-main-content-login-' + name + '-title').css('color', '#262626');
+        $('.p6e-main-content-login-input-' + name).css('border-bottom', '2px solid #262626');
+    }
+
+    /**
+     * 登录成功的操作
+     */
+    function loginSuccess(res) {
+        const data = res.data;
+        setCache({
+            accessToken: data.accessToken,
+            refreshToken: data.refreshToken,
+            expiresIn: data.expiresIn,
+            tokenType: data.tokenType,
+        });
+        if (data.responseType !== null
+            && data.responseType !== undefined
+            && 'code' === data.responseType.toLocaleLowerCase()) {
+            window.location.href = data.redirectUri + '?code=' + data.code
+                + ((data.state === undefined || data.state === null) ? '' : '&state=' + data.state);
+        } else {
+            window.location.href = data.redirectUri + '?access_token='
+                + data.accessToken + '&expires_in=' + data.expiresIn
+                + ((data.state === undefined || data.state === null) ? '' : '&state=' + data.state);
+        }
+    }
+
+    /**
+     * 加密
+     */
+    function encryption(a, b) {
+        //使用公钥加密
+        const encrypt = new JSEncrypt();
+        encrypt.setPublicKey('-----BEGIN PUBLIC KEY-----' + a + '-----END PUBLIC KEY-----');
+        return encrypt.encrypt(b);
+    }
+
+    /**
+     * 缓存的相关的操作
+     */
+    function setCache(data) {
+        setCookie('P6E_OAUTH2_AUTH_TOKEN', JSON.stringify(data), 1);
+    }
+
+    /**
+     * 缓存的相关的操作
+     */
+    function delCache() {
+        setCookie('P6E_OAUTH2_AUTH_TOKEN', '', 0);
+    }
+
+    /**
+     * 缓存的相关的操作
+     */
+    function getCache() {
+        const data = getCookie('P6E_OAUTH2_AUTH_TOKEN');
+        if (data !== null && data !== undefined) {
+            try {
+                return JSON.parse(data);
+            } catch (e) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 写入缓存数据
+     */
+    function setCookie(name, value, hours){
+        const d = new Date();
+        d.setTime(d.getTime() + (hours * 3500 * 1000));
+        const expires = d.toGMTString();
+        document.cookie = name + '=' + value + ';expires=' + expires;
+    }
+
+    /**
+     * 读取缓存数据
+     */
+    function getCookie(name){
+        const reg = new RegExp('(^| )' + name + '=([^;]*)(;|$)');
+        const arr = document.cookie.match(reg);
+        if(arr !== undefined && arr !== null) {
+            return unescape(arr[2]);
+        } else {
+            return null;
+        }
+    }
+
+    $(function () {
+        if (window.performance.navigation.type === 2) {
+            location.reload();
+            return;
+        }
+        // 读取 URL 参数
+        init();
+        // 判断是否是回调数据
+        if (initParams !== null
+            && initParams !== undefined
+            && initParams.type !== null
+            && initParams.type !== undefined
+            && initParams.code !== null
+            && initParams.code !== undefined
+            && initParams.state !== null
+            && initParams.state !== undefined
+            && (initParams.type === 'qq' || initParams.type === 'we_chat')) {
+            // QQ
+            if (initParams.type === 'qq') {
+                // 发送请求到服务器
+                $.ajax({
+                    type: 'GET',
+                    url: baseUrl + '/login/qq/callback?type=data&code=' + initParams.code + '&state=' + initParams.state,
+                    contentType: 'application/json',
+                    dataType: 'JSON',
+                    success: (res) => {
+                        // 处理数据
+                        if (res.code === 0) {
+                            loginSuccess(res);
+                        } else {
+                            $('.p6e-main-error').text(res.message);
+                            $('.p6e-main-login').css('display', 'none');
+                            $('.p6e-main-error').css('display', 'block');
+                        }
+                    }, error: (e) => {
+                        $('.p6e-main-error').text(e);
+                        $('.p6e-main-login').css('display', 'none');
+                        $('.p6e-main-error').css('display', 'block');
+                    }
+                });
+            }
+            // 微信
+            if (initParams.type === 'we_chat') {}
+        } else {
+            // 获取客户端信息
+            getClientData(() => {
+                // 初始化完成
+                isInit = true;
+                // 验证本地是否存在缓存数据
+                const cache = getCache();
+                if (cache === null || cache === undefined) {
+                    // 现实登录页面
+                    $('.p6e-main-content-login-input').css('display', 'block');
+                    $('.p6e-main-login-content-switch').css('display', 'block');
+                    $('.p6e-main-content-login-button').css('display', 'block');
+                    $('.p6e-main-content-login-authorization').css('display', 'none');
+                } else {
+                    // 显示授权页面
+                    $('.p6e-main-content-login-input').css('display', 'none');
+                    $('.p6e-main-login-content-switch').css('display', 'none');
+                    $('.p6e-main-content-login-button').css('display', 'none');
+                    $('.p6e-main-content-login-authorization').css('display', 'block');
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>
