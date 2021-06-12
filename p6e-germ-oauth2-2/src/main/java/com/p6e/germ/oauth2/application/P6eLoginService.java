@@ -80,6 +80,9 @@ public interface P6eLoginService {
      */
     public P6eNrCodeModel.DtoResult nrCodeLogin(P6eNrCodeModel.DtoParam param);
 
+
+
+    public P6eQrCodeModel.DtoResult qrCodeData(P6eQrCodeModel.DtoParam param);
     /**
      * 获取扫码登录数据
      * @param code CODE 标记

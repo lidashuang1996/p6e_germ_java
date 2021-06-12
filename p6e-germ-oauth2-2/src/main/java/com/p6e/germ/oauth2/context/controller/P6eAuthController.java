@@ -169,7 +169,7 @@ public class P6eAuthController extends P6eBaseController {
                 response.addCookie(cookie2);
                 // 写入返回的页面数据
                 response.setContentType(HTML_CONTENT_TYPE);
-                response.getWriter().write(Utils.variableFormatting(Config.getHtml(), new String[]{ HTML_DATA_NAME,  P6eJsonUtil.toJson(contentMap) }));
+                response.getWriter().write(Utils.variableFormatting(html, new String[]{ HTML_DATA_NAME,  P6eJsonUtil.toJson(contentMap) }));
                 response.getWriter().flush();
                 response.getWriter().close();
                 return null;

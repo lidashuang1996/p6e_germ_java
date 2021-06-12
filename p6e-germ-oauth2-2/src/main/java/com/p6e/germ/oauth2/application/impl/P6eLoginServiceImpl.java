@@ -3,6 +3,7 @@ package com.p6e.germ.oauth2.application.impl;
 import com.p6e.germ.common.config.P6eConfig;
 import com.p6e.germ.common.config.P6eOauth2Config;
 import com.p6e.germ.common.utils.*;
+import com.p6e.germ.oauth2.Utils;
 import com.p6e.germ.oauth2.application.P6eLoginService;
 import com.p6e.germ.oauth2.domain.entity.*;
 import com.p6e.germ.oauth2.domain.keyvalue.P6eMarkKeyValue;
@@ -12,6 +13,7 @@ import com.p6e.germ.oauth2.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -224,23 +226,66 @@ public class P6eLoginServiceImpl implements P6eLoginService {
 
 
 
-
-
     @Override
     public P6eQrCodeModel.DtoResult qrCode(P6eQrCodeModel.DtoParam param) {
         final P6eQrCodeModel.DtoResult result = new P6eQrCodeModel.DtoResult();
         try {
             // 判断其他登录是否启动
             if (config.getQrCode().isEnable()) {
+                final String mark = param.getMark();
                 try {
                     // 验证参数是否存在且刷新过期时间
-                    P6eMarkEntity.get(param.getMark()).refresh();
+                    P6eMarkEntity.get(mark).refresh();
                 } catch (Exception e) {
                     result.setError(P6eResultModel.Error.PAGE_EXPIRED);
                     return result;
                 }
                 // 写入二维码的数据
-                result.setContent(config.getQrCode().getUrl() + P6eQrCodeEntity.create().cache().getKey());
+                result.setContent(Utils.variableFormatting(config.getQrCode().getUrl(), new String[]{
+                        "code", (P6eQrCodeEntity.create(mark).cache().getKey()), "mark", mark }));
+            } else {
+                result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            result.setError(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+        return result;
+    }
+
+    @Override
+    public P6eQrCodeModel.DtoResult qrCodeData(P6eQrCodeModel.DtoParam param) {
+        final P6eQrCodeModel.DtoResult result = new P6eQrCodeModel.DtoResult();
+        try {
+            // 判断其他登录是否启动
+            if (config.getQrCode().isEnable()) {
+                try {
+                    // 验证参数是否存在
+                    P6eMarkEntity.get(param.getMark());
+                } catch (Exception e) {
+                    result.setError(P6eResultModel.Error.PAGE_EXPIRED);
+                    return result;
+                }
+                try {
+                    // 写入读取的缓存数据内容
+                    final P6eQrCodeEntity qrCode = P6eQrCodeEntity.get(param.getCode());
+                    if (qrCode.verificationMark(param.getMark())) {
+                        try {
+                            final String value = qrCode.getValue();
+                            if (value != null) {
+                                final P6eQrCodeModel.DtoResult r = P6eJsonUtil.fromJson(value, P6eQrCodeModel.DtoResult.class);
+                                P6eCopyUtil.run(r, result);
+                            }
+                        } finally {
+                            qrCode.clean();
+                        }
+                    } else {
+                        result.setError(P6eResultModel.Error.PARAMETER_EXCEPTION);
+                    }
+                } catch (Exception e) {
+                    result.setError(P6eResultModel.Error.RESOURCES_NO_EXIST);
+                    return result;
+                }
             } else {
                 result.setError(P6eResultModel.Error.SERVICE_NOT_ENABLE);
             }
@@ -257,16 +302,28 @@ public class P6eLoginServiceImpl implements P6eLoginService {
         try {
             // 判断其他登录是否启动
             if (config.getQrCode().isEnable()) {
+                final P6eMarkKeyValue.Content mContent;
                 try {
-                    // 验证参数是否存在
-                    P6eMarkEntity.get(param.getMark());
+                    // 读取缓存的信息并删除缓存
+                    mContent = P6eMarkEntity.get(param.getMark()).clean().getData();
                 } catch (Exception e) {
                     result.setError(P6eResultModel.Error.PAGE_EXPIRED);
                     return result;
                 }
                 try {
-                    // 写入缓存的数据内容
-                    result.setContent(P6eQrCodeEntity.get(param.getCode()).getValue());
+                    // 读取来源信息
+                    final String accessToken = param.getAccessToken();
+                    final Map<String, String> uMap = P6eTokenEntity.get(new P6eTokenKeyValue.AccessToken(accessToken)).getData();
+                    final String id = uMap.get("id");
+                    // 创建用户认证信息并缓存
+                    final P6eTokenEntity token = P6eTokenEntity.create(
+                            new P6eTokenKeyValue.CodeParam(P6eJsonUtil.toJson(mContent)),
+                            new P6eTokenKeyValue.DataParam(id, uMap)
+                    ).cache();
+                    result.setCode(token.getKey());
+                    P6eCopyUtil.run(mContent, result);
+                    P6eCopyUtil.run(token.getContent(), result);
+                    P6eQrCodeEntity.get(param.getCode()).setValue(P6eJsonUtil.toJson(result));
                 } catch (Exception e) {
                     result.setError(P6eResultModel.Error.RESOURCES_NO_EXIST);
                     return result;
@@ -280,8 +337,6 @@ public class P6eLoginServiceImpl implements P6eLoginService {
         }
         return result;
     }
-
-
 
 
 
@@ -327,7 +382,7 @@ public class P6eLoginServiceImpl implements P6eLoginService {
                     try {
                         mContent = P6eMarkEntity.get(m).clean().getData();
                     } catch (Exception e) {
-                        result.setError(P6eResultModel.Error.OTHER_LOGIN_STATE_NOT_EXIST);
+                        result.setError(P6eResultModel.Error.PAGE_EXPIRED);
                         return result;
                     }
                     // 获取用户的信息

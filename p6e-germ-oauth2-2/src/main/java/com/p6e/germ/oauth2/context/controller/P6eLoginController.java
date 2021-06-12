@@ -23,32 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 public class P6eLoginController extends P6eBaseController {
 
     @ApiOperation(
-            value = "账号密码登录的密码加密凭证接口"
-    )
-    @GetMapping("/login/secret_voucher")
-    public P6eResultModel secretVoucher(P6eSecretVoucherModel.VoParam param) {
-        try {
-            if (param == null || param.getMark() == null) {
-                return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
-            } else {
-                final P6eSecretVoucherModel.DtoResult result =
-                        P6eApplication.login.secretVoucher(P6eCopyUtil.run(param, P6eSecretVoucherModel.DtoParam.class));
-                if (result == null) {
-                    return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
-                } else if (result.getError() != null) {
-                    return P6eResultModel.build(result.getError());
-                } else {
-                    return P6eResultModel.build(P6eCopyUtil.run(result, P6eSecretVoucherModel.VoResult.class));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error(e.getMessage());
-            return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
-        }
-    }
-
-    @ApiOperation(
             value = "验证登录的接口"
     )
     @GetMapping("/login/verification")
@@ -89,6 +63,37 @@ public class P6eLoginController extends P6eBaseController {
         }
     }
 
+
+
+
+
+
+    @ApiOperation(
+            value = "账号密码登录的密码加密凭证接口"
+    )
+    @GetMapping("/login/secret_voucher")
+    public P6eResultModel secretVoucher(P6eSecretVoucherModel.VoParam param) {
+        try {
+            if (param == null || param.getMark() == null) {
+                return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
+            } else {
+                final P6eSecretVoucherModel.DtoResult result =
+                        P6eApplication.login.secretVoucher(P6eCopyUtil.run(param, P6eSecretVoucherModel.DtoParam.class));
+                if (result == null) {
+                    return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
+                } else if (result.getError() != null) {
+                    return P6eResultModel.build(result.getError());
+                } else {
+                    return P6eResultModel.build(P6eCopyUtil.run(result, P6eSecretVoucherModel.VoResult.class));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
+        }
+    }
+
     @ApiOperation(
             value = "账号密码登录的接口"
     )
@@ -112,8 +117,8 @@ public class P6eLoginController extends P6eBaseController {
                     return P6eResultModel.build(result.getError());
                 } else {
                     // 重定向去新的页面
-                    P6eAuthController.page(request, response, P6eJsonUtil.toJson(
-                            P6eCopyUtil.run(result, P6eApModel.DtoResult.class)));
+                    P6eAuthController.page(request, response,
+                            P6eJsonUtil.toJson(P6eCopyUtil.run(result, P6eApModel.DtoResult.class)));
                     return null;
                 }
             }
@@ -206,7 +211,6 @@ public class P6eLoginController extends P6eBaseController {
 
 
 
-
     @ApiOperation(
             value = "获取二维码登录的接口"
     )
@@ -237,7 +241,8 @@ public class P6eLoginController extends P6eBaseController {
             value = "获取二维码登录信息的接口"
     )
     @GetMapping("/login/qr_code/data")
-    public P6eResultModel qrCodeData(P6eQrCodeModel.VoParam param) {
+    public P6eResultModel qrCodeData(P6eQrCodeModel.VoParam param,
+                                     HttpServletRequest request, HttpServletResponse response) {
         try {
             if (param == null
                     || param.getMark() == null
@@ -245,13 +250,19 @@ public class P6eLoginController extends P6eBaseController {
                 return P6eResultModel.build(P6eResultModel.Error.PARAMETER_EXCEPTION);
             } else {
                 final P6eQrCodeModel.DtoResult result =
-                        P6eApplication.login.qrCodeLogin(P6eCopyUtil.run(param, P6eQrCodeModel.DtoParam.class));
+                        P6eApplication.login.qrCodeData(P6eCopyUtil.run(param, P6eQrCodeModel.DtoParam.class));
                 if (result == null) {
                     return P6eResultModel.build(P6eResultModel.Error.SERVICE_EXCEPTION);
                 } else if (result.getError() != null) {
                     return P6eResultModel.build(result.getError());
                 } else {
-                    return P6eResultModel.build(P6eCopyUtil.run(result, P6eNrCodeModel.VoResult.class));
+                    final P6eQrCodeModel.VoResult vr = P6eCopyUtil.run(result, P6eQrCodeModel.VoResult.class);
+                    if (vr == null || vr.getAccessToken() == null || vr.getAccessToken().isEmpty()) {
+                        return P6eResultModel.build();
+                    } else {
+                        P6eAuthController.page(request, response, P6eJsonUtil.toJson(vr));
+                        return null;
+                    }
                 }
             }
         } catch (Exception e) {

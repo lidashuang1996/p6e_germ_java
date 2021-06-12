@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "precache-manifest.3cd3abae862dbd3c001df360bd06b9b1.js"
+  "precache-manifest.3a4a31539433ecd5b55fe451f8dd8246.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "p6e_auth_vue"});

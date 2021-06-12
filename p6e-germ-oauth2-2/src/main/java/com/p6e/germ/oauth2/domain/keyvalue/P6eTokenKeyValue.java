@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -32,6 +33,15 @@ public class P6eTokenKeyValue {
         private String refreshToken;
         private String tokenType;
         private Long expiresIn;
+
+        public Map<String, String> toMap() {
+            final Map<String, String> result = new HashMap<>(4);
+            result.put("token_type", tokenType);
+            result.put("access_token", accessToken);
+            result.put("refresh_token", refreshToken);
+            result.put("expires_in", String.valueOf(expiresIn));
+            return result;
+        }
     }
 
     @Data
