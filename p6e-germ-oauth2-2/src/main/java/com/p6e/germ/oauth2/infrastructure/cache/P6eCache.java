@@ -15,14 +15,11 @@ public final class P6eCache {
     public static IP6eCacheMark mark;
     /** 认证缓存 */
     public static IP6eCacheToken token;
-    /** 第方三方授权 state 数据缓存 */
-    public static IP6eCacheState state;
     /** 客户端缓存 */
     public static IP6eCacheClient client;
     /** 凭证缓存 */
     public static IP6eCacheSecretVoucher voucher;
 
-    public static IP6eCachePush push;
     public static IP6eCacheNrCode nrCode;
 
     public static IP6eCacheOtherState otherState;
@@ -33,7 +30,7 @@ public final class P6eCache {
     public static void init() {
         otherState = P6eSpringUtil.getBean(IP6eCacheOtherState.class, new P6eCacheRedisOtherState());
         // CODE 缓存
-        qrCode = P6eSpringUtil.getBean(IP6eCacheQrCode.class, new P6eCacheRedisCode());
+        qrCode = P6eSpringUtil.getBean(IP6eCacheQrCode.class, new P6eCacheRedisQrCode());
         nrCode = P6eSpringUtil.getBean(IP6eCacheNrCode.class, new P6eCacheRedisNrCode());
         // 认证缓存
         auth = P6eSpringUtil.getBean(IP6eCacheAuth.class, new P6eCacheRedisAuth());
@@ -42,11 +39,9 @@ public final class P6eCache {
         // 认证缓存
         token = P6eSpringUtil.getBean(IP6eCacheToken.class, new P6eCacheRedisToken());
         // 第方三方授权 state 数据缓存
-        state = P6eSpringUtil.getBean(IP6eCacheState.class, new P6eCacheRedisState());
         // 客户端的缓存
         client = P6eSpringUtil.getBean(IP6eCacheClient.class, new P6eCacheRedisClient());
         // 凭证缓存
-        voucher = P6eSpringUtil.getBean(IP6eCacheSecretVoucher.class, new P6eCacheRedisVoucher());
-        push = P6eSpringUtil.getBean(IP6eCachePush.class, new P6eCacheRedisPush());
+        voucher = P6eSpringUtil.getBean(IP6eCacheSecretVoucher.class, new P6eCacheRedisSecretVoucher());
     }
 }

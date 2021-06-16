@@ -14,7 +14,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * 由于 CLIENT 比较少，调用比较频繁，可以缓存一下到 CACHE 中间键
+ * 由于 CLIENT 比较少，调用比较频繁，可以缓存到中间键
  * @author lidashuang
  * @version 1.0
  */
@@ -39,9 +39,9 @@ public class P6eCacheDatabaseTask {
     private P6eOauth2ClientMapper p6eClientMapper;
 
     /**
-     * 每隔 15 分钟执行，同步一次缓存数据
+     * 每隔 45 分钟执行，同步一次缓存数据
      */
-    @Scheduled(initialDelay = 10 * 1000, fixedRate = 900 * 1000)
+    @Scheduled(initialDelay = 10 * 1000, fixedRate = 45 * 60 * 1000)
     public void execute() {
         LOGGER.info("start operation db to cache.");
         int page = 0;
